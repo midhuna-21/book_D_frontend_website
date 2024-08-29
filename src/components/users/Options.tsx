@@ -1,0 +1,59 @@
+import React, { useState } from "react";
+import AddBookForm from "../users/AddBookForm";
+import bookPage from "../../assets/bookPage.png";
+
+const Options: React.FC = () => {
+    const [activeOption, setActiveOption] = useState("addBooks");
+
+    const handleOptionClick = (option: string) => {
+        setActiveOption(option);
+    };
+
+    // Render different components based on activeOption state
+    const renderComponent = () => {
+        switch (activeOption) {
+            case "addBooks":
+                return <AddBookForm />;
+            case "rentedBooks":
+                // return <RentedBooks />;
+            case "soldBooks":
+                // return <SoldBooks />;
+            default:
+                return null;
+        }
+    };
+
+    return (
+        <div className="flex flex-col items-center justify-center h-screen bg-gray-100  mx-auto shadow-md mt-16">
+            <div className="flex flex-1 flex-row gap-5 py-10 px-12">
+                <button
+                    className={`border-2 border-slate-600 px-4 py-2 rounded-md text-black font-serif hover:bg-gray-800 hover:border-gray-900 hover:text-white ${
+                        activeOption === "addBooks" ? "bg-gray-800 text-white" : ""
+                    }`}
+                    onClick={() => handleOptionClick("addBooks")}
+                >
+                    Add Books
+                </button>
+                <button
+                    className={`border-2 border-slate-600 px-4 py-2 rounded-md text-black font-serif hover:bg-gray-800 hover:border-gray-900 hover:text-white ${
+                        activeOption === "rentedBooks" ? "bg-gray-800 text-white" : ""
+                    }`}
+                    onClick={() => handleOptionClick("rentedBooks")}
+                >
+                    Rented Books
+                </button>
+                <button
+                    className={`border-2 border-slate-600 px-4 py-2 rounded-md text-black font-serif hover:bg-gray-800 hover:border-gray-900 hover:text-white ${
+                        activeOption === "soldBooks" ? "bg-gray-800 text-white" : ""
+                    }`}
+                    onClick={() => handleOptionClick("soldBooks")}
+                >
+                    Sold Books
+                </button>
+            </div>
+            {renderComponent()}
+        </div>
+    );
+};
+
+export default Options;
