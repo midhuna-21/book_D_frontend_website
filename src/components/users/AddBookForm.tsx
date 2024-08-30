@@ -38,9 +38,9 @@ type FormData = {
     pincode: string;
     maxDistance: number;
     maxDays: number;
-    minDays:number;
-    latitude:number;
-    longitude:number;
+    minDays: number;
+    latitude: number;
+    longitude: number;
 };
 
 const RentBookForm: React.FC = () => {
@@ -64,9 +64,9 @@ const RentBookForm: React.FC = () => {
         pincode: "",
         maxDistance: 0,
         maxDays: 0,
-        minDays:0,
-        latitude:0,
-        longitude:0,
+        minDays: 0,
+        latitude: 0,
+        longitude: 0,
     };
 
     const [formData, setFormData] = useState<FormData>(initialFormData);
@@ -145,7 +145,7 @@ const RentBookForm: React.FC = () => {
                 "price",
                 "maxDistance",
                 "maxDays",
-                "minDays"
+                "minDays",
             ].includes(name)
         ) {
             console.log(name, "nam");
@@ -161,10 +161,10 @@ const RentBookForm: React.FC = () => {
             [name]: sanitizedValue,
         }));
     };
-    
+
     const getLatLngFromAddress = async (address: string) => {
         try {
-            const apiKey = 'AIzaSyAw-4P7bBpkfYBigSCggZyNEMr4fkP0Z0M'; 
+            const apiKey = "AIzaSyAw-4P7bBpkfYBigSCggZyNEMr4fkP0Z0M";
             const response = await axios.get(
                 `https://maps.googleapis.com/maps/api/geocode/json`,
                 {
@@ -174,36 +174,36 @@ const RentBookForm: React.FC = () => {
                     },
                 }
             );
-            if (response.data.status === 'OK') {
+            if (response.data.status === "OK") {
                 const location = response.data.results[0].geometry.location;
                 return {
                     latitude: location.lat,
                     longitude: location.lng,
                 };
             } else {
-                console.error('Geocoding error:', response.data.status);
+                console.error("Geocoding error:", response.data.status);
                 return null;
             }
         } catch (error) {
-            console.error('Error while fetching lat/lng:', error);
+            console.error("Error while fetching lat/lng:", error);
             return null;
         }
     };
-    
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-            const formattedAddress = `${formData.street}, ${formData.city}, ${formData.district}, ${formData.state}, ${formData.pincode}`;
-            
-            const latLng = await getLatLngFromAddress(formattedAddress);
-        
-            if (latLng) {
-                setFormData((prevFormData) => ({
-                    ...prevFormData,
-                    latitude: latLng.latitude,
-                    longitude: latLng.longitude,
-                }));
-            }
-      
+        const formattedAddress = `${formData.street}, ${formData.city}, ${formData.district}, ${formData.state}, ${formData.pincode}`;
+
+        const latLng = await getLatLngFromAddress(formattedAddress);
+
+        if (latLng) {
+            setFormData((prevFormData) => ({
+                ...prevFormData,
+                latitude: latLng.latitude,
+                longitude: latLng.longitude,
+            }));
+        }
+
         const errors = validateFormData(formData, isRentBook);
         if (errors.length === 0) {
             const formDataWithImages = new FormData();
@@ -222,16 +222,19 @@ const RentBookForm: React.FC = () => {
                 "quantity",
                 formData.quantity?.toString() || ""
             );
-            formDataWithImages.append(
-                "street",
-                formData.street || ""
-            );
+            formDataWithImages.append("street", formData.street || "");
             formDataWithImages.append("city", formData.city || "");
             formDataWithImages.append("district", formData.district || "");
             formDataWithImages.append("state", formData.state || "");
             formDataWithImages.append("pincode", formData.pincode || "");
-            formDataWithImages.append("latitude", formData.latitude?.toString() || "");
-            formDataWithImages.append("longitude", formData.longitude?.toString() || "");
+            formDataWithImages.append(
+                "latitude",
+                formData.latitude?.toString() || ""
+            );
+            formDataWithImages.append(
+                "longitude",
+                formData.longitude?.toString() || ""
+            );
 
             if (isRentBook) {
                 formDataWithImages.append(
@@ -309,13 +312,10 @@ const RentBookForm: React.FC = () => {
         fetchBook();
     });
 
-
-
     const handleGetLocation = () => {
         if (navigator.geolocation) {
             // console.log(navigator,'navigator')
             navigator.geolocation.getCurrentPosition(
-
                 async (position) => {
                     // console.log(navigator.geolocation,'geolocation navigator')
                     const { latitude, longitude } = position.coords;
@@ -328,8 +328,8 @@ const RentBookForm: React.FC = () => {
                     if (locationDetails) {
                         setFormData({
                             ...formData,
-                            latitude:latitude,
-                            longitude:longitude,
+                            latitude: latitude,
+                            longitude: longitude,
                             street: locationDetails.street || "",
                             city: locationDetails.city || "",
                             district: locationDetails.district || "",
@@ -341,12 +341,12 @@ const RentBookForm: React.FC = () => {
                 (error) => {
                     console.error("Error fetching geolocation:", error);
                     alert("Unable to retrieve location");
-                } ,
+                },
                 {
-                    enableHighAccuracy: true,  
-                    timeout: 10000,           
-                    maximumAge: 0        
-                  }
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0,
+                }
             );
         } else {
             alert("Geolocation is not supported by your browser");
@@ -359,18 +359,18 @@ const RentBookForm: React.FC = () => {
 
         try {
             const response = await axios.get(url);
-            console.log(response,'response')
+            console.log(response, "response");
             const results = response.data.results;
 
             if (results.length > 0) {
-                console.log(results,'results')
+                console.log(results, "results");
                 const addressComponents = results[0].address_components;
                 let street = "",
                     city = "",
                     district = "",
                     state = "",
                     pincode = "";
-                    console.log(addressComponents,'addressComponents')
+                console.log(addressComponents, "addressComponents");
                 addressComponents.forEach((component: any) => {
                     if (component.types.includes("sublocality_level_2")) {
                         street = component.long_name;
@@ -404,10 +404,9 @@ const RentBookForm: React.FC = () => {
         }
     };
 
-    return (
-        <div className="flex min-h-screen bg-gray-100 bg-cover ">
-            <div className="bg-white opacity-95 shadow-lg rounded-lg px-8 py-6 w-full max-w-4xl ml-12">
-                <div className="flex  mb-6">
+    return (    
+        <form className="space-y-6 ">
+                <div className="mb-6">
                     <button
                         type="button"
                         className={`px-4 py-2 rounded-l-lg ${
@@ -443,8 +442,9 @@ const RentBookForm: React.FC = () => {
                         Sell Book
                     </button> */}
                 </div>
+        <div className="flex flex-row">
+            <div className=" bg-white h-full opacity-95 shadow-lg rounded-lg px-8 py-6 w-full max-w-4xl">
 
-                <form className="space-y-6">
                     <div className="flex flex-col sm:flex-row sm:space-x-6">
                         <div className="flex-1">
                             <label
@@ -648,6 +648,11 @@ const RentBookForm: React.FC = () => {
                             </select>
                         </div>
                     </div>
+            </div>
+      
+        <div className="flex bg-cover ">
+            <div className="bg-white h-full opacity-95 shadow-lg rounded-lg px-8 py-6 w-full max-w-4xl ml-12">
+ 
                     <div className="flex flex-col sm:flex-row sm:space-x-6">
                         <div className="flex-1">
                             <label
@@ -821,7 +826,7 @@ const RentBookForm: React.FC = () => {
                                         className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
                                     />
                                 </div>
-                                </div>
+                            </div>
                         </>
                     ) : (
                         <div className="flex-1 mb-6">
@@ -857,9 +862,10 @@ const RentBookForm: React.FC = () => {
                             Submit
                         </button>
                     </div>
-                </form>
             </div>
         </div>
+        </div>
+        </form>
     );
 };
 

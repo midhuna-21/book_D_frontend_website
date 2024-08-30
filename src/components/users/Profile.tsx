@@ -114,7 +114,7 @@ const Profile: React.FC = () => {
                     },
                 }
             );
-
+        
             if (response.data.status === 'OK') {
                 const location = response.data.results[0].geometry.location;
                 const components = response.data.results[0].address_components;
@@ -123,8 +123,12 @@ const Profile: React.FC = () => {
                 let foundState = '';
                 let foundDistrict = '';
                 let foundCity = '';
+                let foundStreet = '';
     
                 components.forEach((component: any) => {
+                  if (component.types.includes('sublocality')) {
+                    foundStreet = component.long_name;
+                }
                     if (component.types.includes('postal_code')) {
                         foundPincode = component.long_name;
                     }
@@ -139,6 +143,7 @@ const Profile: React.FC = () => {
                     }
                 })
                 return {
+                    street:foundStreet,
                     pincode: foundPincode,
                     state: foundState,
                     district: foundDistrict,
@@ -153,121 +158,232 @@ const Profile: React.FC = () => {
             return null;
         }
     };
-    
+
     const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        const { address } = formData;
-      
-        if (address) {
-          const formattedAddress = `${address.street}, ${address.city}, ${address.district}, ${address.state}, ${address.pincode}`;
-          
-          if (address.street && address.city && address.district && address.state && address.pincode) {
-            const latLng = await getLatLngFromAddress(formattedAddress);
-            if (latLng) {
-              const { pincode, state, district, city } = latLng;
+      e.preventDefault();
     
-              if (pincode !== address.pincode) {
-                toast.error('Invalid pincode. Please check the entered pincode.');
-                return;
-              }
-      
-              if (state.toLowerCase() !== address.state.toLowerCase()) {
-                toast.error('Invalid state. Please check the entered state.');
-                return;
-              }
-      
-              if (district.toLowerCase() !== address.district.toLowerCase()) {
-                toast.error('Invalid district. Please check the entered district.');
-                return;
-              }
-      
-              if (city.toLowerCase() !== address.city.toLowerCase()) {
-                toast.error('Invalid city. Please check the entered city.');
-                return;
-              }
-      
-              setFormData((prevFormData) => ({
-                ...prevFormData,
-                address: {
-                  ...prevFormData.address,
-                  pincode,
-                  state,
-                  district,
-                  city
-                }
-              }));
-            } else {
-              toast.error('Invalid address. Please check details.');
-              return;
-            }
-          } else {
-            toast.error("Invalid address. Please check the entered details.");
+      const { address } = formData;
+    
+      const isAddressEntered = address?.street || address?.city || address?.district || address?.state || address?.pincode;
+      const isFullAddressProvided = address?.street && address?.city && address?.district && address?.state && address?.pincode;
+    
+      if (isAddressEntered && !isFullAddressProvided) {
+        toast.error("Please fill in the complete address details.");
+        return;
+      }
+      if (isFullAddressProvided) {
+        const formattedAddress = `${address?.street}, ${address?.city}, ${address?.district}, ${address?.state}, ${address?.pincode}`;
+        
+        const latLng = await getLatLngFromAddress(formattedAddress);
+        if (latLng) {
+          console.log(latLng,'latnnnnnn')
+          const { pincode, state, district, city } = latLng;
+    
+          if (pincode !== address?.pincode) {
+            console.log(address.pincode,'[niond')
+            console.log(pincode,'pinode')
+            toast.error('Invalid pincode. Please check the entered pincode.');
             return;
           }
-        }
-      
-        const isAddressEntered = address?.street || address?.city || address?.district || address?.state || address?.pincode;
-        const isFullAddressProvided = address?.street && address?.city && address?.district && address?.state && address?.pincode;
-      
-        if (isAddressEntered && !isFullAddressProvided) {
-          toast.error("Please fill your address details.");
+    
+          if (state.toLowerCase() !== address?.state?.toLowerCase()) {
+            toast.error('Invalid state. Please check the entered state.');
+            return;
+          }
+    
+          if (district.toLowerCase() !== address?.district?.toLowerCase()) {
+            toast.error('Invalid district. Please check the entered district.');
+            return;
+          }
+    
+          if (city.toLowerCase() !== address?.city?.toLowerCase()) {
+            toast.error('Invalid city. Please check the entered city.');
+            return;
+          }
+    
+          setFormData((prevFormData) => ({
+            ...prevFormData,
+            address: {
+              ...prevFormData.address,
+              pincode,
+              state,
+              district,
+              city
+            }
+          }));
+        } else {
+          toast.error('Invalid address. Please check details.');
           return;
         }
-      
-        const isGoogle = user?.isGoogle ?? false;
-        const validationResult = validate(
-          formData.name || "",
-          formData.email || "",
-          formData.phone || "",
-          address?.street || "",
-          address?.city || "",
-          address?.district || "",
-          address?.state || "",
-          address?.pincode || "",
-          isGoogle
-        );
-      
-        if (validationResult === true) {
-          try {
-            const filteredFormData: User = {
-              ...formData,
-              address: {
-                ...address,
-                street: address?.street?.trim() || "",
-                city: address?.city?.trim() || "",
-                district: address?.district?.trim() || "",
-                state: address?.state?.trim() || "",
-                pincode: address?.pincode?.trim() || "",
-                latitude: address?.latitude,
-                longitude: address?.longitude,
-              }
-            };
-      
-            const response = await userAxiosInstance.put(
-              "/update-profile",
-              { formData: filteredFormData },
-              { withCredentials: true }
-            );
-      
-            if (response.status === 200) {
-              console.log(response?.data, 'data');
-              setIsFormChanged(false);
-              dispatch(addUser(response.data));
-              navigate("/home/profile");
-              setFormData(filteredFormData);
-              toast.success("Profile updated successfully");
+      }
+    
+      // Proceed with validation for phone number, name, and other fields
+      const isGoogle = user?.isGoogle ?? false;
+      const validationResult = validate(
+        formData.name || "",
+        formData.email || "",
+        formData.phone || "",
+        address?.street || "",
+        address?.city || "",
+        address?.district || "",
+        address?.state || "",
+        address?.pincode || "",
+        isGoogle
+      );
+    
+      if (validationResult === true) {
+        try {
+          const filteredFormData: User = {
+            ...formData,
+            address: {
+              ...address,
+              street: address?.street?.trim() || "",
+              city: address?.city?.trim() || "",
+              district: address?.district?.trim() || "",
+              state: address?.state?.trim() || "",
+              pincode: address?.pincode?.trim() || "",
+              latitude: address?.latitude,
+              longitude: address?.longitude,
             }
-          } catch (error: any) {
-            if (error.response && error.response.status === 404) {
-              toast.error(error.response.data.message);
-            } else {
-              toast.error("An error occurred, please try again later");
-            }
+          };
+    
+          const response = await userAxiosInstance.put(
+            "/update-profile",
+            { formData: filteredFormData },
+            { withCredentials: true }
+          );
+    
+          if (response.status === 200) {
+            setIsFormChanged(false);
+            console.log(response.data,'dinej')
+            dispatch(addUser(response.data));
+            navigate("/home/profile");
+            setFormData(filteredFormData);
+            toast.success("Profile updated successfully");
           }
-        } else {
-          toast.error(validationResult);
+        } catch (error: any) {
+          if (error.response && error.response.status === 404) {
+            toast.error(error.response.data.message);
+          } else {
+            toast.error("An error occurred, please try again later");
+          }
         }
-      };
+      } else {
+        toast.error(validationResult);
+      }
+    };
+    
+    
+    // const handleSubmit = async (e: React.FormEvent) => {
+    //     e.preventDefault();
+    //     const { address } = formData;
+      
+    //     if (address) {
+    //       const formattedAddress = `${address.street}, ${address.city}, ${address.district}, ${address.state}, ${address.pincode}`;
+          
+    //       if (address.street && address.city && address.district && address.state && address.pincode) {
+    //         const latLng = await getLatLngFromAddress(formattedAddress);
+    //         if (latLng) {
+    //           const { pincode, state, district, city } = latLng;
+    
+    //           if (pincode !== address.pincode) {
+    //             toast.error('Invalid pincode. Please check the entered pincode.');
+    //             return;
+    //           }
+      
+    //           if (state.toLowerCase() !== address.state.toLowerCase()) {
+    //             toast.error('Invalid state. Please check the entered state.');
+    //             return;
+    //           }
+      
+    //           if (district.toLowerCase() !== address.district.toLowerCase()) {
+    //             toast.error('Invalid district. Please check the entered district.');
+    //             return;
+    //           }
+      
+    //           if (city.toLowerCase() !== address.city.toLowerCase()) {
+    //             toast.error('Invalid city. Please check the entered city.');
+    //             return;
+    //           }
+      
+    //           setFormData((prevFormData) => ({
+    //             ...prevFormData,
+    //             address: {
+    //               ...prevFormData.address,
+    //               pincode,
+    //               state,
+    //               district,
+    //               city
+    //             }
+    //           }));
+    //         } else {
+    //           toast.error('Invalid address. Please check details.');
+    //           return;
+    //         }
+    //       }
+    //     }
+      
+    //     const isAddressEntered = address?.street || address?.city || address?.district || address?.state || address?.pincode;
+    //     const isFullAddressProvided = address?.street && address?.city && address?.district && address?.state && address?.pincode;
+      
+    //     if (isAddressEntered && !isFullAddressProvided) {
+    //       toast.error("Please fill your address details.");
+    //       return;
+    //     }
+      
+    //     const isGoogle = user?.isGoogle ?? false;
+    //     const validationResult = validate(
+    //       formData.name || "",
+    //       formData.email || "",
+    //       formData.phone || "",
+    //       address?.street || "",
+    //       address?.city || "",
+    //       address?.district || "",
+    //       address?.state || "",
+    //       address?.pincode || "",
+    //       isGoogle
+    //     );
+      
+    //     if (validationResult === true) {
+    //       try {
+    //         const filteredFormData: User = {
+    //           ...formData,
+    //           address: {
+    //             ...address,
+    //             street: address?.street?.trim() || "",
+    //             city: address?.city?.trim() || "",
+    //             district: address?.district?.trim() || "",
+    //             state: address?.state?.trim() || "",
+    //             pincode: address?.pincode?.trim() || "",
+    //             latitude: address?.latitude,
+    //             longitude: address?.longitude,
+    //           }
+    //         };
+      
+    //         const response = await userAxiosInstance.put(
+    //           "/update-profile",
+    //           { formData: filteredFormData },
+    //           { withCredentials: true }
+    //         );
+      
+    //         if (response.status === 200) {
+    //           setIsFormChanged(false);
+    //           dispatch(addUser(response.data));
+    //           navigate("/home/profile");
+    //           setFormData(filteredFormData);
+    //           toast.success("Profile updated successfully");
+    //         }
+    //       } catch (error: any) {
+    //         if (error.response && error.response.status === 404) {
+    //           toast.error(error.response.data.message);
+    //         } else {
+    //           toast.error("An error occurred, please try again later");
+    //         }
+    //       }
+    //     } else {
+    //       toast.error(validationResult);
+    //     }
+    //   };
       
   
      

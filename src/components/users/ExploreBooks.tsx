@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { userAxiosInstance } from '../../utils/api/axiosInstance';
-import {Link} from 'react-router-dom'
+import {Link,useLocation} from 'react-router-dom'
 import {useSelector} from 'react-redux'
 import { RootState } from '../../utils/ReduxStore/store/store';
 import { FaGreaterThan, FaLessThan } from 'react-icons/fa';
@@ -12,23 +12,60 @@ const ExploreBooks: React.FC = () => {
   const booksPerPage = 10;
   const userInfo = useSelector((state: RootState) => state.user.userInfo?.user);
   const name = userInfo?.name || "";
+  const location = useLocation();
+  const searchQuery = location.state?.searchQuery || ''; 
+
 
   useEffect(() => {
     const fetchBooks = async () => {
+      setLoading(true);
       try {
-        const userId = userInfo._id
-        const response = await userAxiosInstance.get('/books');
-        setBooks(response.data);
-        console.log(books),'bol'
+        const userId = userInfo?._id;
+        const endpoint = searchQuery ? `/search/${searchQuery}` : '/books';
+
+        const response = await userAxiosInstance.get(endpoint);
+
+        if (Array.isArray(response.data)) {
+          setBooks(response.data);
+        } else {
+          console.warn("Expected an array but got:", response.data);
+          setBooks([]);
+        }
       } catch (error) {
         console.error('Error fetching books', error);
-      }finally{
+        setBooks([]);
+      } finally {
         setLoading(false);
       }
     };
 
     fetchBooks();
-  }, [userInfo]);
+  }, [searchQuery, userInfo]);
+
+  // useEffect(() => {
+  //   const fetchBooks = async () => {
+  //     try {
+  //       const userId = userInfo._id
+  //       const endpoint = searchQuery ? `/search/${searchQuery}`:'/books'
+  //       console.log(endpoint,'endp')
+  //       const response = await userAxiosInstance.get(endpoint);
+  //       console.log(response?.data,'frontend')
+  //       setBooks(response.data);
+  //       if (Array.isArray(response.data)) {
+  //         setBooks(response.data);
+  //       } else {
+  //         console.warn("Expected an array but got:", response.data);
+  //         setBooks([]); 
+  //       }
+  //     } catch (error) {
+  //       console.error('Error fetching books', error);
+  //     }finally{
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchBooks();
+  // }, [userInfo,searchQuery]);
 
   const showShimmer = loading || books.length === 0;
 
@@ -76,9 +113,15 @@ const ExploreBooks: React.FC = () => {
                   className="w-full h-72 object-cover rounded-t-lg transition-opacity duration-300 group-hover:opacity-80"
                 />
                 <div className="p-4 text-center">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                  <h2 className="text-lg font-bold text-gray-800 mb-2">
                     {book.bookTitle}
-                  </h3>
+                  </h2>
+                  <h4 className="text-lg font-semibold text-gray-800 mb-2">
+                    {book.author}
+                  </h4>
+                  <h5 className="text-lg font-semibold text-gray-800 mb-2">
+                    {book.publishedYear}
+                  </h5>
                   <button className="button-profile-photo-box h-10 w-40 justify-center items-center shadow-xl font-serif">
                     View Details
                   </button>
