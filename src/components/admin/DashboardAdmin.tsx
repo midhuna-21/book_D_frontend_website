@@ -132,12 +132,12 @@ const CenterAdmin: React.FC = () => {
               <Pie data={pieData} height={100} width={100} />
             </div>
           </div>
-          <div className="bg-white p-4 rounded shadow w-1/3">
-            <h3 className="text-lg font-bold mb-4">Users</h3>
+          {/* <div className="bg-white p-4 rounded shadow w-1/3">
+            <h3 className="text-lg font-bold mb-4">Users</h3> */}
             {/* <div className="flex justify-center">
               <Line data={userGrowthData} height={100} width={100} />
             </div> */}
-          </div>
+          {/* </div> */}
         </div>
       </div>
     </div>

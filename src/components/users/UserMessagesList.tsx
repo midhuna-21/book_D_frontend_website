@@ -54,7 +54,7 @@ const UserMessagesList: React.FC = () => {
   };
 
   return (
-    <div className="mt-12 mx-auto w-full max-w-4xl">
+    <div className="mt-12 mx-auto w-full max-w-4xl px-4 sm:px-6 lg:px-8">
       <h2 className="text-center text-lg font-bold text-gray-600">
         Your Conversations
       </h2>
@@ -62,15 +62,15 @@ const UserMessagesList: React.FC = () => {
         <div className="flex flex-col space-y-4 max-h-96 overflow-y-auto">
           {userMessages.map((userMessage) => (
             <Link to={`/chat/${userMessage.userId}`} key={userMessage.userId}>
-              <div className="flex items-center mb-4 p-2 hover:bg-gray-100 rounded-lg">
-                <div className="w-16 h-16 rounded-full overflow-hidden mr-4">
+              <div className="flex flex-col sm:flex-row items-center mb-4 p-2 hover:bg-gray-100 rounded-lg">
+                <div className="w-16 h-16 rounded-full overflow-hidden mr-4 mb-2 sm:mb-0 sm:mr-4">
                   <img
                     src={userMessage.userImage || photo}
                     alt={userMessage.userName}
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <div>
+                <div className="text-center sm:text-left">
                   <p className="text-xl font-bold">{userMessage.userName}</p>
                   <p className="text-sm text-gray-500">{userMessage.lastMessage}</p>
                   <p className="text-xs text-gray-400">

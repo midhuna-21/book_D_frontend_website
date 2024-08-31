@@ -388,14 +388,16 @@ const Profile: React.FC = () => {
   
      
     return (
-        <div className="container flex flex-row mt-7 gap-7 ">
+      <div className="container mt-7 px-4 md:px-8">
          {user.isGoogle  && (
              <GmailUpdate />
          )}
-            <div className={`bg-white rounded-lg shadow-xl p-7 ${user.isGoogle ? 'w-full ':'w-2/3 mx-auto  justify-center items-center'}  h-full`}>
-                <h2 className="text-lg font-bold mb-5 text-gray-700">Profile</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
-                    <div>
+            <div
+    className={`bg-white rounded-lg shadow-xl p-7 ${user.isGoogle ? 'w-full' : 'w-full md:w-2/3 mx-auto'} h-full md:mt-12 mt-12`}
+  >
+       <h2 className="text-lg font-bold mb-5 text-gray-700">Profile</h2>
+       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+          <div>
                         <p className="text-gray-600 font-semibold text-sm mb-3">Name</p>
                         <input
                             type="text"
@@ -503,8 +505,8 @@ const Profile: React.FC = () => {
                         />
                     </div>
                 </div>
-                <div className="flex justify-end space-x-3">
-                    {isFormChanged && (
+                <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3">
+                {isFormChanged && (
                         <button
                         className="bg-gray-400 hover:bg-gray-500 rounded-md p-1 px-2 font-semibold text-white"
                         onClick={handleCancel}

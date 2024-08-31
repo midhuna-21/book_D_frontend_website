@@ -33,7 +33,7 @@ const UserProfile:React.FC=()=>{
    return (
       <>
          <ProfileHeader />
-            <div className="section1 flex flex-row gap-8">
+             <div className="flex flex-col md:flex-row gap-8 p-4">
                 <ProfileSideBar onSectionChange={handleSectionChange} />
                 <div className="flex-1">
                     {renderContent()}

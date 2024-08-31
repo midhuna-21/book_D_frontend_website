@@ -9,7 +9,7 @@ const ExploreBooks: React.FC = () => {
   const [books, setBooks] = useState<any[]>([]);  
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const booksPerPage = 10;
+  const booksPerPage = 6;
   const userInfo = useSelector((state: RootState) => state.user.userInfo?.user);
   const name = userInfo?.name || "";
   const location = useLocation();
@@ -94,19 +94,19 @@ const ExploreBooks: React.FC = () => {
         {[...Array(8)].map((_, index) => (
           <div
             key={index}
-            className="animate-pulse bg-gray-200 rounded-lg shadow-md w-64 h-80 mx-auto"
+            className="animate-pulse bg-gray-200 rounded-lg shadow-md w-72 h-80 mx-auto"
           ></div>
         ))}
       </div>
     ) : (
       <>
-       <div className="flex flex-wrap justify-center gap-6">
+     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10">
           {currentBooks.map((book) => (
             <Link
               to={`/home/book/${book._id}`}
               key={book._id}
               className="relative group">
-              <div className="relative group flex flex-col items-center bg-white rounded-lg shadow-md w-64 mx-auto">
+              <div className="relative group flex flex-col items-center bg-white rounded-lg shadow-md w-72 mx-auto">
                 <img
                   src={book.images[0]}
                   alt={book.bookTitle}
@@ -131,7 +131,6 @@ const ExploreBooks: React.FC = () => {
           ))}
         </div>
 
-        {/* Pagination  */}
         <div className="flex justify-center mt-8">
           <button
             onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}

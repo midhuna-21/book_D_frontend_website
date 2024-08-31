@@ -5,6 +5,7 @@ import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { calculateRoadDistance } from "../../utils/reuseFunction/haversineFormula";
+import { toast } from "sonner";
 import {
     faUser,
     faBuilding,
@@ -178,7 +179,7 @@ const BookDetail: React.FC = () => {
                     console.log(allowedDistance,'allowed distance')
 
                     if (distance > allowedDistance) {
-                        alert("The book is too far from your location to rent.");
+                        toast.error(`The book is available within ${book.maxDistance}.`);
                         return;
                     } else {
                         // const content = "requested to rent this book";

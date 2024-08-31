@@ -103,33 +103,33 @@ const ProfileHeader: React.FC = () => {
    }
     }
     return (
-        <div className="flex flex-col items-start">
-            <div
+        <div className="flex flex-col items-center md:items-start">
+                     <div
                 className="p-6 h-60 flex flex-col items-center relative w-full"
                 style={{
                     backgroundImage: `url(${bookHeader})`,
                     backgroundSize: "cover",
                     backgroundPosition: "center",
                 }}>
-                <div className="absolute -bottom-16 left-20 w-52 h-52 bg-white rounded-full overflow-hidden">
-                    <img
+                 <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 md:left-20 md:-bottom-16 w-32 md:w-52 h-32 md:h-52 bg-white rounded-full overflow-hidden">
+                 <img
                         src={user?.image  || photo}
                         alt="photo"
                         className="object-cover w-full h-full"
                     />
                     <button
-                        className="absolute bottom-3 right-8 bg-gray-200 p-2 rounded-full z-10"
+                        className="absolute bottom-2 right-2 md:bottom-3 md:right-8 bg-gray-200 p-2 rounded-full z-10"
                         onClick={openModal}>
                         <FaCamera className="text-gray-700" />
                     </button>
                 </div>
             </div>
-            <div className="bg-gray-200 h-20 flex items-center pl-20">
-                <div className="flex flex-row items-center">
-                    <div className="absolute left-20 w-52 h-52"></div>
-                    <div className="ml-72">
-                        <h1 className="name font-serif text-3xl">
-                            {user?.name}
+            <div className="bg-gray-200 h-20 flex flex-col md:flex-row items-center p-4 md:pl-20 w-full">
+    <div className="flex flex-row items-center w-full md:w-auto">
+    <div className="w-32 md:w-52 h-32 md:h-52"></div>
+      <div className="ml-0 md:ml-8 text-center md:text-left">
+        <h1 className="name font-serif text-2xl md:text-3xl">
+           {user?.name}
                         </h1>
                         <p className="email text-sm font-normal">
                             {user?.email}
@@ -167,8 +167,8 @@ const ProfileHeader: React.FC = () => {
                                     <img
                                         src={user.image}
                                         alt="User Image"
-                                        className="w-60 h-60 object-cover"
-                                    />
+                                        className="w-32 md:w-60 h-32 md:h-60 object-cover"
+                                        />
                                 </div>
                             )}
                                     {selectedImage && (
@@ -176,8 +176,8 @@ const ProfileHeader: React.FC = () => {
                                     <img
                                         src={selectedImage}
                                         alt="Selected"
-                                        className="w-60 h-60 object-cover"
-                                    />
+                                        className="w-32 md:w-60 h-32 md:h-60 object-cover"
+                                        />
                                     <button
                                         type="button"
                                         className="absolute top-2 right-2 bg-gray-800 text-white rounded-full p-1 hover:bg-gray-600 transition duration-300"
@@ -204,9 +204,8 @@ const ProfileHeader: React.FC = () => {
                                    
                                 </div>
                             )}
-                         <div className="flex flex-row gap-3">
-                         
-                             {!selectedImage && user?.image && (
+                           <div className="flex flex-col sm:flex-row gap-3">
+                           {!selectedImage && user?.image && (
                                     <button
                                         type="button"
                                         className="text-black rounded-full p-1 cursor:pointer transition duration-300"

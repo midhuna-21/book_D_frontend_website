@@ -4,11 +4,12 @@ import { Link } from "react-router-dom";
 
 interface ProfileSideBarProps {
     onSectionChange: (section: string) => void;
+    className?: string;
 }
 const ProfileSideBar: React.FC<ProfileSideBarProps> = ({ onSectionChange }) => {
     return (
         // <div className="flex flex-row ">
-        <div className="contianer-sidebar bg-gray-50 flex flex-col items-center p-12 m rounded-lg shadow-md">
+        <div className="contianer-sidebar bg-gray-50 flex flex-col items-center p-12 m rounded-lg shadow-md md:mt-12 mt-12">
             <div className="contianer-sidebar-section1 text-center flex flex-col gap-4 w-full">
                 <button
                     onClick={() => onSectionChange("Profile")}

@@ -17,19 +17,17 @@ import OrdersList from '../../components/users/OrdersList';
 
 const Home: React.FC = () => {
     return (
-        <div>
+        <div className='flex flex-col min-h-screen'>
                   <Header />    
-                 {/* <SideBar />  */}
-                 <div className="pt-16"> 
+                 <div className="flex-grow pt-16"> 
+                    <div className='container mx-auto px-4'>
                 <Routes>
                     <Route path="/" element={<CenterOfHome />} />
                     <Route path="/*" element={<NestedRoutes />} />
                 </Routes>
-        
-                {/* <div className="absolute top-0 left-0">
-                    <SideBar />
-                </div> */}
          </div>
+         </div>
+         
         </div>
     );
 };

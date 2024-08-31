@@ -21,9 +21,11 @@
       const userId = userInfo?._id;
       const [isAgreed, setIsAgreed] = useState(false);
 
+      console.log(requestId,'requestId global scope')
       useEffect(() => {
           const fetchDetails = async () => {
               try {
+                console.log(requestId,'inncerscope')
                   const response = await userAxiosInstance.get(
                       `/lending-details/${requestId}`
                   );
@@ -199,15 +201,15 @@
                 Quantity: {bookDetails?.quantity}
               </p>
               <p className="text-gray-600">
-                Rental Price for a Day: {bookDetails?.bookId?.rentalFee}
+                Rental Price for a Day: {bookDetails?.bookId?.rentalFee} ₹
               </p>
               <p className="text-gray-600">
-                Deposit Amount: {bookDetails?.bookId?.extraFee}
+                Deposit Amount: {bookDetails?.bookId?.extraFee} ₹
               </p>
               <p className="text-gray-600">
-                Total Rental Price: {bookDetails?.totalRentalPrice}
+                Total Rental Price: {bookDetails?.totalRentalPrice} ₹
               </p>
-              <p className="text-gray-600">Total Price: ${totalPrice}</p>
+              <p className="text-gray-600">Total Price: {totalPrice} ₹</p>
             </div>
             <div className="mt-6">
               <label className="inline-flex items-center">

@@ -24,8 +24,8 @@ const Options: React.FC = () => {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center h-screen bg-gray-100  mx-auto shadow-md mt-16">
-            <div className="flex flex-1 flex-row gap-5 py-10 px-12">
+        <div className="flex flex-col items-center justify-center bg-gray-100  mx-auto shadow-md mt-16 w-full max-w-full sm:px-8 lg:px-16">
+            <div className="flex flex-wrap justify-center gap-5 py-10">
                 <button
                     className={`border-2 border-slate-600 px-4 py-2 rounded-md text-black font-serif hover:bg-gray-800 hover:border-gray-900 hover:text-white ${
                         activeOption === "addBooks" ? "bg-gray-800 text-white" : ""

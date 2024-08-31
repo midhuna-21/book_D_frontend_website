@@ -23,13 +23,11 @@ const Payment = ({ totalPrice }: { totalPrice: number }) => {
       if (error) {
         console.error('[error]', error);
       } else {
-        console.log('[PaymentMethod]', paymentMethod);
 
-        // Call your backend to create the PaymentIntent
         const response = await fetch('/create-payment-intent', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ amount: totalPrice * 100 }), // Stripe expects the amount in cents
+          body: JSON.stringify({ amount: totalPrice * 100 }),
         });
 
         const paymentIntent = await response.json();
