@@ -16,8 +16,7 @@ interface Address {
     district?: string;
     state?: string;
     pincode?: string;
-    latitude?: number;
-    longitude?: number;
+  
   }
 
 interface User {
@@ -41,8 +40,7 @@ const Profile: React.FC = () => {
             district: user?.address?.district || "",
             state: user?.address?.state || "",
             pincode: user?.address?.pincode || "",
-            latitude: user?.address?.latitude || 0,
-            longitude: user?.address?.longitude || 0,
+           
           },
     };
  
@@ -171,53 +169,51 @@ const Profile: React.FC = () => {
         toast.error("Please fill in the complete address details.");
         return;
       }
-      if (isFullAddressProvided) {
-        const formattedAddress = `${address?.street}, ${address?.city}, ${address?.district}, ${address?.state}, ${address?.pincode}`;
+      // if (isFullAddressProvided) {
+      //   const formattedAddress = `${address?.street}, ${address?.city}, ${address?.district}, ${address?.state}, ${address?.pincode}`;
         
-        const latLng = await getLatLngFromAddress(formattedAddress);
-        if (latLng) {
-          console.log(latLng,'latnnnnnn')
-          const { pincode, state, district, city } = latLng;
+      //   const latLng = await getLatLngFromAddress(formattedAddress);
+      //   if (latLng) {
+      //     console.log(latLng,'latnnnnnn')
+      //     const { pincode, state, district, city } = latLng;
     
-          if (pincode !== address?.pincode) {
-            console.log(address.pincode,'[niond')
-            console.log(pincode,'pinode')
-            toast.error('Invalid pincode. Please check the entered pincode.');
-            return;
-          }
+      //     if (pincode !== address?.pincode) {
+      //       console.log(pincode,'pinode')
+      //       toast.error('Invalid pincode. Please check the entered pincode.');
+      //       return;
+      //     }
     
-          if (state.toLowerCase() !== address?.state?.toLowerCase()) {
-            toast.error('Invalid state. Please check the entered state.');
-            return;
-          }
+      //     if (state.toLowerCase() !== address?.state?.toLowerCase()) {
+      //       toast.error('Invalid state. Please check the entered state.');
+      //       return;
+      //     }
     
-          if (district.toLowerCase() !== address?.district?.toLowerCase()) {
-            toast.error('Invalid district. Please check the entered district.');
-            return;
-          }
+      //     if (district.toLowerCase() !== address?.district?.toLowerCase()) {
+      //       toast.error('Invalid district. Please check the entered district.');
+      //       return;
+      //     }
     
-          if (city.toLowerCase() !== address?.city?.toLowerCase()) {
-            toast.error('Invalid city. Please check the entered city.');
-            return;
-          }
+      //     if (city.toLowerCase() !== address?.city?.toLowerCase()) {
+      //       toast.error('Invalid city. Please check the entered city.');
+      //       return;
+      //     }
     
-          setFormData((prevFormData) => ({
-            ...prevFormData,
-            address: {
-              ...prevFormData.address,
-              pincode,
-              state,
-              district,
-              city
-            }
-          }));
-        } else {
-          toast.error('Invalid address. Please check details.');
-          return;
-        }
-      }
+      //     setFormData((prevFormData) => ({
+      //       ...prevFormData,
+      //       address: {
+      //         ...prevFormData.address,
+      //         pincode,
+      //         state,
+      //         district,
+      //         city
+      //       }
+      //     }));
+      //   } else {
+      //     toast.error('Invalid address. Please check details.');
+      //     return;
+      //   }
+      // }
     
-      // Proceed with validation for phone number, name, and other fields
       const isGoogle = user?.isGoogle ?? false;
       const validationResult = validate(
         formData.name || "",
@@ -242,8 +238,7 @@ const Profile: React.FC = () => {
               district: address?.district?.trim() || "",
               state: address?.state?.trim() || "",
               pincode: address?.pincode?.trim() || "",
-              latitude: address?.latitude,
-              longitude: address?.longitude,
+           
             }
           };
     
@@ -255,8 +250,8 @@ const Profile: React.FC = () => {
     
           if (response.status === 200) {
             setIsFormChanged(false);
-            console.log(response.data,'dinej')
             dispatch(addUser(response.data));
+
             navigate("/home/profile");
             setFormData(filteredFormData);
             toast.success("Profile updated successfully");

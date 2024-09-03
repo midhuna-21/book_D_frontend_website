@@ -6,10 +6,10 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../utils/ReduxStore/store/store";
 import { addUser } from "../../utils/ReduxStore/slice/userSlice";
 import photo from "../../assets/th.jpeg";
-import { FaCamera,FaTrashAlt } from "react-icons/fa";
+import { FaCamera, FaTrashAlt } from "react-icons/fa";
 import "../../styles/tailwind.css";
 import { Box, Icon } from "@chakra-ui/react";
-import {userAxiosInstance} from '../../utils/api/axiosInstance'
+import { userAxiosInstance } from "../../utils/api/axiosInstance";
 import { FaBookReader } from "react-icons/fa";
 
 const ProfileHeader: React.FC = () => {
@@ -78,42 +78,44 @@ const ProfileHeader: React.FC = () => {
             toast.error("Please select a valid image file.");
         }
     };
-    const handleRemove = async(e:React.FormEvent)=>{
+    const handleRemove = async (e: React.FormEvent) => {
         e.preventDefault();
         const imageToRemove = user?.image;
-        console.log(imageToRemove,'imageToRemove')
+        console.log(imageToRemove, "imageToRemove");
 
-    if (!imageToRemove) {
-        toast.error("No image to remove.");
-        return;
-    }
-   try{
-    const response = await userAxiosInstance.delete("/delete-profile-image", {
-        data: { imageToRemove },
-        withCredentials: true,
-       
-    })
-    if(response.status == 200){
-        dispatch(addUser(response.data));
-        setSelectedImage(null);
-        setFile(null);
-    }
-   }catch(error:any){
-    toast.error("An error occurred, try again later.");
-   }
-    }
+        if (!imageToRemove) {
+            toast.error("No image to remove.");
+            return;
+        }
+        try {
+            const response = await userAxiosInstance.delete(
+                "/delete-profile-image",
+                {
+                    data: { imageToRemove },
+                    withCredentials: true,
+                }
+            );
+            if (response.status == 200) {
+                dispatch(addUser(response.data));
+                setSelectedImage(null);
+                setFile(null);
+            }
+        } catch (error: any) {
+            toast.error("An error occurred, try again later.");
+        }
+    };
     return (
         <div className="flex flex-col items-center md:items-start">
-                     <div
+            <div
                 className="p-6 h-60 flex flex-col items-center relative w-full"
                 style={{
                     backgroundImage: `url(${bookHeader})`,
                     backgroundSize: "cover",
                     backgroundPosition: "center",
                 }}>
-                 <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 md:left-20 md:-bottom-16 w-32 md:w-52 h-32 md:h-52 bg-white rounded-full overflow-hidden">
-                 <img
-                        src={user?.image  || photo}
+                <div className="absolute -bottom-16 left-1/2 transform md:ml-16 -translate-x-1/2 md:left-20 md:-bottom-16 w-32 md:w-52 h-32 md:h-52 bg-white rounded-full overflow-hidden">
+                    <img
+                        src={user?.image || photo}
                         alt="photo"
                         className="object-cover w-full h-full"
                     />
@@ -125,15 +127,15 @@ const ProfileHeader: React.FC = () => {
                 </div>
             </div>
             <div className="bg-gray-200 h-20 flex flex-col md:flex-row items-center p-4 md:pl-20 w-full">
-    <div className="flex flex-row items-center w-full md:w-auto">
-    <div className="w-32 md:w-52 h-32 md:h-52"></div>
-      <div className="ml-0 md:ml-8 text-center md:text-left">
-        <h1 className="name font-serif text-2xl md:text-3xl">
-           {user?.name}
+                <div className="flex flex-row items-center w-full md:w-auto">
+                    <div className="w-32 md:w-52 h-32 md:h-52"></div>
+                    <div>
+                        <h1 className="name font-serif text-2xl md:text-3xl">
+                            {user?.name}
                         </h1>
-                        <p className="email text-sm font-normal">
+                        {/* <p className="email text-sm font-normal">
                             {user?.email}
-                        </p>
+                        </p> */}
                     </div>
                 </div>
             </div>
@@ -158,41 +160,41 @@ const ProfileHeader: React.FC = () => {
                                 />
                             </svg>
                         </button>
-                        <h2 className="text-lg font-serif text-center mb-4">Update Profile Image</h2>
+                        <h2 className="text-lg font-serif text-center mb-4">
+                            Update Profile Image
+                        </h2>
                         <Box h="1px" bg="grey" flex="1" />
-         
+
                         <div className="flex flex-col items-center space-y-4 mt-6">
-                        {user?.image && !selectedImage && (
+                            {user?.image && !selectedImage && (
                                 <div className="relative mb-4 flex justify-center items-center">
                                     <img
                                         src={user.image}
                                         alt="User Image"
                                         className="w-32 md:w-60 h-32 md:h-60 object-cover"
-                                        />
+                                    />
                                 </div>
                             )}
-                                    {selectedImage && (
+                            {selectedImage && (
                                 <div className="relative mb-4 flex justify-center items-center">
                                     <img
                                         src={selectedImage}
                                         alt="Selected"
                                         className="w-32 md:w-60 h-32 md:h-60 object-cover"
-                                        />
+                                    />
                                     <button
                                         type="button"
                                         className="absolute top-2 right-2 bg-gray-800 text-white rounded-full p-1 hover:bg-gray-600 transition duration-300"
                                         onClick={() => {
                                             setSelectedImage(null);
                                             setFile(null);
-                                        }}
-                                    >
+                                        }}>
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
                                             className="h-4 w-4"
                                             fill="none"
                                             viewBox="0 0 24 24"
-                                            stroke="currentColor"
-                                        >
+                                            stroke="currentColor">
                                             <path
                                                 strokeLinecap="round"
                                                 strokeLinejoin="round"
@@ -201,11 +203,10 @@ const ProfileHeader: React.FC = () => {
                                             />
                                         </svg>
                                     </button>
-                                   
                                 </div>
                             )}
-                           <div className="flex flex-col sm:flex-row gap-3">
-                           {!selectedImage && user?.image && (
+                            <div className="flex flex-col sm:flex-row gap-3">
+                                {!selectedImage && user?.image && (
                                     <button
                                         type="button"
                                         className="text-black rounded-full p-1 cursor:pointer transition duration-300"
@@ -214,30 +215,27 @@ const ProfileHeader: React.FC = () => {
                                     </button>
                                 )}
                                 <label className="block button-profile-photo-box">
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={handleImageChange}
-                                    className="sr-only"
-                                />
-                                <button className="button-profile-photo py-2 px-2">
-                                    Choose File
-                                </button>
-                            </label>
-                            <div>
-                                {file && (
-                                    <button
-                                        onClick={handleSubmit}
-                                        className="bg-green-950 p-2 px-3 font-bold text-white">
-                                        Upload
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleImageChange}
+                                        className="sr-only"
+                                    />
+                                    <button className="button-profile-photo py-2 px-2">
+                                        Choose File
                                     </button>
-                                )}
+                                </label>
+                                <div>
+                                    {file && (
+                                        <button
+                                            onClick={handleSubmit}
+                                            className="bg-green-950 p-2 px-3 font-bold text-white">
+                                            Upload
+                                        </button>
+                                    )}
+                                </div>
                             </div>
-                            </div>
-                          
-                            
                         </div>
-                        
                     </div>
                 </div>
             )}

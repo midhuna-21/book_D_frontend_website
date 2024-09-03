@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { axiosUser } from "../../utils/api/baseUrl";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import {addUser} from '../../utils/ReduxStore/slice/userSlice';
 import { useDispatch } from "react-redux";
 import sitelogo from "../../assets/siteLogo.png";
@@ -31,16 +31,20 @@ const LinkGoogleEmail: React.FC = () => {
 
 
         try {
+            console.log(email,'email')
+            console.log(password,'password')
+
             const response = await axiosUser.post("/link-google-account", { email, password });
 
             if (response.status === 200) {
                 toast.success("Your account has been successfully linked!");
                 dispatch(addUser(response.data))
-   console.log('hkome')
+
                 navigate("/home");
             }
         } catch (error: any) {
             if (error.response && error.response.status === 400) {
+                console.log('indoi')
                 toast.error("Incorrect password. Please try again.");
             } else {
                 toast.error("An error occurred, please try again later.");
@@ -72,7 +76,7 @@ const LinkGoogleEmail: React.FC = () => {
 
                     <form onSubmit={handleSubmit}>
                         <label className="block mb-2 font-mono">
-                            Password
+                           Current Password
                             <div className="relative">
                                 <input
                                     type={isPasswordVisible ? "text" : "password"}

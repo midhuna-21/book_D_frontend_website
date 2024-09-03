@@ -8,7 +8,7 @@ const CenterOfHome: React.FC = () => {
     return (
         <div className="flex flex-col">
             <div
-                className="w-full bg-cover bg-center h-screen flex items-center justify-center"
+                className=" bg-cover  min-h-screen flex items-center justify-center"
                 style={{ backgroundImage: `url(${backGroundImage})` }}>
                 <div className="flex flex-col justify-center items-center px-4 sm:px-8">
                     <span className="py-10 text-2xl  md:text-2xl font-serif">Book.D</span>

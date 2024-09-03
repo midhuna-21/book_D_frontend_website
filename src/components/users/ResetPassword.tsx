@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import sitelogo from "../../assets/siteLogo.png";
 import {useSelector,useDispatch} from 'react-redux';
 import {RootState} from '../../utils/ReduxStore/store/store';
-import {addUser} from '../../utils/ReduxStore/slice/userSlice';
+import {clearUser} from '../../utils/ReduxStore/slice/userSlice';
 import { HiEye, HiEyeOff } from "react-icons/hi";
 import security from "../../assets/security-lock-icon-29.jpg";
 import { useState } from "react";
@@ -16,7 +16,7 @@ const ResetPassword: React.FC = () => {
     const [conformPassword, setConformPassword] = useState("");
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const user= useSelector((state:RootState)=>state?.user?.userInfo?.user)
-    console.log(user,'k')
+   
     const navigate = useNavigate();
     const location = useLocation();
     const dispatch = useDispatch();
@@ -53,9 +53,12 @@ const ResetPassword: React.FC = () => {
                 password: password,
             })
             .then(function (response) {
-               console.log(response.data,'e ')
-               dispatch(addUser(response.data))
-                navigate("/home", { replace: true });
+                localStorage.removeItem("useraccessToken");
+                localStorage.removeItem("userrefreshToken");
+                dispatch(clearUser());
+            //    dispatch(addUser(response.data))
+            toast.success("successfully unlinked your email account.")
+                navigate("/login", { replace: true });
                 localStorage.removeItem("otpSubmitted");
             })
             .catch(function (error) {

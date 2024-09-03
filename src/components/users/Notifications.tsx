@@ -6,12 +6,14 @@ import { userAxiosInstance } from "../../utils/api/axiosInstance";
 import Swal from "sweetalert2";
 import { useSocket } from "../../utils/context/SocketProvider";
 import ConfirmationRequest from "./ConfirmationRequest";
+import { formatDistanceToNow, isToday, isYesterday, isWithinInterval, subDays, subMonths } from "date-fns";
 
 interface User {
     _id: string;
 }
 interface Book {
     _id: string;
+    bookTitle:string;
 }
 
 interface Notification {
@@ -21,6 +23,8 @@ interface Notification {
     senderId: User;
     bookId: Book;
     requestId: string;
+    content: string;
+    createdAt: string; 
 }
 
 const Notifications: React.FC = () => {
@@ -38,6 +42,7 @@ const Notifications: React.FC = () => {
     );
     const userId = userInfo?._id;
 
+    
     useEffect(() => {
         if (socket) {
             socket.on("notification", (notification) => {
@@ -52,27 +57,111 @@ const Notifications: React.FC = () => {
         }
     }, [socket]);
 
+    const formatTimeCategory = (createdAt: string): string => {
+        const now = new Date();
+        const notificationDate = new Date(createdAt);
+        const timeDiff = now.getTime() - notificationDate.getTime();
+    
+        const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+    
+        if (days < 1) {
+            return "Just now";
+        } else if (isYesterday(notificationDate)) {
+            return "Yesterday";
+        } else if (days <= 7) {
+            return "Last 7 days";
+        } else if (days <= 30) {
+            return "30 days";
+        } else {
+            return "Older";
+        }
+    };
     useEffect(() => {
         const fetchNotification = async () => {
             try {
                 const response = await userAxiosInstance.get("/notifications");
-
-                setNotifications(response?.data?.notifications);
+                const fetchedNotifications = response.data.notifications;
+    
+                if (Array.isArray(fetchedNotifications)) {
+                    const formattedNotifications = fetchedNotifications.map(
+                        (notification: Notification) => ({
+                            ...notification,
+                            category: formatTimeCategory(notification.createdAt), 
+                            formattedTime: formatTime(notification.createdAt),
+                        })
+                    );
+    
+                    setNotifications(formattedNotifications);
+                } else {
+                    console.error("Fetched notifications are not an array");
+                }
             } catch (error: any) {
-                console.log("Error");
+                console.log("Error fetching notifications", error);
             }
         };
+    
         fetchNotification();
-    });
+    }, []);
+    
+    
+    // useEffect(() => {
+    //     const fetchNotification = async () => {
+    //         try {
+    //             const response = await userAxiosInstance.get("/notifications");
+    //             const fetchedNotifications = response.data.notifications;
+
+    //             if (Array.isArray(fetchedNotifications)) {
+    //                 const formattedNotifications = fetchedNotifications.map(
+    //                     (notification: Notification) => ({
+    //                         ...notification,
+    //                         formattedTime: formatTime(notification.createdAt),
+    //                     })
+    //                 );
+    //                 setNotifications(formattedNotifications);
+    //             } else {
+    //                 console.error("Fetched notifications are not an array");
+    //             }
+    //         } catch (error: any) {
+    //             console.log("Error");
+    //         }
+    //     };
+    //     fetchNotification();
+    // });
+
+    const formatTime = (createdAt: string): string => {
+        const now = new Date();
+        const notificationDate = new Date(createdAt);
+        const timeDiff = now.getTime() - notificationDate.getTime();
+    
+        const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+        const weeks = Math.floor(days / 7);
+    
+        if (days < 1) {
+            return "just now";
+        } else if (days === 1) {
+            return "1d";
+        } else if (days < 7) {
+            return `${days}d`;
+        } else if (weeks === 1) {
+            return "1w";
+        } else if (weeks < 7) {
+            return `${weeks}w`;
+        } else {
+            return notificationDate.toLocaleDateString();
+        }
+    };
+    
+
 
     const handleAccept = async (
         notificationId: string,
         receiverId: string,
         bookId: string,
+        bookTitle:string,
         requestId: string
     ) => {
         try {
-            const content = `accepted your request. Now you can proceed with the procedures. Click here to view the lender's details.`;
+            const content = `Your request is Accepted to rent this book ${bookTitle}. Now you can proceed with the procedures. Click here to view the lender's details.`;
 
             const notificationData = {
                 senderId: userId,
@@ -132,6 +221,7 @@ const Notifications: React.FC = () => {
                 selectedNotification?._id,
                 selectedNotification?.senderId._id,
                 selectedNotification?.bookId._id,
+                selectedNotification?.bookId?.bookTitle,
                 selectedNotification?.requestId
             );
             setIsModalOpen(false);
@@ -146,11 +236,12 @@ const Notifications: React.FC = () => {
     const handleReject = async (
         notificationId: string,
         bookId: string,
+        bookTitle:string,
         receiverId: string,
         requestId: string
     ) => {
         try {
-            const content = "Your request was rejected";
+            const content = `Your request to rent the book "${bookTitle}" has been rejected.`;
             const notificationData = {
                 senderId: userId,
                 receiverId,
@@ -203,11 +294,21 @@ const Notifications: React.FC = () => {
             <h2 className="text-center text-lg font-bold text-gray-600">
                 Here is your request and accept message
             </h2>
-            <div className="py-12 ">
-                {notifications.map((notification, index) => (
+            <div className="py-12 flex  justify-center items-center">
+            {["Just now", "Yesterday", "Last 7 days", "30 days", "Older"].map((category) => {
+                const categoryNotifications = notifications.filter(
+                    (notification) => notification.category === category
+                );
+                return categoryNotifications.length > 0 ? (
+                    <div key={category} >
+                    <h3 className="text-lg font-semibold text-gray-700 my-4">
+                        {category}
+                    </h3>
+                    {categoryNotifications.map((notification, index) => (
                     <div
                         key={index}
-                        className="flex flex-col sm:flex-row items-center justify-between p-4 border-b shadow-md mb-4">
+                        className="flex flex-col sm:flex-row py-7 items-center justify-between p-4 border-b shadow-md mb-4"
+                        style={{ width: '900px' }}>
                         <div className="flex items-center w-full sm:w-auto">
                             <div className="w-12 h-12 rounded-full overflow-hidden mr-4">
                                 <img
@@ -220,10 +321,10 @@ const Notifications: React.FC = () => {
                                 />
                             </div>
                             <div>
-                                <p className="font-bold text-gray-800">
+                                {/* <p className="font-bold text-gray-800">
                                     {notification.userName ||
                                         notification?.senderId?.name}
-                                </p>
+                                </p> */}
                                 <p className="text-gray-600">
                                     <strong>
                                         {notification.userName ||
@@ -234,6 +335,9 @@ const Notifications: React.FC = () => {
                                         {notification.bookTitle ||
                                             notification?.bookId?.bookTitle}
                                     </strong>
+                                    <span className="ml-2 text-sm text-gray-500">
+                                        {notification.formattedTime}
+                                    </span> 
                                     {notification.type === "accepted" && (
                                         <a
                                             href={
@@ -294,6 +398,7 @@ const Notifications: React.FC = () => {
                                                 handleReject(
                                                     notification._id,
                                                     notification.bookId?._id,
+                                                     notification.bookId?.bookTitle,
                                                     notification?.senderId?._id,
                                                     notification?.requestId
                                                 )
@@ -304,7 +409,11 @@ const Notifications: React.FC = () => {
                                 ))}
                         </div>
                     </div>
-                ))}
+                         ))}
+                    </div>
+                ) : null;
+                 
+})}
             </div>
         </div>
     );

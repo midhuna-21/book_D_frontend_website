@@ -81,19 +81,19 @@ const SignInButton: React.FC = () => {
                         })
                         .catch(function (error) {
                             if(error.response && error.response.status === 400){
+                             
+                                toast.error(error.response.data.message);
                                 navigate("/enter-password", { state: { email: response.data.email } });
 
                             }
                       
                             if (error.response && error.response.status === 500 ||  error.response.status === 401) {
                                 toast.error(error.response.data.message);
-                            } else {
-                                toast.error("An error occured try again later");
-                            }
+                            } 
                         });
                 } catch (error: any) {
                     console.log(error.message);
-                }
+                }   
             },
             onError: (error) => {
                 console.error("Login Failed:", error);

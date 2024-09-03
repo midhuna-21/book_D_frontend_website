@@ -5,6 +5,7 @@ interface ConfirmationRequestProps {
    onClose: () => void;
    onConfirm: () => void;
    content: string; 
+   
  }
  
  const ConfirmationRequest: React.FC<ConfirmationRequestProps> = ({ isOpen, onClose, onConfirm, content }) => {

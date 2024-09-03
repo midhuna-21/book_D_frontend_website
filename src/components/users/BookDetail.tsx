@@ -207,7 +207,7 @@ const BookDetail: React.FC = () => {
                         if (requestResponse.status === 200) {
                             setRequested(true);
                             const requestId = requestResponse?.data?.request?._id; 
-                            const content = "requested to rent this book";
+                            const content = "Requested to rent this book";
                             const notificationData = {
                               senderId: userId,
                               receiverId: lender._id,

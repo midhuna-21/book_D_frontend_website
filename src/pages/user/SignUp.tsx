@@ -55,8 +55,6 @@ const Register: React.FC = () => {
             )
             .then(function (response) {
                 if (response.status === 200) {
-                    // toast.success('succedd signup')
-                    console.log(response.data,'repsonse from signup')
                     navigate("/otp-verification", {
                         state: { response: response.data, origin: "sign-up" },
                     });
