@@ -162,22 +162,13 @@ const BookDetail: React.FC = () => {
                 lat2: bookLocation.latitude,
                 lng2: bookLocation.longitude,
             };
-            console.log(calculateDistance, "calculation distance");
             const distanceResponse = await userAxiosInstance.get("/google-distance", {
                 params: calculateDistance,
                 withCredentials: true,
             })
                 if(distanceResponse.status==200){
                     const distance = distanceResponse?.data?.distanceResponse
-
-                    console.log(
-                        "Distance between user and book location:",
-                        distance,
-                        "km"
-                    );
                     const allowedDistance = book.maxDistance;
-                    console.log(allowedDistance,'allowed distance')
-
                     if (distance > allowedDistance) {
                         toast.error(`The book is available within ${book.maxDistance}.`);
                         return;
@@ -351,6 +342,7 @@ const BookDetail: React.FC = () => {
 
     if (!book) return <div>Loading...</div>;
 
+    console.log(book?.images,'book in book detail')
     return (
         <div className="flex flex-col items-center justify-center py-12">
             <div className="mb-12 text-center">

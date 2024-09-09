@@ -2,15 +2,10 @@ import React, { useState, useEffect } from "react";
 import { userAxiosInstance } from "../../utils/api/axiosInstance";
 import { toast } from "sonner";
 import { validateFormData } from "../../utils/validations/bookFormValidatoin";
-import { useSelector } from "react-redux";
-import { RootState } from "../../utils/ReduxStore/store/store";
-import { useNavigate } from "react-router-dom";
-import bookPage from "../../assets/bookPage.png";
+import { useNavigate, useParams } from "react-router-dom";
 import images from "../../assets/images.png";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
-import LocationInput from "./GoogleMap";
-import { Map, GoogleApiWrapper } from "google-maps-react";
 import axios from "axios";
 
 interface Genre {
@@ -31,13 +26,13 @@ type FormData = {
     extraFee?: number;
     price?: number;
     quantity: number;
-   address:{
-    street: string;
-    city: string;
-    district: string;
-    state: string;
-    pincode: string;
-   }
+    address: {
+        street: string;
+        city: string;
+        district: string;
+        state: string;
+        pincode: string;
+    };
     maxDistance: number;
     maxDays: number;
     minDays: number;
@@ -45,7 +40,7 @@ type FormData = {
     longitude: number;
 };
 
-const RentBookForm: React.FC = () => {
+const EditBookForm: React.FC = () => {
     const initialFormData: FormData = {
         bookTitle: "",
         description: "",
@@ -59,13 +54,13 @@ const RentBookForm: React.FC = () => {
         extraFee: 0,
         price: 0,
         quantity: 0,
-       address:{
-        street: "",
-        city: "",
-        district: "",
-        state: "",
-        pincode: "",
-       },
+        address: {
+            street: "",
+            city: "",
+            district: "",
+            state: "",
+            pincode: "",
+        },
         maxDistance: 0,
         maxDays: 0,
         minDays: 0,
@@ -74,11 +69,14 @@ const RentBookForm: React.FC = () => {
     };
 
     const [formData, setFormData] = useState<FormData>(initialFormData);
+    const { bookId } = useParams();
+    const [imageUrls, setImageUrls] = useState<string[]>([]);
     // const [isOtherSelected, setIsOtherSelected] = useState(false);
     // const genres = useSelector(
     //     (state: RootState) => state.admin?.adminInfo?.genres
     // );
     const [genres, setGenres] = useState<Genre[]>([]);
+    const [book, setBook] = useState<FormData>();
 
     const clearInput = () => {
         setFormData(initialFormData);
@@ -122,6 +120,76 @@ const RentBookForm: React.FC = () => {
         }
     };
 
+    useEffect(() => {
+        const fetchBook = async () => {
+            try {
+                const response = await userAxiosInstance.get(`/book/${bookId}`);
+                const fetchedBook = response?.data?.book;
+                console.log(fetchedBook, "fetched book");
+                if (fetchedBook) {
+                    setBook(fetchedBook);
+
+                    if (fetchedBook.images) {
+                        setImageUrls(fetchedBook.images);
+                    }
+                }
+            } catch (error) {
+                console.error("Error fetching book details", error);
+            }
+        };
+        fetchBook();
+    }, [bookId]);
+
+    
+
+    useEffect(() => {
+        if (book) {
+            setFormData({
+                bookTitle: book.bookTitle || "",
+                description: book.description || "",
+                images: Array.isArray(book.images) ? book.images : [],
+                author: book.author || "",
+                publisher: book.publisher || "",
+                publishedYear: book.publishedYear || "",
+                genre: book.genre || "",
+                customGenre: book.customGenre || "",
+                rentalFee: book.rentalFee || 0,
+                extraFee: book.extraFee || 0,
+                price: book.price || 0,
+                quantity: book.quantity || 0,
+                address: {
+                    street: book.address?.street || "",
+                    city: book.address?.city || "",
+                    district: book.address?.district || "",
+                    state: book.address?.state || "",
+                    pincode: book.address?.pincode || "",
+                },
+                maxDistance: book.maxDistance || 0,
+                maxDays: book.maxDays || 0,
+                minDays: book.minDays || 0,
+                latitude: book.latitude || 0,
+                longitude: book.longitude || 0,
+            });
+
+            if (book.images && Array.isArray(book.images)) {
+                const imageFiles = book.images
+                    .map((image) => {
+                        if (typeof image === "string") {
+                            return { src: image, file: null };
+                        } else if (image instanceof File) {
+                            const imageUrl = URL.createObjectURL(image);
+                            return { src: imageUrl, file: image };
+                        }
+                        return null;
+                    })
+                    .filter((item) => item !== null);
+
+            
+            }
+        }
+    }, [book]);
+
+    // console.log(book, "book");
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
         if (files) {
@@ -152,10 +220,8 @@ const RentBookForm: React.FC = () => {
                 "minDays",
             ].includes(name)
         ) {
-            console.log(name, "nam");
             let numericValue = parseFloat(value);
             if (numericValue < 0 || isNaN(numericValue)) {
-                console.log(name, "d");
                 numericValue = 0;
             }
             sanitizedValue = numericValue.toString();
@@ -194,10 +260,8 @@ const RentBookForm: React.FC = () => {
         }
     };
 
- 
-
     useEffect(() => {
-        const fetchBook = async () => {
+        const fetchGenre = async () => {
             try {
                 const response = await userAxiosInstance.get("/genres");
                 setGenres(response.data);
@@ -206,7 +270,7 @@ const RentBookForm: React.FC = () => {
             }
         };
 
-        fetchBook();
+        fetchGenre();
     });
 
     const handleGetLocation = () => {
@@ -227,13 +291,13 @@ const RentBookForm: React.FC = () => {
                             ...formData,
                             latitude: latitude,
                             longitude: longitude,
-                           address:{
-                            street: locationDetails.street || "",
-                            city: locationDetails.city || "",
-                            district: locationDetails.district || "",
-                            state: locationDetails.state || "",
-                            pincode: locationDetails.pincode || "",
-                           }
+                            address: {
+                                street: locationDetails.street || "",
+                                city: locationDetails.city || "",
+                                district: locationDetails.district || "",
+                                state: locationDetails.state || "",
+                                pincode: locationDetails.pincode || "",
+                            },
                         });
                     }
                 },
@@ -258,18 +322,16 @@ const RentBookForm: React.FC = () => {
 
         try {
             const response = await axios.get(url);
-            console.log(response, "response");
+
             const results = response.data.results;
 
             if (results.length > 0) {
-                console.log(results, "results");
                 const addressComponents = results[0].address_components;
                 let street = "",
                     city = "",
                     district = "",
                     state = "",
                     pincode = "";
-                console.log(addressComponents, "addressComponents");
                 addressComponents.forEach((component: any) => {
                     if (component.types.includes("sublocality_level_2")) {
                         street = component.long_name;
@@ -302,7 +364,6 @@ const RentBookForm: React.FC = () => {
             return null;
         }
     };
-
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -338,9 +399,15 @@ const RentBookForm: React.FC = () => {
             );
             formDataWithImages.append("street", formData.address.street || "");
             formDataWithImages.append("city", formData.address.city || "");
-            formDataWithImages.append("district", formData.address.district || "");
+            formDataWithImages.append(
+                "district",
+                formData.address.district || ""
+            );
             formDataWithImages.append("state", formData.address.state || "");
-            formDataWithImages.append("pincode", formData.address.pincode || "");
+            formDataWithImages.append(
+                "pincode",
+                formData.address.pincode || ""
+            );
             formDataWithImages.append(
                 "latitude",
                 formData.latitude?.toString() || ""
@@ -380,8 +447,10 @@ const RentBookForm: React.FC = () => {
             }
 
             try {
-                const response = await userAxiosInstance.post(
-                    isRentBook ? "/rent-book" : "/sell-book",
+                const response = await userAxiosInstance.put(
+                    isRentBook
+                        ? `/rent-book-update/${bookId}`
+                        : `/sell-book-update/${bookId}`,
                     formDataWithImages,
                     {
                         withCredentials: true,
@@ -394,11 +463,11 @@ const RentBookForm: React.FC = () => {
                 if (response.status === 200) {
                     toast.success(
                         isRentBook
-                            ? "Book rented successfully"
-                            : "Book sold successfully"
+                            ? "Book updated successfully"
+                            : "Book updated successfully"
                     );
 
-                    clearInput();
+                  navigate('/home/profile/my-books')
                 }
             } catch (error: any) {
                 if (error.response && error.response.status === 404) {
@@ -413,8 +482,11 @@ const RentBookForm: React.FC = () => {
         }
     };
     return (
-        <div className="flex min-h-screen bg-cover ">
-            <form className="space-y-6">
+        <div className="flex min-h-screen bg-cover flex-col py-12">
+            <h2 className="text-center text-lg md:py-0 py-12 font-bold text-gray-600">
+                Update your book details
+            </h2>
+            <form className="space-y-6 py-12" encType="multipart/form-data">
                 <div className="flex flex-col md:flex-row gap-3 px-12">
                     <div className="bg-white opacity-95 shadow-lg rounded-lg px-8 py-6">
                         <div className="flex  mb-6">
@@ -464,7 +536,7 @@ const RentBookForm: React.FC = () => {
                                     type="text"
                                     id="bookTitle"
                                     name="bookTitle"
-                                    placeholder="e.g., Wings Of Fire"
+                                    // placeholder={book?.bookTitle || "Enter Book Title"}
                                     value={formData.bookTitle}
                                     onChange={handleChange}
                                     className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
@@ -481,7 +553,7 @@ const RentBookForm: React.FC = () => {
                                             type="text"
                                             id="publisher"
                                             name="publisher"
-                                            placeholder="e.g., Universities Press"
+                                            // placeholder={book?.publisher}
                                             value={formData.publisher}
                                             onChange={handleChange}
                                             className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
@@ -497,7 +569,7 @@ const RentBookForm: React.FC = () => {
                                             type="string"
                                             id="publishedYear"
                                             name="publishedYear"
-                                            placeholder="e.g., 2003"
+                                            // placeholder={book?.publishedYear}
                                             value={formData.publishedYear}
                                             onChange={handleChange}
                                             className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
@@ -515,7 +587,7 @@ const RentBookForm: React.FC = () => {
                                         type="text"
                                         id="author"
                                         name="author"
-                                        placeholder="e.g., A.P.J Abdul Kalam"
+                                        // placeholder={book?.author}
                                         value={formData.author}
                                         onChange={handleChange}
                                         className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
@@ -531,6 +603,7 @@ const RentBookForm: React.FC = () => {
                                         type="number"
                                         id="quantity"
                                         name="quantity"
+                                        // placeholder={book?.quantity!== undefined ? book.quazntity.toString(): "Enter Quantity"}
                                         value={formData.quantity}
                                         onChange={handleChange}
                                         className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
@@ -545,42 +618,59 @@ const RentBookForm: React.FC = () => {
                                         <Carousel
                                             showThumbs={false}
                                             className="w-full">
-                                            {Array.from(formData.images).map(
-                                                (image, index) => (
-                                                    <div
-                                                        key={index}
-                                                        className="w-full h-full relative">
-                                                        <img
-                                                            src={URL.createObjectURL(
+                                            {formData.images.map(
+                                                (
+                                                    image: string | File,
+                                                    index: number
+                                                ) => {
+                                                    let imageUrl;
+
+                                                    if (image instanceof File) {
+                                                        imageUrl =
+                                                            URL.createObjectURL(
                                                                 image
-                                                            )}
-                                                            alt={`Book ${index}`}
-                                                            className="w-full h-full object-cover rounded-lg shadow-lg"
-                                                        />
-                                                        <button
-                                                            type="button"
-                                                            className="absolute top-2 left-2 bg-gray-800 text-white rounded-full p-1 m-1 hover:bg-gray-600 transition duration-300"
-                                                            onClick={() =>
-                                                                handleRemoveImage(
-                                                                    index
-                                                                )
-                                                            }>
-                                                            <svg
-                                                                xmlns="http://www.w3.org/2000/svg"
-                                                                className="h-4 w-4"
-                                                                fill="none"
-                                                                viewBox="0 0 24 24"
-                                                                stroke="currentColor">
-                                                                <path
-                                                                    strokeLinecap="round"
-                                                                    strokeLinejoin="round"
-                                                                    strokeWidth="2"
-                                                                    d="M6 18L18 6M6 6l12 12"
-                                                                />
-                                                            </svg>
-                                                        </button>
-                                                    </div>
-                                                )
+                                                            );
+                                                    } else if (
+                                                        typeof image ===
+                                                        "string"
+                                                    ) {
+                                                        imageUrl = image;
+                                                    }
+
+                                                    return (
+                                                        <div
+                                                            key={index}
+                                                            className="w-full h-full relative">
+                                                            <img
+                                                                src={imageUrl}
+                                                                alt={`Book ${index}`}
+                                                                className="w-full h-full object-cover rounded-lg shadow-lg"
+                                                            />
+                                                            <button
+                                                                type="button"
+                                                                className="absolute top-2 left-2 bg-gray-800 text-white rounded-full p-1 m-1 hover:bg-gray-600 transition duration-300"
+                                                                onClick={() =>
+                                                                    handleRemoveImage(
+                                                                        index
+                                                                    )
+                                                                }>
+                                                                <svg
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                    className="h-4 w-4"
+                                                                    fill="none"
+                                                                    viewBox="0 0 24 24"
+                                                                    stroke="currentColor">
+                                                                    <path
+                                                                        strokeLinecap="round"
+                                                                        strokeLinejoin="round"
+                                                                        strokeWidth="2"
+                                                                        d="M6 18L18 6M6 6l12 12"
+                                                                    />
+                                                                </svg>
+                                                            </button>
+                                                        </div>
+                                                    );
+                                                }
                                             )}
                                         </Carousel>
                                     ) : (
@@ -625,7 +715,7 @@ const RentBookForm: React.FC = () => {
                                     name="description"
                                     value={formData.description}
                                     onChange={handleChange}
-                                    placeholder="e.g., Wings of Fire (1999), is the autobiography of the Missile Man..."
+                                    // placeholder={book?.description}
                                     className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
                                 />
                             </div>
@@ -642,7 +732,9 @@ const RentBookForm: React.FC = () => {
                                     onChange={handleChange}
                                     className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200">
                                     <option value="" disabled>
-                                        Select a genre
+                                        {book?.genre
+                                            ? book.genre.toString()
+                                            : "Select a genre"}
                                     </option>
                                     {genres &&
                                         genres.map((genre) => (
@@ -669,6 +761,7 @@ const RentBookForm: React.FC = () => {
                                     type="text"
                                     id="street"
                                     name="street"
+                                    // placeholder={book?.street}
                                     value={formData.address.street}
                                     onChange={handleChange}
                                     className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
@@ -684,6 +777,7 @@ const RentBookForm: React.FC = () => {
                                     type="text"
                                     id="city"
                                     name="city"
+                                    // placeholder={book?.city}
                                     value={formData.address.city}
                                     onChange={handleChange}
                                     className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
@@ -701,6 +795,7 @@ const RentBookForm: React.FC = () => {
                                     type="text"
                                     id="district"
                                     name="district"
+                                    // placeholder={book?.district}
                                     value={formData.address.district}
                                     onChange={handleChange}
                                     className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
@@ -716,6 +811,7 @@ const RentBookForm: React.FC = () => {
                                     type="text"
                                     id="state"
                                     name="state"
+                                    // placeholder={book?.state}
                                     value={formData.address.state}
                                     onChange={handleChange}
                                     className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
@@ -731,6 +827,7 @@ const RentBookForm: React.FC = () => {
                                     type="text"
                                     id="pincode"
                                     name="pincode"
+                                    // placeholder={book?.pincode}
                                     value={formData.address.pincode}
                                     onChange={handleChange}
                                     className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
@@ -760,7 +857,7 @@ const RentBookForm: React.FC = () => {
                                             type="number"
                                             id="rentalFee"
                                             name="rentalFee"
-                                            placeholder="e.g., 20 rs"
+                                            // placeholder={book?.rentalFee !== undefined ? book.rentalFee.toString() : "Enter rental fee"}
                                             value={formData.rentalFee || ""}
                                             onChange={handleChange}
                                             className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
@@ -776,6 +873,7 @@ const RentBookForm: React.FC = () => {
                                             type="number"
                                             id="extraFee"
                                             name="extraFee"
+                                            // placeholder={book?.extraFee !== undefined ? book.extraFee.toString() : "Enter extraFee fee"}
                                             value={formData.extraFee || ""}
                                             onChange={handleChange}
                                             className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
@@ -793,7 +891,7 @@ const RentBookForm: React.FC = () => {
                                             type="number"
                                             id="maxDistance"
                                             name="maxDistance"
-                                            placeholder="e.g., 50 km"
+                                            // placeholder={book?.maxDistance !== undefined ? book.maxDistance.toString() : "Enter maximum distance"}
                                             value={formData.maxDistance || ""}
                                             onChange={handleChange}
                                             className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
@@ -809,7 +907,7 @@ const RentBookForm: React.FC = () => {
                                             type="number"
                                             id="maxDays"
                                             name="maxDays"
-                                            placeholder="e.g., 30 days"
+                                            // placeholder={book?.maxDistance !== undefined ? book.maxDistance.toString() : "Enter maximum distance fee"}
                                             value={formData.maxDays || ""}
                                             onChange={handleChange}
                                             className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
@@ -825,7 +923,7 @@ const RentBookForm: React.FC = () => {
                                             type="number"
                                             id="minDays"
                                             name="minDays"
-                                            placeholder="e.g., 30 days"
+                                            // placeholder={book?.minDays !== undefined ? book.minDays.toString() : "Enter minimum days"}
                                             value={formData.minDays || ""}
                                             onChange={handleChange}
                                             className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
@@ -844,7 +942,7 @@ const RentBookForm: React.FC = () => {
                                     type="number"
                                     id="price"
                                     name="price"
-                                    placeholder="e.g., 500 rs"
+                                    // placeholder={book?.price !== undefined ? book.price.toString() : "Enter price"}
                                     value={formData.price || ""}
                                     onChange={handleChange}
                                     className="w-3/6 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
@@ -874,4 +972,4 @@ const RentBookForm: React.FC = () => {
     );
 };
 
-export default RentBookForm;
+export default EditBookForm;

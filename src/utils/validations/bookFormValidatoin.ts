@@ -11,10 +11,13 @@ interface FormData {
     price?: number;
     quantity:number;
     images?: File[] | null;
+   address:{
     street:string;
     city:string;
     district:string;
     state:string;
+    pincode:string;
+   }
     maxDistance:number;
     maxDays:number;
     minDays:number;
@@ -150,33 +153,29 @@ const validateFormData = (
 
     if (!formData.images || formData.images.length === 0) {
         errors.push("Upload at least one image.");
-    } else if (!fileTypeTest(formData.images)) {
-        errors.push(
-            "Please provide images in supported formats: JPEG, PNG, GIF, WEBP."
-        );
-    }
+    } 
 
-    if (!formData.street.trim()) {
+    if (!formData.address.street.trim()) {
         errors.push("Please enter Building Name.");
-    } else if (formData.street.length > 100) {
+    } else if (formData.address.street.length > 100) {
         errors.push("Building Name is too long.");
     }
 
-    if (!formData.city.trim()) {
+    if (!formData.address.city.trim()) {
         errors.push("Please enter City.");
-    } else if (formData.city.length > 50) {
+    } else if (formData.address.city.length > 50) {
         errors.push("City is too long.");
     }
 
-    if (!formData.district.trim()) {
+    if (!formData.address.district.trim()) {
         errors.push("Please enter District.");
-    } else if (formData.district.length > 50) {
+    } else if (formData.address.district.length > 50) {
         errors.push("District is too long.");
     }
 
-    if (!formData.state.trim()) {
+    if (!formData.address.state.trim()) {
         errors.push("Please enter State.");
-    } else if (formData.state.length > 50) {
+    } else if (formData.address.state.length > 50) {
         errors.push("State is too long.");
     }
 
@@ -196,9 +195,10 @@ const validateFormData = (
         errors.push("Please enter Minimum Days.");
     } else if (formData.maxDays <= 0) {
         errors.push("Minimum Days must be a positive number.");
-    }else if(formData.maxDays<formData.minDays){
-        errors.push("Minimum Days must be a less than Maximum Days.");
     }
+    // else if(formData.maxDays<formData.minDays){
+    //     errors.push("Minimum Days must be a less than Maximum Days.");
+    // }
 
     if (!formData.latitude || isNaN(formData.latitude)) {
         errors.push("Error in getting location");

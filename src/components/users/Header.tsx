@@ -36,6 +36,7 @@ const Header: React.FC = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
+    console.log(picture,'user')
     useEffect(() => {
         window.addEventListener("scroll", handleScroll);
         return () => {

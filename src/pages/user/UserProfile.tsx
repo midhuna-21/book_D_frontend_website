@@ -1,45 +1,41 @@
-import React,{useState} from 'react';
+import React from 'react';
+import { Route, Routes, Navigate } from 'react-router-dom';
 import ProfileHeader from '../../components/users/ProfileHeader';
 import ProfileSideBar from '../../components/users/ProfileSideBar';
 import Profile from '../../components/users/Profile';
 import MyBooks from '../../components/users/MyBooks';
-import OrdersList from '../../components/users/OrdersList'
+import PrivateRoute from '../../routes/PrivateRoute';
+
+
 
 const UserProfile:React.FC=()=>{
-   const [activeSection, setActiveSection] = useState('profile');
-
-   const handleSectionChange = (section: string) => {
-       setActiveSection(section);
-   };
-
-
-   const renderContent = () => {
-      switch (activeSection) {
-          case 'myBooks':
-              return <MyBooks />;
-          case 'Profile':
-              return <Profile />;
-          case 'security':
-              return <div>Security</div>;
-          case 'Orders':
-              return <div><OrdersList/></div>;
-          case 'reviews':
-              return <div>Reviews</div>;
-          default:
-              return <Profile />;
-      }
-  };
-
    return (
       <>
          <ProfileHeader />
              <div className="flex flex-col md:flex-row gap-8 p-4">
-                <ProfileSideBar onSectionChange={handleSectionChange} />
+                <ProfileSideBar/>
                 <div className="flex-1">
-                    {renderContent()}
+                 
+                    <Routes>
+                    <Route path="/my-profile" element={<Profile />} />
+                    <Route path="/*" element={<NestedRoutes />} />
+                </Routes>
                 </div>
             </div>
       </>
    )
 }
+
+const NestedRoutes: React.FC = () => {
+    return (
+        <>
+            <Routes>
+                <Route path="/my-books" element={<PrivateRoute><MyBooks /></PrivateRoute>} />
+                {/* <Route path="/edit-my-book" element={<PrivateRoute><MyBooks /></PrivateRoute>} /> */}
+                <Route path="*" element={<Navigate to="/home/profile/my-profile" replace />} />
+            </Routes>
+        </>
+    );
+};
+
 export default UserProfile;
