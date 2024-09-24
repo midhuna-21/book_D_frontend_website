@@ -76,7 +76,7 @@ const MyBooks: React.FC = () => {
         // console.log(`Editing book ${bookId}`);
     };
     return (
-        <div className="p-6 bg-gray-100 rounded-lg shadow-md">
+        <div className="p-6 bg-gray-100 rounded-lg shadow-md mt-12">
             <div className="flex gap-4 mb-6">
                 <button
                     className={`px-4 py-2 rounded-md ${
@@ -132,7 +132,7 @@ const MyBooks: React.FC = () => {
                                         </div>
                                     )}
                                 </div>
-                                <div className="w-32 lg:w-1/2 h-80 relative">
+                                <div className="w-50 lg:w-1/2 h-80 relative md:32">
                                     {book.images && book.images.length > 0 ? (
                                         <Carousel
                                             showThumbs={false}
@@ -157,7 +157,7 @@ const MyBooks: React.FC = () => {
                                                 )
                                             )}
                                         </Carousel>
-                                    ) : (
+                                    ) : ( 
                                         <img
                                             src={
                                                 book.images &&

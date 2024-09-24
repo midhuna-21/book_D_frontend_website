@@ -126,10 +126,10 @@ const UsersList: React.FC = () => {
     };
 
     return (
-        <div className="bg-stone-800 shadow-md rounded p-4 h-full">
+        <div className="bg-stone-800 shadow-md rounded p-4 h-full ">
             <h2 className="text-xl font-bold mb-4 text-zinc-300">Users List</h2>
             <div className="mb-4 flex justify-between">
-                <div>
+            <div className="flex flex-wrap mb-4 sm:mb-0">
                     <button
                         onClick={() => handleViewModeChange("all")}
                         className={`px-4 py-2 rounded ${
@@ -158,13 +158,13 @@ const UsersList: React.FC = () => {
                         Reported Users
                     </button> */}
                 </div>
-                <div className="flex space-x-2">
-                    <input
+                <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                <input
                         type="text"
                         placeholder="Search by name"
                         value={searchKey}
                         onChange={handleSearchChange}
-                        className="px-4 py-2 border rounded"
+                        className="px-4 py-2 border rounded w-full sm:w-auto"
                     />
                     <button
                         onClick={handleSortByDate}
@@ -177,6 +177,7 @@ const UsersList: React.FC = () => {
                     </button>
                 </div>
             </div>
+            <div className="overflow-x-auto">
             <div className="h-96 overflow-y-auto">
                 {filteredUsers().length === 0 ? (
                     <div className="text-gray-500 mb-4 flex items-center justify-center h-full">
@@ -245,6 +246,7 @@ const UsersList: React.FC = () => {
                         </table>
                     </div>
                 )}
+            </div>
             </div>
         </div>
     );

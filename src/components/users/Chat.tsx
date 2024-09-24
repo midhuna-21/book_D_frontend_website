@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../utils/ReduxStore/store/store";
 import { userAxiosInstance } from "../../utils/api/axiosInstance";
 import { useSocket } from "../../utils/context/SocketProvider";
+import userLogo from "../../assets/userLogo.png";
 
 interface Message {
     senderId: string;
@@ -36,6 +37,7 @@ const Chat: React.FC = () => {
     );
     const userId = userInfo._id;
     const receiverId = paramUserId || "";
+    const picture = userInfo?.image || userLogo;
 
     const [chatRooms, setChatRooms] = useState<Receivers[]>([]);
     const [messages, setMessages] = useState<any[]>([]);
@@ -43,6 +45,7 @@ const Chat: React.FC = () => {
     const [messageText, setMessageText] = useState("");
     const [currentChatRoomId, setCurrentChatRoomId] = useState<string>("");
     const [isRead, setIsRead] = useState(false);
+    
 
     const [selectedUserDetails, setSelectedUserDetails] = useState<{
         userId: string;
@@ -67,7 +70,6 @@ const Chat: React.FC = () => {
                     `/users-messages-list/${userId}`
                 );
 
-                console.log(response.data, "response data");
                 const conversations = response.data.conversations;
 
                 if (Array.isArray(conversations)) {
@@ -119,12 +121,10 @@ const Chat: React.FC = () => {
             const response = await userAxiosInstance.get(
                 `/chat-room/${chatRoomId}`
             );
-            console.log(response, "chat respined");
 
             const chat = response?.data?.chat;
 
             if (chat) {
-                console.log(chat, "chat is here");
                 const { messages, senderId, receiverId } = chat;
 
                 const isSender = senderId._id === userId;
@@ -148,7 +148,6 @@ const Chat: React.FC = () => {
                     `/chatRoom-update/${chatRoomId}`
                 );
 
-                console.log(isReadResponse.data.isRead, "isReadResponse");
                 setIsRead(true);
             } else {
                 console.error("Chat data is not available");
@@ -159,7 +158,7 @@ const Chat: React.FC = () => {
     };
     useEffect(() => {
         if (socket) {
-            console.log("Socket initialized");
+            console.log("socket initialized");
 
             socket.on("receive-message", (message) => {
                 console.log("Received message:", message);
@@ -223,7 +222,6 @@ const Chat: React.FC = () => {
             if (response.status === 200 && chat) {
                 const newMessage = chat;
                 if (socket) {
-                    console.log("helo");
                     socket.emit("send-message", {
                         senderId: userId,
                         receiverId: selectedUserDetails.userId,
@@ -299,7 +297,7 @@ const Chat: React.FC = () => {
                                     }>
                                     <div className="w-16 h-16 rounded-full overflow-hidden mr-4 relative">
                                         <img
-                                            src={chatRoom.userImage || photo}
+                                            src={chatRoom.userImage}
                                             alt={chatRoom.userName}
                                             className="w-full h-full object-cover"
                                         />

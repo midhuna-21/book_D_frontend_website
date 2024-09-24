@@ -21,7 +21,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     useEffect(() => {
         const newSocket = io('http://localhost:8000');
-
+        
         if (userId) {
             newSocket.emit('register', userId);
             console.log(`User ${userId} registered with socket ID ${newSocket.id}`);

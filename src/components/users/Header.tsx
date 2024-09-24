@@ -23,6 +23,7 @@ const Header: React.FC = () => {
     const userInfo = useSelector(
         (state: RootState) => state.user.userInfo?.user
     );
+    const userId=userInfo?._id || "";
     const name = userInfo?.name || "";
     const picture = userInfo?.image || userLogo;
     const [isHovered, setIsHovered] = useState(false);
@@ -32,11 +33,12 @@ const Header: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const [searchResults, setSearchResults] = useState([]);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [messageCount, setMessageCount] = useState<number>(0);
+
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    console.log(picture,'user')
     useEffect(() => {
         window.addEventListener("scroll", handleScroll);
         return () => {
@@ -84,6 +86,21 @@ const Header: React.FC = () => {
         }
     };
 
+
+    useEffect(() => {
+
+    const fetchMessageCount = async () => {
+        try {
+            const response = await userAxiosInstance.get(`/unread-messages/${userId}`);
+            console.log(response?.data)
+            setMessageCount(response?.data?.count);
+        } catch (error) {
+            console.error("Failed to fetch message count", error);
+        }
+    };
+    fetchMessageCount()
+},[userId])
+
     return (
         <>
             <header
@@ -91,7 +108,6 @@ const Header: React.FC = () => {
                     !visible && "transform -translate-y-full"
                 }`}
                 style={{ height: "80px" }}>
-                {/* Logo Section */}
                 <div className="flex items-center ml-4">
                     <img src={logo} alt="Logo" className="h-12" />
                     <span className="font-serif ml-2 text-emerald-800 text-xl">
@@ -99,17 +115,13 @@ const Header: React.FC = () => {
                     </span>
                 </div>
 
-                {/* Hamburger Menu for Mobile */}
                 <div className="flex items-center md:hidden mr-4">
                     <button onClick={toggleMenu} className="focus:outline-none">
                         <FaBars className="text-gray-800 text-2xl" />
                     </button>
                 </div>
-
-                {/* Desktop Menu */}
                 <div
                     className={`hidden md:flex items-center space-x-4 px-10 mr-12 gap-10`}>
-                    {/* Search and Navigation Links */}
                     <div className="relative flex items-center">
                         {isSearchVisible && (
                             <div className="relative flex items-center">
@@ -170,6 +182,11 @@ const Header: React.FC = () => {
                         <div className="relative flex flex-col items-center cursor-pointer ">
                             <div className="hover:bg-gray-200 hover:w-12 hover:h-12 hover:rounded-full flex items-center justify-center">
                                 <FaEnvelope className="text-gray-800 text-xl" />
+                                {messageCount > 0 && (
+                            <span className="absolute top-0 right-0 bg-red-500 text-white rounded-full text-xs px-1">
+                                {messageCount}
+                            </span>
+                        )}
                             </div>
                             <span className="text-xs">Messages</span>
                         </div>

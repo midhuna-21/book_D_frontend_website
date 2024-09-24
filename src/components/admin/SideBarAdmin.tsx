@@ -56,14 +56,20 @@ const AdminSideBar: React.FC = () => {
               {!isCollapsed && <span className="ml-3">Add Genre</span>}
             </li>
             </Link>
+            <Link to='/admin/rental-orders'>
             <li className="px-4 py-2 hover:bg-gray-700 flex items-center">
               <FaBook />
-              {!isCollapsed && <span className="ml-3">Book Manage</span>}
+              {!isCollapsed && <span className="ml-3">Rental Orders</span>}
             </li>
+            </Link>
+            <Link to='/admin/wallet'>
+
             <li className="px-4 py-2 hover:bg-gray-700 flex items-center">
               <FaPaypal />
               {!isCollapsed && <span className="ml-3">PayMents</span>}
             </li>
+            </Link>
+
            
             <li className="px-4 py-2 hover:bg-gray-700 flex items-center" onClick={handleLogout}>
               <FaSignOutAlt />

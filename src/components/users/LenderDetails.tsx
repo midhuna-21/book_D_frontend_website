@@ -13,7 +13,7 @@
 
 
   const LenderDetails = () => {
-      const { requestId } = useParams();
+      const { cartId } = useParams();
       const [bookDetails, setBookDetails] = useState<any>(null);
       const userInfo = useSelector(
           (state: RootState) => state?.user?.userInfo?.user
@@ -21,13 +21,12 @@
       const userId = userInfo?._id;
       const [isAgreed, setIsAgreed] = useState(false);
 
-      console.log(requestId,'requestId global scope')
       useEffect(() => {
           const fetchDetails = async () => {
               try {
-                console.log(requestId,'inncerscope')
+                console.log(cartId,'inncerscope')
                   const response = await userAxiosInstance.get(
-                      `/lending-details/${requestId}`
+                      `/lending-details/${cartId}`
                   );
                   setBookDetails(response?.data?.details);
               } catch (error) {
@@ -36,7 +35,7 @@
           };
 
           fetchDetails();
-      }, [requestId]);
+      }, [cartId]);
 
       const handleAgreeChange = () => {
           setIsAgreed(!isAgreed);
@@ -55,12 +54,13 @@
         );
       
         const body = {
-          requestId:bookDetails?._id,
+          cartId:bookDetails?._id,
           bookId:bookDetails?.bookId?._id,
           bookTitle:bookDetails?.bookId?.bookTitle,
           userId:userId,
           lenderId:bookDetails?.bookId?.lenderId,
           totalPrice:totalPrice,
+          totalRentalPrice:bookDetails?.totalRentalPrice,
           quantity:bookDetails?.quantity,
           depositAmount:bookDetails?.bookId?.extraFee
         };
@@ -75,27 +75,23 @@
       
             const result = await stripePromise.redirectToCheckout({
               sessionId: response.data.id,
+              
             });
 
-            const data={
-                bookId:bookDetails?.bookId?._id,
-                userId:userId,
-                lenderId:bookDetails?.bookId?.lenderId,
-                totalPrice:totalPrice,
-                quantity:bookDetails?.quantity,
-                depositAmount:bookDetails?.bookId?.extraFee
-            }
+            // console.log(result,'rsult')
+            // const data={
+            //   bookId:bookDetails?.bookId?._id,
+            //   userId:userId,
+            //     cartId:bookDetails?.cartId,
+            //   }
             
-            console.log(data,'data')
-            const createOrder = await userAxiosInstance.post('/create-order',data,{withCredentials:true})
+            // console.log(data,'data')
+            // const createOrder = await userAxiosInstance.post('/create-order',data,{withCredentials:true})
              
             if (result.error) {
               console.error("Error redirecting to checkout:", result.error.message);
               return;
-            }
-
-               
-            
+            }   
           } else {
             console.error("Stripe initialization failed");
           }
@@ -104,42 +100,7 @@
         }
       };
    
-      
-    //   const makePayment = async () => {
-    //     const stripePromise: Stripe | null = await loadStripe(
-    //       "pk_test_51PsQIxJLTsyLCzN2DBw1f6Od4OEh0vdO34mKYQmfUgomCnP0D7IegGNMvKaZdF8zYjrIb8r6pYOppVveK24egrWn00CdaN0RvG"
-    //     );
-      
-    //     const body = {
-    //       bookTitle: bookDetails?.bookId?.bookTitle,
-    //       totalPrice: totalPrice,
-    //       requestId: requestId,
-    //       quantity: bookDetails?.quantity,
-    //     };
-      
-    //     const headers = {
-    //       "Content-Type": "application/json",
-    //     };
-      
-    //     try {
-    //       const response = await userAxiosInstance.post('/create-checkout', body, { headers });
-          
-    //       console.log("Checkout session response:", response.data);
-      
-    //       if (response.data && response.data.id) {
-    //         const result = await stripePromise.redirectToCheckout({
-    //           sessionId: response.data.id,
-    //         });
-    //         console.log("Redirect to checkout result:", result); 
-    //       } else {
-    //         console.error("Error: No session ID returned from server.");
-    //       }
-    //     } catch (error) {
-    //       console.error("Error creating checkout session:", error);
-    //     }
-    //   };
-      
-      
+
       const totalPrice =
           bookDetails?.bookId?.extraFee + bookDetails?.totalRentalPrice;
 
@@ -165,7 +126,7 @@
                   Name
                 </h3>
                 <p className="text-gray-600">
-                  {bookDetails?.receiverId?.name}
+                  {bookDetails?.ownerId?.name}
                 </p>
               </div>
               <div className="border-b pb-4 mb-4">
@@ -173,7 +134,7 @@
                   Phone Number
                 </h3>
                 <p className="text-gray-600">
-                  {bookDetails?.receiverId?.phone}
+                  {bookDetails?.ownerId?.phone}
                 </p>
               </div>
             </div>
@@ -227,7 +188,7 @@
               <p className="text-sm text-gray-600 mt-4">
                 Please pay within 24 hours. After the time expires, you will not be able to make the payment, and you will need to request the book again. The amount will be credited to our website. When you arrive at the lender's location, such as{" "}
                 <strong>
-                  Mr. {bookDetails?.receiverId?.name}
+                  Mr. {bookDetails?.ownerId?.name}
                 </strong>
                 's residence, please inform us. Only then will the amount be credited to the lender. If any issues arise or the book sustains damage, the deposit amount will also be credited to the lender. Ensure the book is safely handled.
               </p>

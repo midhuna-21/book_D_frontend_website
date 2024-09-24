@@ -19,16 +19,16 @@ const PaymentSuccess = () => {
   const searchParams = new URLSearchParams(location.search);
   const bookId = searchParams.get("book_id");
   const userId = searchParams.get("user_id");
-  const requestId = searchParams.get("request_id");
+  const cartId = searchParams.get("cart_id");
   const [orderData, setOrderData] = useState<OrderData | null>(null);
   const navigate = useNavigate()
   useEffect(() => {
     const fetchSessionData = async () => {
       try {
         if (bookId && userId) {
-          const response = await userAxiosInstance.post("/create-order", { bookId, userId,requestId });
+          const response = await userAxiosInstance.post("/create-order", { bookId, userId,cartId });
 
-          console.log(response)
+          console.log(response,'ok da')
           if (response.status==200) {
             setOrderData(response.data.order);
 
@@ -42,11 +42,12 @@ const PaymentSuccess = () => {
     };
 
     fetchSessionData();
-  }, [bookId && userId]);
+  }, []);
 
   const handleOkClick = () => {
    navigate("/home/order-list"); 
  };
+ console.log(orderData,'ordere')
 
   if (!orderData) {
     return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
@@ -60,7 +61,7 @@ const PaymentSuccess = () => {
         </div>
         <h1 className="text-2xl font-bold text-gray-800 mb-2">Payment Successful!</h1>
         <p className="text-gray-600 mb-6">
-          {orderData?.userId?.name}, your rental for the book <strong>{orderData?.bookId?.bookTitle}</strong> has been created successfully.
+          {orderData?.userId?.name}, your rental for the book <strong>{orderData?.bookId?.bookTitle}</strong> has been successfull.
         </p>
         <div className="text-center mt-6">
           <button

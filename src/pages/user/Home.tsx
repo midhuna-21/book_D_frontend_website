@@ -47,7 +47,7 @@ const NestedRoutes: React.FC = () => {
                 <Route path="/my-books" element={<PrivateRoute><MyBooks /></PrivateRoute>} />
 
                 <Route path="/book/:id" element={<PrivateRoute><BookDetail /></PrivateRoute>} />
-                <Route path="/payment-details/:requestId" element={<PrivateRoute><LenderDetails /></PrivateRoute>} />
+                <Route path="/payment-details/:cartId" element={<PrivateRoute><LenderDetails /></PrivateRoute>} />
                 <Route path="/payment-success" element={<PrivateRoute><Successfull /></PrivateRoute>} />
                 <Route path="/orders-list" element={<PrivateRoute><OrdersList /></PrivateRoute>} />
                 <Route path='/edit-book/:bookId' element={<PrivateRoute><EditBookForm /></PrivateRoute>} />
