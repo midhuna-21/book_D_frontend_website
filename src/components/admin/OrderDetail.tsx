@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import {useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { adminAxiosInstance } from "../../utils/api/axiosInstance";
 import { FaBook, FaUser, FaMapMarkerAlt, FaCalendarAlt, FaRupeeSign, FaRegCalendarTimes, FaInfoCircle } from 'react-icons/fa';
 
@@ -42,7 +42,6 @@ interface Order {
 }
 
 const OrderDetail = () => {
-    const navigate = useNavigate();
     const { orderId } = useParams();
     const [order, setOrder] = useState<Order | null>(null);
 

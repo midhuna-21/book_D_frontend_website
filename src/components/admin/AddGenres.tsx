@@ -1,8 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useRef } from "react";
 import { toast } from "sonner";
-import {useDispatch,useSelector} from 'react-redux'
-import {RootState} from '../../utils/ReduxStore/store/store'
+import {useDispatch} from 'react-redux'
 import { addGenre } from "../../utils/ReduxStore/slice/adminSlice";
 import { adminAxiosInstance } from "../../utils/api/axiosInstance";
 import { FaPlus } from "react-icons/fa";
@@ -12,10 +10,7 @@ const AddGenresWithList: React.FC = () => {
     const [genreName, setGenreName] = useState("");
     const [file, setFile] = useState<File | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const navigate = useNavigate();
     const dispatch = useDispatch()
-
-    const genres = useSelector((state: RootState) => state.admin?.genres);
 
     const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];

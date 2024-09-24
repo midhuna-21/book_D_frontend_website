@@ -4,7 +4,6 @@ import { userAxiosInstance } from "../../utils/api/axiosInstance";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { calculateRoadDistance } from "../../utils/reuseFunction/haversineFormula";
 import { toast } from "sonner";
 import {
     faUser,
@@ -18,12 +17,10 @@ const BookDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const userInfo = useSelector((state: any) => state.user.userInfo?.user);
     const userId = userInfo?._id || "";
-    const userName = userInfo?.name;
     const [book, setBook] = useState<any>(null);
     const bookId = book?._id!;
     const rentalFee = book?.rentalFee!;
     const extraFee = book?.extraFee!
-    const [isRequested, setIsRequested] = useState(false);
     const [totalDays, setTotalDays] = useState<any>(null);
     const [lender, setLender] = useState<any>(null);
     const [requested, setRequested] = useState(false);
@@ -96,7 +93,7 @@ const BookDetail: React.FC = () => {
     useEffect(() => {
         const fetchRequest = async () => {
             try {
-                const response = await userAxiosInstance
+                await userAxiosInstance
                     .get(`/check-request/${userId}/${bookId}`)
                     .then((response) => {
                         console.log(response?.data);

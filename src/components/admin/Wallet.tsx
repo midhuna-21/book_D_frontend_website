@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from 'react-router-dom';
 import { adminAxiosInstance } from "../../utils/api/axiosInstance";
 import { toast } from "sonner";
 
@@ -14,11 +13,7 @@ interface Transaction {
 const WalletTransactionsList: React.FC = () => {
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [viewMode, setViewMode] = useState("all");
-    const [searchKey, setSearchKey] = useState("");
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null); 
-
-    const navigate = useNavigate();
 
     const fetchTransactions = async () => {
         try {
@@ -30,12 +25,10 @@ const WalletTransactionsList: React.FC = () => {
                 toast.error("Error fetching wallet transactions");
             }
         } catch (err) {
-            console.error(err);
-            setError("Failed to fetch transactions");
-            toast.error("Failed to fetch transactions");
-        } finally {
             setLoading(false);
-        }
+            console.error(err);
+            toast.error("Failed to fetch transactions");
+        } 
     };
 
     useEffect(() => {

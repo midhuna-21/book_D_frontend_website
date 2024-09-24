@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import bookHeader from "../../assets/bookHeader.png";
-import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../utils/ReduxStore/store/store";
@@ -8,9 +7,8 @@ import { addUser } from "../../utils/ReduxStore/slice/userSlice";
 import photo from "../../assets/th.jpeg";
 import { FaCamera, FaTrashAlt } from "react-icons/fa";
 import "../../styles/tailwind.css";
-import { Box, Icon } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 import { userAxiosInstance } from "../../utils/api/axiosInstance";
-import { FaBookReader } from "react-icons/fa";
 
 const ProfileHeader: React.FC = () => {
     const user = useSelector((state: RootState) => state?.user?.userInfo?.user);
@@ -18,8 +16,6 @@ const ProfileHeader: React.FC = () => {
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const [file, setFile] = useState<File | null>(null);
     const dispatch = useDispatch();
-
-    const navigate = useNavigate();
 
     const openModal = () => {
         setIsModalOpen(true);

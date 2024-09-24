@@ -2,13 +2,11 @@ import React, { useState, useEffect, ChangeEvent } from "react";
 import { useSelector,useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { RootState } from "../../utils/ReduxStore/store/store";
-import googleimage from "../../assets/google.png";
 import { toast } from "sonner";
 import { addUser } from "../../utils/ReduxStore/slice/userSlice";
 import { userAxiosInstance } from "../../utils/api/axiosInstance";
 import {validate} from '../../utils/validations/profile-validation';
 import GmailUpdate from './GmailUpdate';
-import axios from 'axios'
 
 interface Address {
     street?: string;
@@ -100,62 +98,6 @@ const Profile: React.FC = () => {
         setFormData(initialFormData);
         setIsFormChanged(false);
     };  
-    const getLatLngFromAddress = async (address: string) => {
-        try {
-            const apiKey = 'AIzaSyD06G78Q2_d18EkXbsYsyg7qb2O-WWUU-Q'; 
-            const response = await axios.get(
-                `https://maps.googleapis.com/maps/api/geocode/json`,
-                {
-                    params: {
-                        address,
-                        key: apiKey,
-                    },
-                }
-            );
-        
-            if (response.data.status === 'OK') {
-                const location = response.data.results[0].geometry.location;
-                const components = response.data.results[0].address_components;
-    
-                let foundPincode = '';
-                let foundState = '';
-                let foundDistrict = '';
-                let foundCity = '';
-                let foundStreet = '';
-    
-                components.forEach((component: any) => {
-                  if (component.types.includes('sublocality')) {
-                    foundStreet = component.long_name;
-                }
-                    if (component.types.includes('postal_code')) {
-                        foundPincode = component.long_name;
-                    }
-                    if (component.types.includes('sublocality_level_1')) {
-                        foundCity = component.long_name;
-                    }
-                    if (component.types.includes('administrative_area_level_1')) {
-                        foundState = component.long_name;
-                    }
-                    if (component.types.includes('administrative_area_level_3')) {
-                        foundDistrict = component.long_name;
-                    }
-                })
-                return {
-                    street:foundStreet,
-                    pincode: foundPincode,
-                    state: foundState,
-                    district: foundDistrict,
-                    city:foundCity
-                };
-            } else {
-                console.error('Address not found error:', response.data.status);
-                return null;
-            }
-        } catch (error) {
-            console.error('Error while fetching lat/lng from address:', error);
-            return null;
-        }
-    };
 
     const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
@@ -169,51 +111,7 @@ const Profile: React.FC = () => {
         toast.error("Please fill in the complete address details.");
         return;
       }
-      // if (isFullAddressProvided) {
-      //   const formattedAddress = `${address?.street}, ${address?.city}, ${address?.district}, ${address?.state}, ${address?.pincode}`;
-        
-      //   const latLng = await getLatLngFromAddress(formattedAddress);
-      //   if (latLng) {
-      //     console.log(latLng,'latnnnnnn')
-      //     const { pincode, state, district, city } = latLng;
-    
-      //     if (pincode !== address?.pincode) {
-      //       console.log(pincode,'pinode')
-      //       toast.error('Invalid pincode. Please check the entered pincode.');
-      //       return;
-      //     }
-    
-      //     if (state.toLowerCase() !== address?.state?.toLowerCase()) {
-      //       toast.error('Invalid state. Please check the entered state.');
-      //       return;
-      //     }
-    
-      //     if (district.toLowerCase() !== address?.district?.toLowerCase()) {
-      //       toast.error('Invalid district. Please check the entered district.');
-      //       return;
-      //     }
-    
-      //     if (city.toLowerCase() !== address?.city?.toLowerCase()) {
-      //       toast.error('Invalid city. Please check the entered city.');
-      //       return;
-      //     }
-    
-      //     setFormData((prevFormData) => ({
-      //       ...prevFormData,
-      //       address: {
-      //         ...prevFormData.address,
-      //         pincode,
-      //         state,
-      //         district,
-      //         city
-      //       }
-      //     }));
-      //   } else {
-      //     toast.error('Invalid address. Please check details.');
-      //     return;
-      //   }
-      // }
-    
+   
       const isGoogle = user?.isGoogle ?? false;
       const validationResult = validate(
         formData.name || "",

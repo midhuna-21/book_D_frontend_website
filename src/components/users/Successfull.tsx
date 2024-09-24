@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation ,useNavigate} from "react-router-dom";
-import axios from "axios";
 import { AiOutlineCheckCircle } from "react-icons/ai"; 
 import { userAxiosInstance } from "../../utils/api/axiosInstance";
 

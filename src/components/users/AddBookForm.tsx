@@ -2,15 +2,9 @@ import React, { useState, useEffect } from "react";
 import { userAxiosInstance } from "../../utils/api/axiosInstance";
 import { toast } from "sonner";
 import { validateFormData } from "../../utils/validations/bookFormValidatoin";
-import { useSelector } from "react-redux";
-import { RootState } from "../../utils/ReduxStore/store/store";
-import { useNavigate } from "react-router-dom";
-import bookPage from "../../assets/bookPage.png";
 import images from "../../assets/images.png";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
-import LocationInput from "./GoogleMap";
-import { Map, GoogleApiWrapper } from "google-maps-react";
 import axios from "axios";
 
 interface Genre {
@@ -74,10 +68,7 @@ const RentBookForm: React.FC = () => {
     };
 
     const [formData, setFormData] = useState<FormData>(initialFormData);
-    // const [isOtherSelected, setIsOtherSelected] = useState(false);
-    // const genres = useSelector(
-    //     (state: RootState) => state.admin?.adminInfo?.genres
-    // );
+
     const [genres, setGenres] = useState<Genre[]>([]);
 
     const clearInput = () => {
@@ -86,30 +77,6 @@ const RentBookForm: React.FC = () => {
 
     const [isRentBook, setIsRentBook] = useState(true);
     const [activeOption, setActiveOption] = useState("addBooks");
-    const navigate = useNavigate();
-
-    // const handleChange = (
-    //     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-    // ) => {
-    //     const { name, value } = e.target;
-
-    //     if (name === "genre") {
-    //         const isOther = value === "Other";
-    //         setIsOtherSelected(isOther);
-    //         setFormData((prevState) => ({
-    //             ...prevState,
-    //             genre: isOther ? "Other" : value,
-    //             customGenre: isOther ? prevState.customGenre : "",
-    //         }));
-    //     } else {
-    //         setFormData((prevState) => ({
-    //             ...prevState,
-    //             [name]: ["rentalFee", "price"].includes(name)
-    //                 ? parseFloat(value.replace(/^0+/, "")) || 0
-    //                 : value,
-    //         }));
-    //     }
-    // };
 
     const handleRemoveImage = (index: number) => {
         if (formData.images && formData.images.length > 0) {

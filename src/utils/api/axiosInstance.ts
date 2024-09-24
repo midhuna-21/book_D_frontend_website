@@ -1,6 +1,5 @@
 import axios, {
     AxiosInstance,
-    AxiosRequestConfig,
     AxiosResponse,
     AxiosError,
     InternalAxiosRequestConfig,
@@ -13,7 +12,6 @@ import config from "../../config/config";
 import { userName } from "../ReduxStore/slice/userSlice";
 import { adminName } from "../ReduxStore/slice/adminSlice";
 
-const API_URL = config.API_URL || "";
 const USER_API_URL = config.USER_API_URL || "";
 const ADMIN_API_URL = config.ADMIN_API_URL || "";
 

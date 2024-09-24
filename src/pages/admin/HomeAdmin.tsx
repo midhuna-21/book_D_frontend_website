@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import AdminHeader from "../../components/admin/AdminHeader";
 import AdminSideBar from "../../components/admin/SideBarAdmin";
 import AdminDashboard from "../../components/admin/DashboardAdmin";

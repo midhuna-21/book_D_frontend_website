@@ -6,11 +6,7 @@
   import { userAxiosInstance } from "../../utils/api/axiosInstance";
   import { useSelector } from "react-redux";
   import { RootState } from "../../utils/ReduxStore/store/store";
-  // import { Elements } from "@stripe/react-stripe-js";
   import { loadStripe,Stripe } from "@stripe/stripe-js";
-  // import Payment from "./Payment";
-
-
 
   const LenderDetails = () => {
       const { cartId } = useParams();

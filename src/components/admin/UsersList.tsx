@@ -15,11 +15,11 @@ interface User {
 const UsersList: React.FC = () => {
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
     const [viewMode, setViewMode] = useState<string>("all"); 
     const [searchKey, setSearchKey] = useState<string>("");
     const [sortByDate, setSortByDate] = useState<boolean>(false);
 
+    
     useEffect(() => {
         const fetchUsers = async () => {
             try {
@@ -27,10 +27,8 @@ const UsersList: React.FC = () => {
                 // console.log(users,'userss')
                 setUsers(response.data);
             } catch (err) {
-                setError("Failed to fetch users");
-            } finally {
                 setLoading(false);
-            }
+            } 
         };
 
         fetchUsers();
@@ -82,8 +80,7 @@ const UsersList: React.FC = () => {
     const handleBlock = (userId: string) => {
         adminAxiosInstance
             .post("/block-user", { _id: userId })
-            .then((response) => {
-                const updatedUser = response.data;
+            .then(() => { 
                 setUsers((prevUsers) => {
                     const newUsers = prevUsers.map((user) =>
                         user._id === userId
@@ -125,6 +122,9 @@ const UsersList: React.FC = () => {
             });
     };
 
+    if (loading) {
+        return <div className="text-gray-500 text-center">Loading...</div>;
+    }
     return (
         <div className="bg-stone-800 shadow-md rounded p-4 h-full ">
             <h2 className="text-xl font-bold mb-4 text-zinc-300">Users List</h2>

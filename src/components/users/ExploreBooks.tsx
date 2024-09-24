@@ -20,7 +20,6 @@ const ExploreBooks: React.FC = () => {
     const fetchBooks = async () => {
       setLoading(true);
       try {
-        const userId = userInfo?._id;
         const endpoint = searchQuery ? `/search/${searchQuery}` : '/books';
 
         const response = await userAxiosInstance.get(endpoint);

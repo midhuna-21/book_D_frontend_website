@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Image, Text, Button, Grid, GridItem } from '@chakra-ui/react';
 import { userAxiosInstance } from '../../utils/api/axiosInstance';
-// import bookImage from '../../assets/bkF1.jpg';
 
 const Books: React.FC = () => {
   const [books, setBooks] = useState<any[]>([]);

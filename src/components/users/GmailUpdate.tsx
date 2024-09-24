@@ -1,22 +1,16 @@
-import React, { useState, useEffect, ChangeEvent } from "react";
+import React, { useState} from "react";
 import { useSelector,useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import { RootState } from "../../utils/ReduxStore/store/store";
 import googleimage from "../../assets/google.png";
-import { toast } from "sonner";
 import { addUser } from "../../utils/ReduxStore/slice/userSlice";
 import { userAxiosInstance } from "../../utils/api/axiosInstance";
-import {validate} from '../../utils/validations/profile-validation';
 
 
 const GmailUpdate: React.FC = () => {
     const user = useSelector((state: RootState) => state?.user?.userInfo?.user);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [linkClicked, setLinkClicked] = useState(false);
     const [message, setMessage] = useState<string>("Your Book.D account is currently linked to your Google account. If you unlink these accounts, then your password will be reset and you will be able to change your email address.");
 const [messageType, setMessageType] = useState<'success' | 'info' | null>(null);
-
-    const navigate = useNavigate()
     const dispatch = useDispatch()
 
     const openModal = () => {
@@ -33,16 +27,15 @@ const [messageType, setMessageType] = useState<'success' | 'info' | null>(null);
         openModal()
     };  
     const handleUnlinkConfirm = async()=>{
-      const response = await userAxiosInstance.post('/send-email',{withCredentials:true})
+       await userAxiosInstance.post('/send-email',{withCredentials:true})
       .then((response)=>{
          if(response.status==200){
             dispatch(addUser(response.data))
             setMessage("Check your email. We've sent a reset password link.");
             setMessageType('success');
-            // navigate('/home/profile')
             closeModal()
          }
-      }).catch((error)=>{
+      }).catch(()=>{
          console.log("Error")
          setMessage("An error occurred. Please try again.");
          setMessageType('info');

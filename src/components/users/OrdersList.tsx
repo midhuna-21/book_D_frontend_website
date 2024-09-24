@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { AiOutlineCheckCircle, AiOutlineCloseCircle } from "react-icons/ai";
 import { userAxiosInstance } from "../../utils/api/axiosInstance";
 import { useSelector } from "react-redux";
 import { RootState } from "../../utils/ReduxStore/store/store";
 import { FaGreaterThan, FaLessThan,FaCheck } from "react-icons/fa";
-import { useSocket } from "../../utils/context/SocketProvider";
 import {toast} from 'sonner';
 
 interface Address {
@@ -60,7 +58,6 @@ const OrderList: React.FC = () => {
     const [currentOrderStatus, setCurrentOrderStatus] = useState<string | null>(
         null
     );
-    const { socket } = useSocket();
 
     const [currentPage, setCurrentPage] = useState(1);
     const ordersPerPage = 4;

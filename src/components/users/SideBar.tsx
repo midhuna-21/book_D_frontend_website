@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import {useNavigate} from 'react-router-dom'
 import logo from '../../assets/whiteLogo.png';
-import { toast } from "sonner";
 import { useDispatch } from 'react-redux';
 import { clearUser } from '../../utils/ReduxStore/slice/userSlice';
-import { axiosUser } from "../../utils/api/baseUrl";
 import {Link} from 'react-router-dom';
 import { FaHome, FaUser, FaEnvelope, FaBell, FaCompass, FaBook, FaSignOutAlt, FaBars } from 'react-icons/fa';
 

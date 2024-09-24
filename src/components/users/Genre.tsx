@@ -4,7 +4,6 @@ import "react-multi-carousel/lib/styles.css";
 import { Box, Image, Text, Flex, Icon } from "@chakra-ui/react";
 import {userAxiosInstance} from '../../utils/api/axiosInstance'
 import { FaBookReader } from "react-icons/fa";
-import { axiosUser } from '../../utils/api/baseUrl';
 
 interface Genres {
   _id: string;

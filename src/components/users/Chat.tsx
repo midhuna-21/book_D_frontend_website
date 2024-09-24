@@ -1,23 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { FaPaperPlane, FaEnvelope } from "react-icons/fa";
-import { useParams } from "react-router-dom";
 import photo from "../../assets/th.jpeg";
 import { useSelector } from "react-redux";
 import { RootState } from "../../utils/ReduxStore/store/store";
 import { userAxiosInstance } from "../../utils/api/axiosInstance";
 import { useSocket } from "../../utils/context/SocketProvider";
-import userLogo from "../../assets/userLogo.png";
-
-interface Message {
-    senderId: string;
-    userId: string;
-    receiver: string;
-    content: string;
-    timestamp: string;
-    createdAt: string;
-    _id: String;
-    messageId: string;
-}
 
 interface Receivers {
     chatRoomId: string;
@@ -31,21 +18,16 @@ interface Receivers {
 }
 
 const Chat: React.FC = () => {
-    const { receiverId: paramUserId } = useParams<{ receiverId: string }>();
     const userInfo = useSelector(
         (state: RootState) => state?.user?.userInfo?.user
     );
     const userId = userInfo._id;
-    const receiverId = paramUserId || "";
-    const picture = userInfo?.image || userLogo;
 
     const [chatRooms, setChatRooms] = useState<Receivers[]>([]);
     const [messages, setMessages] = useState<any[]>([]);
 
     const [messageText, setMessageText] = useState("");
     const [currentChatRoomId, setCurrentChatRoomId] = useState<string>("");
-    const [isRead, setIsRead] = useState(false);
-    
 
     const [selectedUserDetails, setSelectedUserDetails] = useState<{
         userId: string;
@@ -53,7 +35,7 @@ const Chat: React.FC = () => {
         userImage: string;
     } | null>(null);
 
-    const { socket, onlineUsers } = useSocket();
+    const { socket } = useSocket();
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -144,11 +126,10 @@ const Chat: React.FC = () => {
                 setCurrentChatRoomId(chatRoomId);
                 fetchMessages(chatRoomId);
 
-                const isReadResponse = await userAxiosInstance.post(
+                await userAxiosInstance.post(
                     `/chatRoom-update/${chatRoomId}`
                 );
 
-                setIsRead(true);
             } else {
                 console.error("Chat data is not available");
             }
@@ -220,7 +201,6 @@ const Chat: React.FC = () => {
             const chat = response?.data?.message;
 
             if (response.status === 200 && chat) {
-                const newMessage = chat;
                 if (socket) {
                     socket.emit("send-message", {
                         senderId: userId,

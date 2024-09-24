@@ -31,7 +31,6 @@ const Header: React.FC = () => {
     const [visible, setVisible] = useState(true);
     const [isSearchVisible, setIsSearchVisible] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
-    const [searchResults, setSearchResults] = useState([]);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [messageCount, setMessageCount] = useState<number>(0);
 

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {useNavigate} from 'react-router-dom';
 import { adminAxiosInstance } from "../../utils/api/axiosInstance";
-import { toast } from "sonner";
 
 interface Book {
     _id: string;
@@ -30,10 +29,8 @@ interface RentalOrder {
 const RentalOrdersList: React.FC = () => {
     const [orders, setOrders] = useState<RentalOrder[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
     const [viewMode, setViewMode] = useState<string>("all");
     const [searchKey, setSearchKey] = useState<string>("");
-    const [sortByDate, setSortByDate] = useState<boolean>(false);
 
 
     const navigate = useNavigate()
@@ -51,8 +48,6 @@ const RentalOrdersList: React.FC = () => {
                     console.error("Error where fetching rental orders");
                 }
             } catch (err) {
-                setError("Failed to fetch orders");
-            } finally {
                 setLoading(false);
             }
         };
@@ -68,11 +63,6 @@ const RentalOrdersList: React.FC = () => {
         setSearchKey(event.target.value);
     };
 
-    const handleSortByDate = () => {
-        setSortByDate((prevSortByDate) => !prevSortByDate);
-    };
-
- 
 
     const filteredOrders = () => {
         let filtered = orders;
@@ -131,6 +121,9 @@ const RentalOrdersList: React.FC = () => {
 };
   
 
+if (loading) {
+    return <div className="text-gray-500 text-center">Loading...</div>;
+}
     return (
         <div className="bg-stone-800 shadow-md rounded p-4 h-full">
             <h2 className="text-xl font-bold mb-4 text-zinc-300">

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../utils/ReduxStore/store/store";
 import { userAxiosInstance } from "../../utils/api/axiosInstance";
-// import { io, Socket } from "socket.io-client";
 import Swal from "sweetalert2";
 import { useSocket } from "../../utils/context/SocketProvider";
 import ConfirmationRequest from "./ConfirmationRequest";
@@ -35,14 +34,11 @@ interface Notification {
 const Notifications: React.FC = () => {
     const [notifications, setNotifications] = useState<any[]>([]);
     const [status, setStatus] = useState(false);
-    const [bookId, setBookId] = useState("");
     const picture = userLogo;
-    // const [socket, setSocket] = useState<Socket | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModalOpenPayment, setIsModalOpenPayment] = useState(false);
     const [selectedNotification, setSelectedNotification] =
         useState<Notification | null>(null);
-    const [requests, setRequests] = useState<any[]>([]);
     const { socket } = useSocket();
 
     const userInfo = useSelector(
@@ -93,7 +89,7 @@ const Notifications: React.FC = () => {
 
             const chatRoom = { senderId: userid, receiverId: userId };
 
-            const chatRoomResponse = await userAxiosInstance.post(
+             await userAxiosInstance.post(
                 "/create-chatRoom",
                 chatRoom
             );
@@ -106,7 +102,7 @@ const Notifications: React.FC = () => {
             if (response.status == 200) {
                 const data = { types: "rejected" };
 
-                const cartUpdateAcceptResponse = await userAxiosInstance.put(
+                await userAxiosInstance.put(
                     `/cart-item-update/${cartId}`,
                     data,
                     { headers: { "Content-Type": "application/json" } }
@@ -192,7 +188,7 @@ const Notifications: React.FC = () => {
                     });
                 }
                 const data = { types: "rejected" };
-                const cartUpdateRejectResponse = await userAxiosInstance.put(
+                await userAxiosInstance.put(
                     `/cart-item-update/${cartId}`,
                     data,
                     { headers: { "Content-Type": "application/json" } }
@@ -232,7 +228,7 @@ const Notifications: React.FC = () => {
                                     notification.status === "requested"
                                 )
                         );
-                    const sortedNotifications = formattedNotifications.sort(
+                       formattedNotifications.sort(
                         (a: Notification, b: Notification) =>
                             new Date(b.updatedAt).getTime() -
                             new Date(a.updatedAt).getTime()

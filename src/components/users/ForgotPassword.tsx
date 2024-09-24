@@ -10,7 +10,6 @@ import { validateEmail } from "../../utils/validations/forgotEmail";
 const ForgotPassword: React.FC = () => {
     const [email, setEmail] = useState("");
     const navigate = useNavigate();
-    const [validRoute, setValidRoute] = useState(false);
 
     const handleSubmitEmail = (
         e: React.MouseEvent<HTMLButtonElement, MouseEvent>
@@ -57,7 +56,7 @@ const ForgotPassword: React.FC = () => {
     useEffect(() => {
         const params = new URLSearchParams(location.search);
         if (params.get('access') === 'true') {
-            setValidRoute(true);
+          console.log('hoooo')
         } else {
             navigate('/login', { replace: true });
         }

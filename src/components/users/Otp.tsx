@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addUser } from "../../utils/ReduxStore/slice/userSlice";
-import signloginImage from "../../assets/signlogin.png";
 import emailImage from "../../assets/emailImage.png";
 import { toast } from "sonner";
 import { axiosUser } from "../../utils/api/baseUrl";
@@ -13,13 +12,11 @@ const Otp: React.FC = () => {
     const dispatch = useDispatch();
     const response = location.state?.response?.user || location.state?.response || ""
     const origin = location.state?.origin
-    const [isOtpVerified, setIsOtpVerified] = useState(false);
     const email = response.email;
 
     const [isSendOtp, setIsSendOtp] = useState(false);
     const [isOtpOnce, setIsOtpOnce] = useState(false);
     const [timer, setTimer] = useState(60);
-    // const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
     const [otp, setOtp] = useState(["", "", "", ""]);
     
 
@@ -108,7 +105,7 @@ const Otp: React.FC = () => {
         }
         axiosUser
             .post("/otp-generate", { email })
-            .then((response) => {
+            .then(() => {
                 toast.success("OTP sent successfully");
                 setIsSendOtp(true);
                 setIsOtpOnce(true);
@@ -149,7 +146,7 @@ const Otp: React.FC = () => {
             }
             axiosUser
                 .post("/otp-generate", { email })
-                .then((response) => {
+                .then(() => {
                     setIsSendOtp(true);
                     setIsOtpOnce(true);
                     startTimer();

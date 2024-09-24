@@ -1,7 +1,6 @@
 import React from 'react';
-import { Route, Routes, Navigate,useLocation } from 'react-router-dom';
+import { Route, Routes, Navigate} from 'react-router-dom';
 import Header from '../../components/users/Header';
-import SideBar from '../../components/users/SideBar';
 import CenterOfHome from '../../components/users/HomePage';
 import Options from '../../components/users/Options';
 import UserProfile from './UserProfile'

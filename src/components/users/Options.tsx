@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import AddBookForm from "../users/AddBookForm";
-import bookPage from "../../assets/bookPage.png";
 
 const Options: React.FC = () => {
     const [activeOption, setActiveOption] = useState("addBooks");
@@ -9,15 +8,12 @@ const Options: React.FC = () => {
         setActiveOption(option);
     };
 
-    // Render different components based on activeOption state
     const renderComponent = () => {
         switch (activeOption) {
             case "addBooks":
                 return <AddBookForm />;
             case "rentedBooks":
-                // return <RentedBooks />;
             case "soldBooks":
-                // return <SoldBooks />;
             default:
                 return null;
         }

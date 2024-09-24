@@ -1,19 +1,15 @@
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { useDispatch } from "react-redux";
-import { addUser } from "../../utils/ReduxStore/slice/userSlice";
 import { useState } from "react";
 import { HiEye, HiEyeOff } from "react-icons/hi";
 import signloginImage from "../../assets/signlogin.png";
 import { validate } from "../../utils/validations/signupValidation";
-// import { otpValidate } from "../../utils/validations/otpValidation";
 import { axiosUser } from "../../utils/api/baseUrl";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import SignInButton from "../../utils/authentication/Googlebutton";
 
 const Register: React.FC = () => {
     const navigate = useNavigate();
-    const dispatch = useDispatch();
     const [email, setEmail] = useState("");
     const [name, setName] = useState("");
     const [phone, setPhone] = useState("");

@@ -61,7 +61,7 @@ const   NewPassword: React.FC = () => {
         if (!otpSubmitted) {
             navigate("/forgot-password");
         } else {
-            const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+            const handleBeforeUnload = () => {
                 localStorage.removeItem("otpSubmitted");
             };
 

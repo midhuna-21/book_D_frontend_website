@@ -1,8 +1,6 @@
 import backGroundImage from "../../assets/bookf1.webp";
 import React from "react";
 import Genre from "../../components/users/Genre";
-import Books from "../../components/users/Books";
-import HowItWorks from '../../components/users/HowItWorks'
 
 const CenterOfHome: React.FC = () => {
     return (

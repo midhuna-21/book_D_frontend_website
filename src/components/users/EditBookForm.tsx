@@ -70,44 +70,12 @@ const EditBookForm: React.FC = () => {
 
     const [formData, setFormData] = useState<FormData>(initialFormData);
     const { bookId } = useParams();
-    const [imageUrls, setImageUrls] = useState<string[]>([]);
-    // const [isOtherSelected, setIsOtherSelected] = useState(false);
-    // const genres = useSelector(
-    //     (state: RootState) => state.admin?.adminInfo?.genres
-    // );
     const [genres, setGenres] = useState<Genre[]>([]);
     const [book, setBook] = useState<FormData>();
-
-    const clearInput = () => {
-        setFormData(initialFormData);
-    };
 
     const [isRentBook, setIsRentBook] = useState(true);
     const [activeOption, setActiveOption] = useState("addBooks");
     const navigate = useNavigate();
-
-    // const handleChange = (
-    //     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-    // ) => {
-    //     const { name, value } = e.target;
-
-    //     if (name === "genre") {
-    //         const isOther = value === "Other";
-    //         setIsOtherSelected(isOther);
-    //         setFormData((prevState) => ({
-    //             ...prevState,
-    //             genre: isOther ? "Other" : value,
-    //             customGenre: isOther ? prevState.customGenre : "",
-    //         }));
-    //     } else {
-    //         setFormData((prevState) => ({
-    //             ...prevState,
-    //             [name]: ["rentalFee", "price"].includes(name)
-    //                 ? parseFloat(value.replace(/^0+/, "")) || 0
-    //                 : value,
-    //         }));
-    //     }
-    // };
 
     const handleRemoveImage = (index: number) => {
         if (formData.images && formData.images.length > 0) {
@@ -129,9 +97,6 @@ const EditBookForm: React.FC = () => {
                 if (fetchedBook) {
                     setBook(fetchedBook);
 
-                    if (fetchedBook.images) {
-                        setImageUrls(fetchedBook.images);
-                    }
                 }
             } catch (error) {
                 console.error("Error fetching book details", error);
@@ -172,7 +137,7 @@ const EditBookForm: React.FC = () => {
             });
 
             if (book.images && Array.isArray(book.images)) {
-                const imageFiles = book.images
+                 book.images
                     .map((image) => {
                         if (typeof image === "string") {
                             return { src: image, file: null };

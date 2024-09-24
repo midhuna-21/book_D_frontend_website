@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import {useNavigate} from 'react-router-dom'
 import logo from '../../assets/whiteLogo.png';
-import { toast } from "sonner";
 import { useDispatch } from 'react-redux';
 import { clearAdmin } from '../../utils/ReduxStore/slice/adminSlice';
-import { axiosAdmin } from "../../utils/api/baseUrl";
 import {Link} from 'react-router-dom';
 import { FaHome, FaUser, FaPaypal, FaBook, FaPlus, FaSignOutAlt,FaBars } from 'react-icons/fa';
 

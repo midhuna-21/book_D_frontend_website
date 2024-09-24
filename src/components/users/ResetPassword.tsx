@@ -52,7 +52,7 @@ const ResetPassword: React.FC = () => {
                 email: email,
                 password: password,
             })
-            .then(function (response) {
+            .then(function () {
                 localStorage.removeItem("useraccessToken");
                 localStorage.removeItem("userrefreshToken");
                 dispatch(clearUser());
@@ -88,7 +88,7 @@ const ResetPassword: React.FC = () => {
         if (!otpSubmitted) {
             navigate("/forgot-password");
         } else {
-            const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+            const handleBeforeUnload = () => {
                 localStorage.removeItem("otpSubmitted");
             };
 

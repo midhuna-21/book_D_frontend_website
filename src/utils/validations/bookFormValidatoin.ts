@@ -25,21 +25,6 @@ interface FormData {
     longitude:number;
 }
 
-const fileTypeTest = (value: File[] | null): boolean => {
-    if (!value) return false;
-    const supportedTypes = [
-        "image/jpeg",
-        "image/png",
-        "image/gif",
-        "image/webp",
-    ];
-    for (let i = 0; i < value.length; i++) {
-        if (!supportedTypes.includes(value[i].type)) {
-            return false;
-        }
-    }
-    return true;
-};
 
 const validateFormData = (
     formData: FormData,
