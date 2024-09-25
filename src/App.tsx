@@ -4,8 +4,7 @@ import UserRouter from './routes/UserRouter';
 import AdminRouter from './routes/AdminRoute';
 
 function App() {
-
- 
+   
    return (
       <>
          <Toaster />
