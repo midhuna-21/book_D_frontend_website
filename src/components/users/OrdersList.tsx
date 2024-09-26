@@ -143,30 +143,7 @@ const OrderList: React.FC = () => {
                     isBookHandover: isBookHandover,
                 }
             );
-            // if(response.status==200){
-            //   const notificationData = {
-            //     bookId: bookId,
-            //     ownerId: userid,
-            //     userId,
-            // };
-
-            // const response = await userAxiosInstance.post(
-            //     "/notification",
-            //     notificationData
-            // );
-
-            // if (socket) {
-            //     socket.emit("send-notification", {
-            //         receiverId: userId,
-            //         notification: response?.data?.notification,
-            //     });
-            // }
-            // }else{
-            // console.error("Error updating status:");
-
-            // }
-
-            console.log(response?.data, "response");
+         
             setShowModal(false);
         } catch (error) {
             console.error("Error updating status:", error);
