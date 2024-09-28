@@ -20,7 +20,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
 
     useEffect(() => {
-        const newSocket = io('http://localhost:8000');
+        const newSocket = io('https://www.bookd.store');
         
         if (userId) {
             newSocket.emit('register', userId);

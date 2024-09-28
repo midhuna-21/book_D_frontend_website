@@ -148,7 +148,7 @@ const BookDetail: React.FC = () => {
     };
 
     useEffect(() => {
-        const newSocket = io("http://localhost:8000");
+        const newSocket = io("https://www.bookd.store");
         setSocket(newSocket);
 
         return () => {
