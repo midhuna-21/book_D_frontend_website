@@ -1,18 +1,35 @@
-import React, { useState, useRef } from "react";
-import { toast } from "sonner";
-import {useDispatch} from 'react-redux'
-import { addGenre } from "../../utils/ReduxStore/slice/adminSlice";
+import React, { useState, useEffect, useRef } from "react";
 import { adminAxiosInstance } from "../../utils/api/axiosInstance";
 import { FaPlus } from "react-icons/fa";
-import GenreList from '../../components/admin/GenresList'
-import GenresList from "../../components/admin/GenresList";
+import { useParams,useNavigate } from "react-router-dom";
+import { toast } from 'sonner';
 
-const AddGenresWithList: React.FC = () => {
+
+const EditGenre: React.FC = () => {
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
-    const [genreName, setGenreName] = useState("");
+    const [genreName, setGenreName] = useState<string>("");
+    const { genreId } = useParams();
     const [file, setFile] = useState<File | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const dispatch = useDispatch()
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        const fetchGenre = async () => {
+            try {
+                const response = await adminAxiosInstance.get(`/genre/${genreId}`);
+                const fetchedGenre = response?.data;
+               
+                if (fetchedGenre) {
+                    setGenreName(fetchedGenre.genreName);
+                    setSelectedImage(fetchedGenre.image);
+                    
+                }
+            } catch (error) {
+                console.error("Error fetching genre details", error);
+            }
+        };
+        fetchGenre();
+    }, [genreId]);
 
     const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -30,58 +47,51 @@ const AddGenresWithList: React.FC = () => {
         }
     };
 
-    const handleAddGenre = (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleUpdate = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        try {
+            const formData = new FormData();
+             const name = genreName.toLowerCase();
+            formData.append("genreName", name);
+            if (file) {
+                formData.append("file", file);
+            }else if(selectedImage){
+                formData.append("exisitingImage", selectedImage);
+            }
 
-        if (!genreName || !file) {
-            toast.error("Please fill in all fields and select an image.");
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append("genreName", genreName);
-        formData.append("file", file);
-
-        adminAxiosInstance
-            .post("/add-genre", formData, {   
+            const response = await adminAxiosInstance.post(`/genre-update/${genreId}`, formData, {
                 withCredentials: true,
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },
-            })
-            .then(function (response) {
-                if (response.status === 200) {
-                    toast.success("Successfully added");
-                    dispatch(addGenre(response.data))
-                    setGenreName("");
-                    setSelectedImage(null);
-                    setFile(null);
-                    if (fileInputRef.current) {
-                        fileInputRef.current.value = "";
-                    }
-                }
-            })
-            .catch((error) => {
-                console.log(error);
-                if (error.response && error.response.status === 400) {
-                    toast.error(error.response.data.message);
-                } else {
-                    toast.error("An error occurred, try again later");
-                }
             });
+
+            if (response.status === 200) {
+                const fetchedGenre = response?.data;
+               
+                if (fetchedGenre) {
+                    setGenreName(fetchedGenre.genreName);
+                    setSelectedImage(fetchedGenre.image);
+                    navigate('/admin/add-genre')
+                }
+            }
+        } catch (error:any) {
+            console.error("Error updating genre:", error);
+            if (error.response && error.response.status === 400) {
+                toast.error(error.response.data.message);
+            } else {
+                toast.error("An error occurred, try again later.");
+            }
+        }
     };
 
     return (
-        <div className="flex items-start min-h-scree bg-stone-900 p-8 rounded-2xl ">
+        <div className="flex items-start h-screen bg-stone-900 p-8 rounded-2xl">
             <div className="p-8 rounded shadow-md w-1/2 mr-4">
-                <h2 className="text-2xl font-custom mb-6 text-zinc-300">
-                    Add New Genre
-                </h2>
-                <form onSubmit={handleAddGenre}>
+                <h2 className="text-2xl font-custom mb-6 text-zinc-300">Edit Genre</h2>
+                <form onSubmit={handleUpdate}>
                     <div className="mb-4">
-                        <label
-                            htmlFor="genreName"
-                            className="block text-zinc-300 mb-2 font-custom">
+                        <label htmlFor="genreName" className="block text-zinc-300 mb-2 font-custom">
                             Genre Name
                         </label>
                         <input
@@ -95,9 +105,7 @@ const AddGenresWithList: React.FC = () => {
                         />
                     </div>
                     <div className="mb-4">
-                        <label
-                            htmlFor="image"
-                            className="block text-zinc-300 mb-2 font-custom">
+                        <label htmlFor="image" className="block text-zinc-300 mb-2 font-custom">
                             Upload Image
                         </label>
                         <div className="flex items-center">
@@ -109,13 +117,12 @@ const AddGenresWithList: React.FC = () => {
                                     accept="image/*"
                                     onChange={handleImageChange}
                                     ref={fileInputRef}
-                                    required
                                 />
                                 <div className="bg-blue-900 text-white px-3 py-2 rounded-md w-32 text-center cursor-pointer">
                                     Choose File
                                 </div>
                             </div>
-                            {selectedImage && (
+                            {(selectedImage) && (
                                 <div className="ml-4">
                                     <img
                                         src={selectedImage}
@@ -130,7 +137,7 @@ const AddGenresWithList: React.FC = () => {
                         <button
                             type="submit"
                             className="bg-green-950 hover:bg-green-800 text-zinc-300 font-bold py-2 px-4 rounded flex items-center justify-center space-x-2">
-                            <span>Add</span> <FaPlus />
+                            <span>Update</span> <FaPlus />
                         </button>
                         <button
                             type="button"
@@ -140,12 +147,8 @@ const AddGenresWithList: React.FC = () => {
                     </div>
                 </form>
             </div>
-            <div className="p-8 rounded shadow-md w-1/2">
-            <GenresList />
-            </div>
-       
         </div>
     );
 };
 
-export default AddGenresWithList;
+export default EditGenre;

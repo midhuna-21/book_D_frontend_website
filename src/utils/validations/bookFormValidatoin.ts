@@ -8,7 +8,6 @@ interface FormData {
     customGenre?: string;
     rentalFee?: number;
     extraFee?:number
-    price?: number;
     quantity:number;
     images?: File[] | null;
    address:{
@@ -27,8 +26,7 @@ interface FormData {
 
 
 const validateFormData = (
-    formData: FormData,
-    isRentBook: boolean
+    formData: FormData
 ): string[] => {
     const errors: string[] = [];
 
@@ -42,7 +40,7 @@ const validateFormData = (
 
     if (!formData.bookTitle.trim()) {
         errors.push("Please enter Book title.");
-    } else if (formData.bookTitle.length > 50) {
+    } else if (formData.bookTitle.length > 100) {
         errors.push("Book title is too long.");
     } else if (!letterRegex.test(formData.bookTitle)) {
         errors.push("Book title must contain atleast one letter.");
@@ -61,7 +59,7 @@ const validateFormData = (
 
     if (!formData.description.trim()) {
         errors.push("Please enter  Description.");
-    } else if (formData.description.length > 200) {
+    } else if (formData.description.length > 500) {
         errors.push("Description is too long.");
     }
 
@@ -69,16 +67,12 @@ const validateFormData = (
         errors.push("Please enter Author.");
     } else if (formData.author.length > 50) {
         errors.push("Author is too long.");
-    } else if (nonLetterRegex.test(formData.author)) {
-        errors.push("Author should only contain letters.");
-    }
+    } 
 
     if (!formData.publisher.trim()) {
         errors.push("Please enter Publisher.");
     } else if (formData.publisher.length > 50) {
         errors.push("Publisher is too long.");
-    } else if (nonLetterRegex.test(formData.publisher)) {
-        errors.push("Publisher should only contain letters.");
     }
 
     if (!formData.quantity || isNaN(formData.quantity)) {
@@ -113,7 +107,6 @@ const validateFormData = (
         errors.push("Custom genre is too long.");
     }
 
-    if (isRentBook) {
         if (!formData.rentalFee || isNaN(formData.rentalFee)) {
             errors.push("Please enter Rental fee");
         } else if (formData.rentalFee <= 0) {
@@ -128,13 +121,7 @@ const validateFormData = (
         else if (formData.extraFee < 0) {
             errors.push("Extra fee cannot be negative.");
         }
-    } else {
-        if (!formData.price || isNaN(formData.price)) {
-            errors.push("Please enter Price ");
-        } else if (formData.price <= 0) {
-            errors.push("Price  must be a positive number.");
-        }
-    }
+    
 
     if (!formData.images || formData.images.length === 0) {
         errors.push("Upload at least one image.");
@@ -181,9 +168,7 @@ const validateFormData = (
     } else if (formData.maxDays <= 0) {
         errors.push("Minimum Days must be a positive number.");
     }
-    // else if(formData.maxDays<formData.minDays){
-    //     errors.push("Minimum Days must be a less than Maximum Days.");
-    // }
+    
 
     if (!formData.latitude || isNaN(formData.latitude)) {
         errors.push("Error in getting location");

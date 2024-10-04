@@ -13,7 +13,6 @@ export const calculateRoadDistance = async (lat1: number, lon1: number, lat2: nu
         
         if (data.status === "OK") {
             const distance = data.rows[0].elements[0].distance.value; 
-            console.log(distance / 1000, 'distance km');
             return distance / 1000; 
         } else {
             console.error('Error in Google Maps API response:', data.error_message);

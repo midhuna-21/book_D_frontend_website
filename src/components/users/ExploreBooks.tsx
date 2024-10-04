@@ -14,14 +14,21 @@ const ExploreBooks: React.FC = () => {
   const name = userInfo?.name || "";
   const location = useLocation();
   const searchQuery = location.state?.searchQuery || ''; 
+  const genreName = location.state?.genreName || "";
 
 
   useEffect(() => {
     const fetchBooks = async () => {
       setLoading(true);
       try {
-        const endpoint = searchQuery ? `/search/${searchQuery}` : '/books';
-
+        let endpoint = '/books';
+        if(searchQuery){
+          endpoint = `/search/${searchQuery}`;
+        }
+        if(genreName){
+          endpoint = `/genre-books/${genreName}`
+        }
+       console.log(endpoint,'endpoint')
         const response = await userAxiosInstance.get(endpoint);
 
         if (Array.isArray(response.data)) {
@@ -39,32 +46,7 @@ const ExploreBooks: React.FC = () => {
     };
 
     fetchBooks();
-  }, [searchQuery, userInfo]);
-
-  // useEffect(() => {
-  //   const fetchBooks = async () => {
-  //     try {
-  //       const userId = userInfo._id
-  //       const endpoint = searchQuery ? `/search/${searchQuery}`:'/books'
-  //       console.log(endpoint,'endp')
-  //       const response = await userAxiosInstance.get(endpoint);
-  //       console.log(response?.data,'frontend')
-  //       setBooks(response.data);
-  //       if (Array.isArray(response.data)) {
-  //         setBooks(response.data);
-  //       } else {
-  //         console.warn("Expected an array but got:", response.data);
-  //         setBooks([]); 
-  //       }
-  //     } catch (error) {
-  //       console.error('Error fetching books', error);
-  //     }finally{
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchBooks();
-  // }, [userInfo,searchQuery]);
+  }, [genreName,searchQuery, userInfo]);
 
   const showShimmer = loading || books.length === 0;
 
@@ -93,43 +75,34 @@ const ExploreBooks: React.FC = () => {
         {[...Array(8)].map((_, index) => (
           <div
             key={index}
-            className="animate-pulse bg-gray-200 rounded-lg shadow-md w-72 h-80 mx-auto"
+            className="animate-pulse bg-gray-200 shadow-md w-72 h-80 mx-auto"
           ></div>
         ))}
       </div>
     ) : (
       <>
-     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-10">
-          {currentBooks.map((book) => (
-            <Link
-              to={`/home/book/${book._id}`}
-              key={book._id}
-              className="relative group">
-              <div className="relative group flex flex-col items-center bg-white rounded-lg shadow-md w-72 mx-auto">
-                <img
-                  src={book.images[0]}
-                  alt={book.bookTitle}
-                  className="w-full h-72 object-cover rounded-t-lg transition-opacity duration-300 group-hover:opacity-80"
-                />
-                <div className="p-4 text-center">
-                  <h2 className="text-lg font-bold text-gray-800 mb-2">
-                    {book.bookTitle}
-                  </h2>
-                  <h4 className="text-lg font-semibold text-gray-800 mb-2">
-                    {book.author}
-                  </h4>
-                  <h5 className="text-lg font-semibold text-gray-800 mb-2">
-                    {book.publishedYear}
-                  </h5>
-                  <button className="button-profile-photo-box h-10 w-40 justify-center items-center shadow-xl font-serif">
-                    View Details
-                  </button>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
+ <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-10">
+  {currentBooks.map((book) => (
+    <Link
+      to={`/home/book/${book._id}`}
+      key={book._id}
+      className="relative group">
+      <div className="relative group flex flex-col items-center bg-white shadow-md w-72 mx-auto h-[420px]">
 
+        <img
+          src={book.images[0]}
+          alt={book.bookTitle}
+          className="w-full h-[350px] object-fit  transition-opacity duration-300 group-hover:opacity-80"
+        />
+        <div className="p-4 text-center flex-grow">
+          <button className="button-profile-photo-box h-10 w-40 justify-center items-center shadow-xl font-serif">
+            View Details
+          </button>
+        </div>
+      </div>
+    </Link>
+  ))}
+</div>
         <div className="flex justify-center mt-8">
           <button
             onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}

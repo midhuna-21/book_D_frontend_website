@@ -24,7 +24,6 @@ type FormData = {
     customGenre: string;
     rentalFee?: number;
     extraFee?: number;
-    price?: number;
     quantity: number;
     address: {
         street: string;
@@ -52,7 +51,6 @@ const EditBookForm: React.FC = () => {
         customGenre: "",
         rentalFee: 0,
         extraFee: 0,
-        price: 0,
         quantity: 0,
         address: {
             street: "",
@@ -73,7 +71,6 @@ const EditBookForm: React.FC = () => {
     const [genres, setGenres] = useState<Genre[]>([]);
     const [book, setBook] = useState<FormData>();
 
-    const [isRentBook, setIsRentBook] = useState(true);
     const [activeOption, setActiveOption] = useState("addBooks");
     const navigate = useNavigate();
 
@@ -93,7 +90,6 @@ const EditBookForm: React.FC = () => {
             try {
                 const response = await userAxiosInstance.get(`/book/${bookId}`);
                 const fetchedBook = response?.data?.book;
-                console.log(fetchedBook, "fetched book");
                 if (fetchedBook) {
                     setBook(fetchedBook);
 
@@ -120,7 +116,6 @@ const EditBookForm: React.FC = () => {
                 customGenre: book.customGenre || "",
                 rentalFee: book.rentalFee || 0,
                 extraFee: book.extraFee || 0,
-                price: book.price || 0,
                 quantity: book.quantity || 0,
                 address: {
                     street: book.address?.street || "",
@@ -154,7 +149,6 @@ const EditBookForm: React.FC = () => {
         }
     }, [book]);
 
-    // console.log(book, "book");
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
         if (files) {
@@ -173,13 +167,22 @@ const EditBookForm: React.FC = () => {
         >
     ) => {
         const { name, value } = e.target;
+        if(name.startsWith("address")){
+            const fieldName = name.split(".")[1]
+            setFormData((prevState)=>({
+                ...prevState,
+                address:{
+                    ...prevState.address,
+                    [fieldName]:value,
+                },
+            }));
+        }else{
         let sanitizedValue = value;
         if (
             [
                 "rentalFee",
                 "quantity",
                 "extraFee",
-                "price",
                 "maxDistance",
                 "maxDays",
                 "minDays",
@@ -196,7 +199,7 @@ const EditBookForm: React.FC = () => {
             [name]: sanitizedValue,
         }));
     };
-
+    }
     const getLatLngFromAddress = async (address: string) => {
         try {
             const apiKey = "AIzaSyAw-4P7bBpkfYBigSCggZyNEMr4fkP0Z0M";
@@ -344,7 +347,7 @@ const EditBookForm: React.FC = () => {
             }));
         }
 
-        const errors = validateFormData(formData, isRentBook);
+        const errors = validateFormData(formData);
         if (errors.length === 0) {
             const formDataWithImages = new FormData();
             formDataWithImages.append("bookTitle", formData.bookTitle);
@@ -382,7 +385,6 @@ const EditBookForm: React.FC = () => {
                 formData.longitude?.toString() || ""
             );
 
-            if (isRentBook) {
                 formDataWithImages.append(
                     "rentalFee",
                     formData.rentalFee?.toString() || ""
@@ -404,19 +406,10 @@ const EditBookForm: React.FC = () => {
                     "extraFee",
                     formData.extraFee?.toString() || ""
                 );
-            } else {
-                formDataWithImages.append(
-                    "price",
-                    formData.price?.toString() || ""
-                );
-            }
+            
 
             try {
-                const response = await userAxiosInstance.put(
-                    isRentBook
-                        ? `/rent-book-update/${bookId}`
-                        : `/sell-book-update/${bookId}`,
-                    formDataWithImages,
+                const response = await userAxiosInstance.put(`/rent-book-update/${bookId}`,formDataWithImages,
                     {
                         withCredentials: true,
                         headers: {
@@ -426,12 +419,7 @@ const EditBookForm: React.FC = () => {
                 );
 
                 if (response.status === 200) {
-                    toast.success(
-                        isRentBook
-                            ? "Book updated successfully"
-                            : "Book updated successfully"
-                    );
-
+                   
                   navigate('/home/profile/my-books')
                 }
             } catch (error: any) {
@@ -457,38 +445,11 @@ const EditBookForm: React.FC = () => {
                         <div className="flex  mb-6">
                             <button
                                 type="button"
-                                className={`px-4 py-2 rounded-l-lg ${
-                                    isRentBook
-                                        ? "bg-gradient-to-r from-sky-900 to-gray-800 text-white"
-                                        : "bg-gradient-to-r from-gray-300 to-gray-500 text-gray-800"
-                                } ${
-                                    activeOption === "addBooks"
-                                        ? "border border-gray-400"
-                                        : ""
-                                }`}
-                                onClick={() => {
-                                    setIsRentBook(true);
-                                    setActiveOption("addBooks");
-                                }}>
+                                className="px-4 py-2 rounded-l-lg bg-gradient-to-r from-gray-300 to-gray-500 text-gray-800"
+                              >
                                 Rent Book
                             </button>
-                            {/* <button
-                        type="button"
-                        className={`px-4 py-2 rounded-r-lg ml-0.5 ${
-                            !isRentBook
-                                ? "bg-gradient-to-r from-sky-900 to-gray-800 text-white"
-                                : "bg-gradient-to-r from-gray-300 to-gray-500 text-gray-800"
-                        } ${
-                            activeOption === "addBooks"
-                                ? "border border-gray-400"
-                                : ""
-                        }`}
-                        onClick={() => {
-                            setIsRentBook(false);
-                            setActiveOption("addBooks");
-                        }}>
-                        Sell Book
-                    </button> */}
+                          
                         </div>
                         <div className="flex flex-col sm:flex-row sm:space-x-6">
                             <div className="flex-1">
@@ -725,7 +686,7 @@ const EditBookForm: React.FC = () => {
                                 <input
                                     type="text"
                                     id="street"
-                                    name="street"
+                                    name="address.street"
                                     // placeholder={book?.street}
                                     value={formData.address.street}
                                     onChange={handleChange}
@@ -741,7 +702,7 @@ const EditBookForm: React.FC = () => {
                                 <input
                                     type="text"
                                     id="city"
-                                    name="city"
+                                    name="address.city"
                                     // placeholder={book?.city}
                                     value={formData.address.city}
                                     onChange={handleChange}
@@ -759,7 +720,7 @@ const EditBookForm: React.FC = () => {
                                 <input
                                     type="text"
                                     id="district"
-                                    name="district"
+                                    name="address.district"
                                     // placeholder={book?.district}
                                     value={formData.address.district}
                                     onChange={handleChange}
@@ -775,7 +736,7 @@ const EditBookForm: React.FC = () => {
                                 <input
                                     type="text"
                                     id="state"
-                                    name="state"
+                                    name="address.state"
                                     // placeholder={book?.state}
                                     value={formData.address.state}
                                     onChange={handleChange}
@@ -791,7 +752,7 @@ const EditBookForm: React.FC = () => {
                                 <input
                                     type="text"
                                     id="pincode"
-                                    name="pincode"
+                                    name="address.pincode"
                                     // placeholder={book?.pincode}
                                     value={formData.address.pincode}
                                     onChange={handleChange}
@@ -809,8 +770,6 @@ const EditBookForm: React.FC = () => {
                             </button>
                         </div>
 
-                        {isRentBook ? (
-                            <>
                                 <div className="flex flex-col sm:flex-row sm:space-x-6 mt-4">
                                     <div className="flex-1">
                                         <label
@@ -895,26 +854,7 @@ const EditBookForm: React.FC = () => {
                                         />
                                     </div>
                                 </div>
-                            </>
-                        ) : (
-                            <div className="flex-1 mb-6 mt-4">
-                                <label
-                                    className="block text-gray-700 font-medium mb-2"
-                                    htmlFor="price">
-                                    Price
-                                </label>
-                                <input
-                                    type="number"
-                                    id="price"
-                                    name="price"
-                                    // placeholder={book?.price !== undefined ? book.price.toString() : "Enter price"}
-                                    value={formData.price || ""}
-                                    onChange={handleChange}
-                                    className="w-3/6 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
-                                    required
-                                />
-                            </div>
-                        )}
+                           
 
                         <div className="flex justify-end mt-12">
                             <button

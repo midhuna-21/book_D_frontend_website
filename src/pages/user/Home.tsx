@@ -14,6 +14,7 @@ import LenderDetails from '../../components/users/LenderDetails'
 import Successfull from '../../components/users/Successfull';
 import OrdersList from '../../components/users/OrdersList';
 import EditBookForm from '../../components/users/EditBookForm'; 
+import AddBookForm from '../../components/users/AddBookForm'
 
 const Home: React.FC = () => {
     return (
@@ -36,7 +37,7 @@ const NestedRoutes: React.FC = () => {
     return (
         <>
             <Routes>
-                <Route path="/add-book" element={<Options />} />
+                <Route path="/add-book" element={<AddBookForm />} />
                 <Route path='/explore' element={<PrivateRoute><ExploreBooks /></PrivateRoute>} />
                 <Route path="/profile/*" element={<PrivateRoute><UserProfile /></PrivateRoute>} />
                 <Route path="/notifications" element={<PrivateRoute><Notifications /></PrivateRoute>} />

@@ -23,7 +23,6 @@ type FormData = {
     customGenre: string;
     rentalFee?: number;
     extraFee?: number;
-    price?: number;
     quantity: number;
    address:{
     street: string;
@@ -51,7 +50,6 @@ const RentBookForm: React.FC = () => {
         customGenre: "",
         rentalFee: 0,
         extraFee: 0,
-        price: 0,
         quantity: 0,
        address:{
         street: "",
@@ -74,9 +72,7 @@ const RentBookForm: React.FC = () => {
     const clearInput = () => {
         setFormData(initialFormData);
     };
-
-    const [isRentBook, setIsRentBook] = useState(true);
-    const [activeOption, setActiveOption] = useState("addBooks");
+    // const [activeOption, setActiveOption] = useState("addBooks");
 
     const handleRemoveImage = (index: number) => {
         if (formData.images && formData.images.length > 0) {
@@ -101,36 +97,46 @@ const RentBookForm: React.FC = () => {
         }
     };
 
+    
     const handleChange = (
         e: React.ChangeEvent<
             HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
         >
     ) => {
         const { name, value } = e.target;
-        let sanitizedValue = value;
-        if (
-            [
-                "rentalFee",
-                "quantity",
-                "extraFee",
-                "price",
-                "maxDistance",
-                "maxDays",
-                "minDays",
-            ].includes(name)
-        ) {
-            console.log(name, "nam");
-            let numericValue = parseFloat(value);
-            if (numericValue < 0 || isNaN(numericValue)) {
-                console.log(name, "d");
-                numericValue = 0;
+        if(name.startsWith("address")){
+            const fieldName = name.split(".")[1]
+            setFormData((prevState)=>({
+                ...prevState,
+                address:{
+                    ...prevState.address,
+                    [fieldName]:value,
+                },
+            }));
+        }else{
+
+            let sanitizedValue = value;
+            if (
+                [
+                    "rentalFee",
+                    "quantity",
+                    "extraFee",
+                    "maxDistance",
+                    "maxDays",
+                    "minDays",
+                ].includes(name)
+            ) {
+                let numericValue = parseFloat(value);
+                if (numericValue < 0 || isNaN(numericValue)) {
+                    numericValue = 0;
+                }
+                sanitizedValue = numericValue.toString();
             }
-            sanitizedValue = numericValue.toString();
+            setFormData((prevState) => ({
+                ...prevState,
+                [name]: sanitizedValue,
+            }));
         }
-        setFormData((prevState) => ({
-            ...prevState,
-            [name]: sanitizedValue,
-        }));
     };
 
     const getLatLngFromAddress = async (address: string) => {
@@ -160,8 +166,6 @@ const RentBookForm: React.FC = () => {
             return null;
         }
     };
-
- 
 
     useEffect(() => {
         const fetchBook = async () => {
@@ -285,7 +289,7 @@ const RentBookForm: React.FC = () => {
             }));
         }
 
-        const errors = validateFormData(formData, isRentBook);
+        const errors = validateFormData(formData);
         if (errors.length === 0) {
             const formDataWithImages = new FormData();
             formDataWithImages.append("bookTitle", formData.bookTitle);
@@ -317,7 +321,6 @@ const RentBookForm: React.FC = () => {
                 formData.longitude?.toString() || ""
             );
 
-            if (isRentBook) {
                 formDataWithImages.append(
                     "rentalFee",
                     formData.rentalFee?.toString() || ""
@@ -339,16 +342,11 @@ const RentBookForm: React.FC = () => {
                     "extraFee",
                     formData.extraFee?.toString() || ""
                 );
-            } else {
-                formDataWithImages.append(
-                    "price",
-                    formData.price?.toString() || ""
-                );
-            }
+            
 
             try {
                 const response = await userAxiosInstance.post(
-                    isRentBook ? "/rent-book" : "/sell-book",
+                   "/rent-book",
                     formDataWithImages,
                     {
                         withCredentials: true,
@@ -359,11 +357,7 @@ const RentBookForm: React.FC = () => {
                 );
 
                 if (response.status === 200) {
-                    toast.success(
-                        isRentBook
-                            ? "Book rented successfully"
-                            : "Book sold successfully"
-                    );
+                  
 
                     clearInput();
                 }
@@ -380,45 +374,26 @@ const RentBookForm: React.FC = () => {
         }
     };
     return (
-        <div className="flex min-h-screen bg-cover ">
+        <div className="flex flex-col items-center justify-center py-12">
+        <div className="mb-12 text-center">
+            <h1 className="text-23xl font-bold text-gray-800 sm:text-2xl">
+            Rent Out Your Books
+            </h1>
+            <p className="text-sm text-gray-600 mt-2 sm:text-base">
+            Share your favorite reads and let others enjoy them while earning along the way.
+            </p>
+        </div>
             <form className="space-y-6">
                 <div className="flex flex-col md:flex-row gap-3 px-12">
                     <div className="bg-white opacity-95 shadow-lg rounded-lg px-8 py-6">
                         <div className="flex  mb-6">
                             <button
                                 type="button"
-                                className={`px-4 py-2 rounded-l-lg ${
-                                    isRentBook
-                                        ? "bg-gradient-to-r from-sky-900 to-gray-800 text-white"
-                                        : "bg-gradient-to-r from-gray-300 to-gray-500 text-gray-800"
-                                } ${
-                                    activeOption === "addBooks"
-                                        ? "border border-gray-400"
-                                        : ""
-                                }`}
-                                onClick={() => {
-                                    setIsRentBook(true);
-                                    setActiveOption("addBooks");
-                                }}>
+                                className="px-4 py-2 rounded-l-lg bg-gradient-to-r from-sky-900 to-gray-800 text-white"
+                                >
                                 Rent Book
                             </button>
-                            {/* <button
-                        type="button"
-                        className={`px-4 py-2 rounded-r-lg ml-0.5 ${
-                            !isRentBook
-                                ? "bg-gradient-to-r from-sky-900 to-gray-800 text-white"
-                                : "bg-gradient-to-r from-gray-300 to-gray-500 text-gray-800"
-                        } ${
-                            activeOption === "addBooks"
-                                ? "border border-gray-400"
-                                : ""
-                        }`}
-                        onClick={() => {
-                            setIsRentBook(false);
-                            setActiveOption("addBooks");
-                        }}>
-                        Sell Book
-                    </button> */}
+                           
                         </div>
                         <div className="flex flex-col sm:flex-row sm:space-x-6">
                             <div className="flex-1">
@@ -635,7 +610,7 @@ const RentBookForm: React.FC = () => {
                                 <input
                                     type="text"
                                     id="street"
-                                    name="street"
+                                    name="address.street"
                                     value={formData.address.street}
                                     onChange={handleChange}
                                     className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
@@ -650,7 +625,7 @@ const RentBookForm: React.FC = () => {
                                 <input
                                     type="text"
                                     id="city"
-                                    name="city"
+                                    name="address.city"
                                     value={formData.address.city}
                                     onChange={handleChange}
                                     className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
@@ -667,7 +642,7 @@ const RentBookForm: React.FC = () => {
                                 <input
                                     type="text"
                                     id="district"
-                                    name="district"
+                                    name="address.district"
                                     value={formData.address.district}
                                     onChange={handleChange}
                                     className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
@@ -682,7 +657,7 @@ const RentBookForm: React.FC = () => {
                                 <input
                                     type="text"
                                     id="state"
-                                    name="state"
+                                    name="address.state"
                                     value={formData.address.state}
                                     onChange={handleChange}
                                     className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
@@ -697,7 +672,7 @@ const RentBookForm: React.FC = () => {
                                 <input
                                     type="text"
                                     id="pincode"
-                                    name="pincode"
+                                    name="address.pincode"
                                     value={formData.address.pincode}
                                     onChange={handleChange}
                                     className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
@@ -713,9 +688,7 @@ const RentBookForm: React.FC = () => {
                                 Get your current Location
                             </button>
                         </div>
-
-                        {isRentBook ? (
-                            <>
+                            
                                 <div className="flex flex-col sm:flex-row sm:space-x-6 mt-4">
                                     <div className="flex-1">
                                         <label
@@ -799,26 +772,7 @@ const RentBookForm: React.FC = () => {
                                         />
                                     </div>
                                 </div>
-                            </>
-                        ) : (
-                            <div className="flex-1 mb-6 mt-4">
-                                <label
-                                    className="block text-gray-700 font-medium mb-2"
-                                    htmlFor="price">
-                                    Price
-                                </label>
-                                <input
-                                    type="number"
-                                    id="price"
-                                    name="price"
-                                    placeholder="e.g., 500 rs"
-                                    value={formData.price || ""}
-                                    onChange={handleChange}
-                                    className="w-3/6 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
-                                    required
-                                />
-                            </div>
-                        )}
+                            
 
                         <div className="flex justify-end mt-12">
                             <button

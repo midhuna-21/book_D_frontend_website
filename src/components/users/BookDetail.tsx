@@ -5,6 +5,7 @@ import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { toast } from "sonner";
+import { FaBookOpen } from "react-icons/fa";
 import {
     faUser,
     faBuilding,
@@ -12,6 +13,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useSelector } from "react-redux";
 import { io, Socket } from "socket.io-client";
+import config from "../../config/config";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const BookDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -20,23 +23,31 @@ const BookDetail: React.FC = () => {
     const [book, setBook] = useState<any>(null);
     const bookId = book?._id!;
     const rentalFee = book?.rentalFee!;
-    const extraFee = book?.extraFee!
+    const extraFee = book?.extraFee!;
     const [totalDays, setTotalDays] = useState<any>(null);
     const [lender, setLender] = useState<any>(null);
     const [requested, setRequested] = useState(false);
     const [socket, setSocket] = useState<Socket | null>(null);
     const [quantity, setQuantity] = useState<number>(1);
- 
-    const [totalDepositAmount,setTotalDepositAmount] = useState<any>(
+    const location = useLocation();
+    const myBook = location?.state?.from;
+    console.log(location?.state, "l ");
+    const [isExpanded, setIsExpanded] = useState(false);
+
+    const toggleReadMore = () => {
+        setIsExpanded(!isExpanded);
+    };
+
+    const [totalDepositAmount, setTotalDepositAmount] = useState<any>(
         extraFee * quantity
-    )
+    );
     const [totalRentalPrice, setTotalRentalPrice] = useState<any>(
         rentalFee * totalDays * quantity
     );
 
-    const [totalAmount,setTotalAmount] =useState<any>(
+    const [totalAmount, setTotalAmount] = useState<any>(
         totalDepositAmount + totalRentalPrice
-    )
+    );
 
     useEffect(() => {
         setTotalAmount(totalDepositAmount + totalRentalPrice);
@@ -122,11 +133,8 @@ const BookDetail: React.FC = () => {
         return new Promise<{ latitude: number; longitude: number }>(
             (resolve, reject) => {
                 if (navigator.geolocation) {
-                    // console.log(navigator.geolocation,'navigatorgolocation')
                     navigator.geolocation.getCurrentPosition(
                         (position) => {
-                            // console.log(position,'golocation')
-
                             const { latitude, longitude } = position.coords;
                             resolve({ latitude, longitude });
                         },
@@ -148,7 +156,8 @@ const BookDetail: React.FC = () => {
     };
 
     useEffect(() => {
-        const newSocket = io("https://www.bookd.store");
+        const newSocket = io(config.API_URL);
+        console.log(config.API_URL,'api url')
         setSocket(newSocket);
 
         return () => {
@@ -224,6 +233,7 @@ const BookDetail: React.FC = () => {
                         if (notificationResponse.status === 200) {
                             setRequested(true);
                             if (socket) {
+                                console.log(socket,'socket653')
                                 socket.emit("send-notification", {
                                     receiverId: lender._id,
                                     notification:
@@ -255,235 +265,265 @@ const BookDetail: React.FC = () => {
         }
     };
 
+    const navigate = useNavigate();
+    const handleEditClick = async (bookId: string) => {
+        navigate(`/home/edit-book/${bookId}`);
+    };
     if (!book) return <div>Loading...</div>;
 
     return (
         <div className="flex flex-col items-center justify-center py-12">
             <div className="mb-12 text-center">
                 <h1 className="text-23xl font-bold text-gray-800 sm:text-2xl">
-                    Request and Get Your Book
+                    {myBook ? "Yours Books Store" : "Request and Get Your Book"}
                 </h1>
                 <p className="text-sm text-gray-600 mt-2 sm:text-base">
-                    Start your reading journey with us and dive into the world
-                    of books. Discover new stories, expand your knowledge, and
-                    fall in love with reading.
+                    {myBook
+                        ? "Manage your books "
+                        : " Start your reading journey with us and dive into the world of books."}
                 </p>
             </div>
-            <div className="w-full px-4 sm:px-6 md:px-8">
-                <div className="bg-white shadow-md p-4 flex flex-col md:flex-row justify-center  space-y-4 md:space-y-0 md:space-x-16">
-                    <div className="w-full md:w-1/3 relative">
-                        <div className="mb-4">
-                            <div className="flex items-center mb-2">
-                                <img
-                                    src={lender.image}
-                                    alt={lender.name}
-                                    className="w-12 h-12 object-cover rounded-full border-2 shadow-md"
-                                />
-                                <div className="ml-2">
-                                    <p className="text-xs text-gray-600">
-                                        Lended by
-                                    </p>
-                                    <span className="text-sm text-gray-800 font-semibold ">
-                                        {lender.name}
-                                    </span>
-                                </div>
+            {/* <div className="w-full px-4 sm:px-6 md:px-8"> */}
+            <div className="bg-white shadow-md p-4 flex flex-col md:flex-row justify-center  space-y-4 md:space-y-0 md:space-x-16">
+                <div className="w-full md:w-1/3 relative">
+                    <div className="mb-4">
+                        <div className="flex items-center mb-2">
+                            <img
+                                src={lender.image}
+                                alt={lender.name}
+                                className="w-12 h-12 object-cover rounded-full border-2 shadow-md"
+                            />
+                            <div className="ml-2">
+                                <p className="text-xs text-gray-600">
+                                    Lended by
+                                </p>
+                                <span className="text-sm text-gray-800 font-semibold ">
+                                    {lender.name}
+                                </span>
                             </div>
                         </div>
-                        <Carousel showThumbs={false} className="w-">
+                    </div>
+                    <div className="flex flex-col justify-center items-center">
+                        <Carousel showThumbs={false} className="w-80">
                             {book.images.map((image: string, index: number) => (
-                                <div key={index} className="w-full   relative">
+                                <div
+                                    key={index}
+                                    className="w-80 h-96 flex justify-center items-center">
                                     <img
                                         src={image}
                                         alt={`Book ${index}`}
-                                        className="w-full h-64 md:h-96 object-cover rounded-lg shadow-md"
+                                        className="w-72 h-96 object-fit shadow-md"
                                     />
                                 </div>
                             ))}
                         </Carousel>
-                    </div>
-                    <div className="w-full md:w-2/3 max-w-md mx-auto p-6 bg-white rounded-lg">
-                        <h1 className="text-2xl md:text-3xl font-serif text-gray-800 mb-4">
-                            {book.bookTitle}
-                        </h1>
-                        <p className="text-lg mb-2">
-                            <FontAwesomeIcon
-                                icon={faUser}
-                                className="mr-2 text-gray-600"
-                            />
-                            <span className="font-semibold text-gray-700">
-                                Author :
-                            </span>{" "}
-                            <span className="data font-mono">
-                                {" "}
-                                {book.author}
-                            </span>
-                        </p>
-                        <p className="text-lg mb-2">
-                            <FontAwesomeIcon
-                                icon={faBuilding}
-                                className="mr-2 text-gray-600"
-                            />
-                            <span className="font-semibold text-gray-700">
-                                Publisher :
-                            </span>{" "}
-                            <span className="data font-mono">
-                                {" "}
-                                {book.publisher}
-                            </span>
-                        </p>
-                        <p className="text-lg mb-2">
-                            {/* <FontAwesomeIcon icon={faBuilding} className="mr-2 text-gray-600" /> */}
-                            <span className="font-semibold text-gray-700">
-                                Published Year :
-                            </span>{" "}
-                            <span className="data font-mono">
-                                {" "}
-                                {book.publishedYear}
-                            </span>
-                        </p>
-                        <p className="text-lg mb-2">
-                            <FontAwesomeIcon
-                                icon={faMapMarkerAlt}
-                                className="text-gray-600"
-                            />
-                            <span className="font-semibold text-gray-700">
-                                Location :
-                            </span>
-                            <span className="data font-mono">
-                                {book?.address?.street}, {book?.address?.city},{" "}
-                                {book?.address?.district},{" "}
-                                {book?.address?.state}
-                            </span>
-                        </p>
-                        {book.maxDistance !== null && (
-                            <p className="text-lg mb-2">
-                                {/* <FontAwesomeIcon icon={faMapMarkerAlt} className="text-gray-600" /> */}
-                                <span className="font-semibold text-gray-700">
-                                    Maximum Distance available:{" "}
-                                </span>
-                                <span className="data font-mono">
-                                    {book?.maxDistance} km
-                                </span>
-                            </p>
+                        {myBook ? (
+                            <button
+                                onClick={() => handleEditClick(book._id)}
+                                className="bg-gray-400 mt-8 bg-gradient-to-r from-teal-900 via-zinc-700 to-gray-600 font-mono text-white px-6 py-3 rounded-lg shadow-md transition duration-300">
+                                Edit
+                            </button>
+                        ) : (
+                            <button
+                                onClick={handleRequest}
+                                className={`mt-8 w-full md:w-1/2 items-center ${
+                                    requested
+                                        ? "bg-gray-400 cursor-not-allowed"
+                                        : "bg-gradient-to-r from-teal-900 via-zinc-700 to-gray-600"
+                                } font-mono text-white px-6 py-3 rounded-lg shadow-md transition duration-300 ${
+                                    requested
+                                        ? ""
+                                        : "hover:from-teal-900 hover:via-zinc-500 hover:to-gray-300"
+                                }`}
+                                disabled={requested}>
+                                {requested ? "Requested" : "Request"}
+                            </button>
                         )}
+                    </div>
+                </div>
+                <div className="w-full md:w-2/3 max-w-md mx-auto p-6 bg-white rounded-lg">
+                    <h1 className="text-2xl md:text-3xl font-serif text-gray-800 mb-4">
+                        {book.bookTitle}
+                    </h1>
+                    <p className="text-lg mb-2 flex items-center">
+                        <FaBookOpen className="mr-2 text-gray-600" />
+                        <span className="font-semibold text-gray-700">
+                            Genre :
+                        </span>{" "}
+                        <span className="data font-mono">{book.genre}</span>
+                    </p>
+
+                    <p className="text-lg mb-2">
+                        <FontAwesomeIcon
+                            icon={faUser}
+                            className="mr-2 text-gray-600"
+                        />
+                        <span className="font-semibold text-gray-700">
+                            Author :
+                        </span>{" "}
+                        <span className="data font-mono"> {book.author}</span>
+                    </p>
+                    <p className="text-lg mb-2">
+                        <FontAwesomeIcon
+                            icon={faBuilding}
+                            className="mr-2 text-gray-600"
+                        />
+                        <span className="font-semibold text-gray-700">
+                            Publisher :
+                        </span>{" "}
+                        <span className="data font-mono">
+                            {" "}
+                            {book.publisher}
+                        </span>
+                    </p>
+                    <p className="text-lg mb-2">
+                        {/* <FontAwesomeIcon icon={faBuilding} className="mr-2 text-gray-600" /> */}
+                        <span className="font-semibold text-gray-700">
+                            Published Year :
+                        </span>{" "}
+                        <span className="data font-mono">
+                            {" "}
+                            {book.publishedYear}
+                        </span>
+                    </p>
+                    <p className="text-lg mb-2">
+                        <FontAwesomeIcon
+                            icon={faMapMarkerAlt}
+                            className="text-gray-600"
+                        />
+                        <span className="font-semibold text-gray-700">
+                            Location :
+                        </span>
+                        <span className="data font-mono">
+                            {book?.address?.street}, {book?.address?.city},{" "}
+                            {book?.address?.district}, {book?.address?.state}
+                        </span>
+                    </p>
+                    {book.maxDistance !== null && (
                         <p className="text-lg mb-2">
+                            {/* <FontAwesomeIcon icon={faMapMarkerAlt} className="text-gray-600" /> */}
                             <span className="font-semibold text-gray-700">
-                                Rental Fee / day :
+                                Maximum Distance available:{" "}
                             </span>
                             <span className="data font-mono">
-                                {" "}
-                                {book.rentalFee} ₹
+                                {book?.maxDistance} km
                             </span>
                         </p>
-                        <p className="text-lg mb-2">
-                            <span className="font-semibold text-gray-700">
-                                Refundable Deposit :
-                            </span>
-                            <span className="data font-mono">
-                                {" "}
-                                {totalDepositAmount} ₹
-                            </span>
-                        </p>
-                        <p className="text-sm text-gray-600 mb-4">
-                            This deposit is taken as a security deposit for any
-                            potential damages or issues with the book. It is
-                            fully refundable upon the safe return of the book
-                            without any damages.
-                        </p>
+                    )}
+                    <p className="text-lg mb-2">
+                        <span className="font-semibold text-gray-700">
+                            Rental Fee / day :
+                        </span>
+                        <span className="data font-mono">
+                            {" "}
+                            {book.rentalFee} ₹
+                        </span>
+                    </p>
+                    <p className="text-lg mb-2">
+                        <span className="font-semibold text-gray-700">
+                            Refundable Deposit :
+                        </span>
+                        <span className="data font-mono">
+                            {" "}
+                            {totalDepositAmount} ₹
+                        </span>
+                    </p>
+                    <p className="text-sm text-gray-600 mb-4">
+                        This deposit is taken as a security deposit for any
+                        potential damages or issues with the book. It is fully
+                        refundable upon the safe return of the book without any
+                        damages.
+                    </p>
 
-                        <p className="text-lg mb-2">
-                            <span className="font-semibold text-gray-700">
-                                Total Rental Price:
-                            </span>
-                            <span className="data font-mono">
-                                {" "}
-                                {totalRentalPrice} ₹
-                            </span>
-                        </p>
+                    <p className="text-lg mb-2">
+                        <span className="font-semibold text-gray-700">
+                            Total Rental Price:
+                        </span>
+                        <span className="data font-mono">
+                            {" "}
+                            {totalRentalPrice} ₹
+                        </span>
+                    </p>
 
-                        <div className="mb-4">
-                            <div className="flex flex-col md:flex-row mb-4">
-                                <label className="font-semibold text-gray-700 mr-4 whitespace-normal text-sm sm:text-base">
-                                    Choose Rental Period (within {book?.minDays}{" "}
-                                    - {book?.maxDays} days):
-                                </label>
-
-                                <div className="flex items-center space-x-2">
-                                    <button
-                                        onClick={decrementTotalDays}
-                                        className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:bg-gray-100"
-                                        disabled={
-                                            requested ||
-                                            totalDays <= (book?.minDays || 1)
-                                        }>
-                                        -
-                                    </button>
-                                    <span className="border border-gray-300 rounded px-3 py-1 bg-white text-center">
-                                        {totalDays}
-                                    </span>
-                                    <button
-                                        onClick={incrementTotalDays}
-                                        className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:bg-gray-100"
-                                        disabled={
-                                            requested ||
-                                            totalDays >= (book?.maxDays || 1)
-                                        }>
-                                        +
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="flex flex-col md:flex-row">
-                            <label className="font-semibold text-gray-700 mr-2">
-                                Quantity :
+                    <div className="mb-4">
+                        <div className="flex flex-col md:flex-row mb-4">
+                            <label className="font-semibold text-gray-700 mr-4 whitespace-normal text-sm sm:text-base">
+                                Choose Rental Period (within {book?.minDays} -{" "}
+                                {book?.maxDays} days):
                             </label>
+
                             <div className="flex items-center space-x-2">
                                 <button
-                                    onClick={decrementQuantity}
-                                    className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:bg-gray-100"
-                                    disabled={requested || quantity <= 1}>
-                                    -
-                                </button>
-                                <span className="border border-gray-300 rounded px-3 py-1 bg-white text-center">
-                                    {quantity}
-                                </span>
-                                <button
-                                    onClick={incrementQuantity}
+                                    onClick={decrementTotalDays}
                                     className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:bg-gray-100"
                                     disabled={
                                         requested ||
-                                        quantity >= (book?.quantity || 1)
+                                        totalDays <= (book?.minDays || 1)
+                                    }>
+                                    -
+                                </button>
+                                <span className="border border-gray-300 rounded px-3 py-1 bg-white text-center">
+                                    {totalDays}
+                                </span>
+                                <button
+                                    onClick={incrementTotalDays}
+                                    className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:bg-gray-100"
+                                    disabled={
+                                        requested ||
+                                        totalDays >= (book?.maxDays || 1)
                                     }>
                                     +
                                 </button>
                             </div>
                         </div>
-
-                        <p className="text-lg mb-4 flex flex-col">
-                            <span className="font-mono text-gray-500 underline decoration-zinc-400 mb-1">
-                                About
-                            </span>
-                            <span className="data font-mono">
-                                {book.description}
-                            </span>
-                        </p>
-                        <button
-                            onClick={handleRequest}
-                            className={`mt-8 w-full md:w-1/2 items-center  ${
-                                requested
-                                    ? "bg-gray-400 cursor-not-allowed"
-                                    : "bg-gradient-to-r from-teal-900 via-zinc-700 to-gray-600"
-                            } font-mono text-white px-6 py-3 rounded-lg shadow-md transition duration-300 ${
-                                requested
-                                    ? ""
-                                    : "hover:from-teal-900 hover:via-zinc-500 hover:to-gray-300"
-                            }`}
-                            disabled={requested}>
-                            {requested ? "Requested" : "Request"}
-                        </button>
                     </div>
+
+                    <div className="flex flex-col md:flex-row">
+                        <label className="font-semibold text-gray-700 mr-2">
+                            Quantity :
+                        </label>
+                        <div className="flex items-center space-x-2">
+                            <button
+                                onClick={decrementQuantity}
+                                className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:bg-gray-100"
+                                disabled={requested || quantity <= 1}>
+                                -
+                            </button>
+                            <span className="border border-gray-300 rounded px-3 py-1 bg-white text-center">
+                                {quantity}
+                            </span>
+                            <button
+                                onClick={incrementQuantity}
+                                className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:bg-gray-100"
+                                disabled={
+                                    requested ||
+                                    quantity >= (book?.quantity || 1)
+                                }>
+                                +
+                            </button>
+                        </div>
+                    </div>
+
+                    <p className="text-lg mb-4">
+                        <span className="font-mono text-gray-500 underline decoration-zinc-400 mb-1">
+                            About
+                        </span>
+                        <span
+                            className={`data font-mono ${
+                                isExpanded ? "" : "line-clamp-2"
+                            } transition-all duration-300 ease-in-out`}>
+                            {book.description}
+                        </span>
+                        {book.description.length > 100 && (
+                            <button
+                                onClick={toggleReadMore}
+                                className="text-blue-600 cursor-pointer hover:underline px-2">
+                                {isExpanded ? "Read Less" : "Read More"}
+                            </button>
+                        )}
+                    </p>
                 </div>
+                {/* </div> */}
             </div>
         </div>
     );

@@ -165,128 +165,14 @@ const Profile: React.FC = () => {
         toast.error(validationResult);
       }
     };
-    
-    
-    // const handleSubmit = async (e: React.FormEvent) => {
-    //     e.preventDefault();
-    //     const { address } = formData;
-      
-    //     if (address) {
-    //       const formattedAddress = `${address.street}, ${address.city}, ${address.district}, ${address.state}, ${address.pincode}`;
-          
-    //       if (address.street && address.city && address.district && address.state && address.pincode) {
-    //         const latLng = await getLatLngFromAddress(formattedAddress);
-    //         if (latLng) {
-    //           const { pincode, state, district, city } = latLng;
-    
-    //           if (pincode !== address.pincode) {
-    //             toast.error('Invalid pincode. Please check the entered pincode.');
-    //             return;
-    //           }
-      
-    //           if (state.toLowerCase() !== address.state.toLowerCase()) {
-    //             toast.error('Invalid state. Please check the entered state.');
-    //             return;
-    //           }
-      
-    //           if (district.toLowerCase() !== address.district.toLowerCase()) {
-    //             toast.error('Invalid district. Please check the entered district.');
-    //             return;
-    //           }
-      
-    //           if (city.toLowerCase() !== address.city.toLowerCase()) {
-    //             toast.error('Invalid city. Please check the entered city.');
-    //             return;
-    //           }
-      
-    //           setFormData((prevFormData) => ({
-    //             ...prevFormData,
-    //             address: {
-    //               ...prevFormData.address,
-    //               pincode,
-    //               state,
-    //               district,
-    //               city
-    //             }
-    //           }));
-    //         } else {
-    //           toast.error('Invalid address. Please check details.');
-    //           return;
-    //         }
-    //       }
-    //     }
-      
-    //     const isAddressEntered = address?.street || address?.city || address?.district || address?.state || address?.pincode;
-    //     const isFullAddressProvided = address?.street && address?.city && address?.district && address?.state && address?.pincode;
-      
-    //     if (isAddressEntered && !isFullAddressProvided) {
-    //       toast.error("Please fill your address details.");
-    //       return;
-    //     }
-      
-    //     const isGoogle = user?.isGoogle ?? false;
-    //     const validationResult = validate(
-    //       formData.name || "",
-    //       formData.email || "",
-    //       formData.phone || "",
-    //       address?.street || "",
-    //       address?.city || "",
-    //       address?.district || "",
-    //       address?.state || "",
-    //       address?.pincode || "",
-    //       isGoogle
-    //     );
-      
-    //     if (validationResult === true) {
-    //       try {
-    //         const filteredFormData: User = {
-    //           ...formData,
-    //           address: {
-    //             ...address,
-    //             street: address?.street?.trim() || "",
-    //             city: address?.city?.trim() || "",
-    //             district: address?.district?.trim() || "",
-    //             state: address?.state?.trim() || "",
-    //             pincode: address?.pincode?.trim() || "",
-    //             latitude: address?.latitude,
-    //             longitude: address?.longitude,
-    //           }
-    //         };
-      
-    //         const response = await userAxiosInstance.put(
-    //           "/update-profile",
-    //           { formData: filteredFormData },
-    //           { withCredentials: true }
-    //         );
-      
-    //         if (response.status === 200) {
-    //           setIsFormChanged(false);
-    //           dispatch(addUser(response.data));
-    //           navigate("/home/profile");
-    //           setFormData(filteredFormData);
-    //           toast.success("Profile updated successfully");
-    //         }
-    //       } catch (error: any) {
-    //         if (error.response && error.response.status === 404) {
-    //           toast.error(error.response.data.message);
-    //         } else {
-    //           toast.error("An error occurred, please try again later");
-    //         }
-    //       }
-    //     } else {
-    //       toast.error(validationResult);
-    //     }
-    //   };
-      
-  
-     
+       
     return (
-      <div className="container mt-7 px-4 md:px-8">
+      <div className="container px-4 md:px-8 flex flex-col md:flex-row gap-5">
          {user.isGoogle  && (
              <GmailUpdate />
          )}
             <div
-    className={`bg-white rounded-lg shadow-xl p-7 ${user.isGoogle ? 'w-full' : 'w-full md:w-2/3 mx-auto'} h-full md:mt-12 mt-12`}
+    className={`bg-white rounded-lg shadow-xl p-7 ${user.isGoogle ? 'w-full' : 'w-full md:w-2/3 mx-auto'} h-full `}
   >
        <h2 className="text-lg font-bold mb-5 text-gray-700">Profile</h2>
        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">

@@ -259,13 +259,23 @@ const Chat: React.FC = () => {
     };
 
     return (
-        <div className="mt-12 mx-auto w-full max-w-6xl flex flex-col md:flex-row space-y-8 md:space-y-0 md:space-x-8">
-            {/* Chat list section */}
-            <div className="w-full md:w-1/2 h-[500px]">
-                <h2 className="text-center text-lg font-bold text-gray-600">
-                    Your Conversations
-                </h2>
-                <div className="mt-6 border border-gray-200 rounded-lg shadow-md p-4 h-full">
+        <div className="mt-12 mx-auto w-full max-w-6xl flex flex-col md:flex-col space-y-8 md:space-y-0 md:space-x-8">
+     
+        <div className="text-center mb-12">
+        <h1 className="text-23xl font-bold text-gray-800 sm:text-2xl">
+
+            Chat with Your Readers
+          </h1>
+          <p className="text-base text-gray-600 mt-2">
+            Engage with lenders directly to discuss book rentals and more.
+          </p>
+        </div>
+         <div className="flex flex-row gap-6">
+         <div className="w-full md:w-1/2 h-[500px]">
+                    <p className="px-2 text-lg font-bold text-zinc-800">
+                        Messages
+                    </p>
+                <div className="mt- border border-gray-200 rounded-lg shadow-md p-4 h-full">
                     <div className="flex flex-col space-y-4 h-full overflow-y-auto">
                         {chatRooms.length > 0 ? (
                             chatRooms.map((chatRoom) => (
@@ -314,12 +324,10 @@ const Chat: React.FC = () => {
                     </div>
                 </div>
             </div>
-
-            {/* One specific Chat section */}
             <div className="w-full md:w-1/2 h-[500px] mt-4 md:mt-0">
-                <h2 className="text-center text-lg md:py-0 py-12 font-bold text-gray-600">
+                {/* <h2 className="text-center text-lg md:py-0 py-12 font-bold text-gray-600">
                     You can chat and enquire about your books
-                </h2>
+                </h2> */}
                 <div className="md:mt-6 border border-gray-200 rounded-lg shadow-md p-4 h-full flex flex-col">
                     {selectedUserDetails ? (
                         <div className="flex flex-col h-full">
@@ -379,7 +387,7 @@ const Chat: React.FC = () => {
                             <div className="pt-4 flex items-center space-x-4 border-t border-gray-200 w-full">
                                 <input
                                     type="text"
-                                    className="flex-grow p-2 border border-gray-300 rounded-lg"
+                                  className="flex-grow p-2 border border-gray-300 rounded-lg"
                                     placeholder="Type a message..."
                                     value={messageText}
                                     onChange={(e) =>
@@ -414,6 +422,7 @@ const Chat: React.FC = () => {
                     )}
                 </div>
             </div>
+         </div>
         </div>
 
        

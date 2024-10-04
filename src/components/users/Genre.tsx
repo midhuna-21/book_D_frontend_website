@@ -4,6 +4,7 @@ import "react-multi-carousel/lib/styles.css";
 import { Box, Image, Text, Flex, Icon } from "@chakra-ui/react";
 import {userAxiosInstance} from '../../utils/api/axiosInstance'
 import { FaBookReader } from "react-icons/fa";
+import {useNavigate} from 'react-router-dom'
 
 interface Genres {
   _id: string;
@@ -32,11 +33,12 @@ const responsive = {
 
 const Genre: React.FC = () => {
   const [genres, setGenres] = useState<Genres[]>([]);
+  const navigate = useNavigate()
 
   useEffect(() => {
     const fetchGenres = async () => {
       try {
-        const response = await userAxiosInstance.get("/genres");
+        const response = await userAxiosInstance.get("/genre");
         setGenres(response.data);
       } catch (error) {
         console.error("Error fetching genres:", error);
@@ -45,6 +47,10 @@ const Genre: React.FC = () => {
 
     fetchGenres();
   }, []);
+
+  const handleGenreClick = (genreName:string)=>{
+    navigate('/home/explore',{state:{genreName}})
+  }
 
   if (genres.length === 0) {
     return null;
@@ -77,7 +83,7 @@ const Genre: React.FC = () => {
       <Box className="container mt-12">
         <Carousel responsive={responsive} infinite autoPlay autoPlaySpeed={3000}>
           {genres.map((genre) => (
-            <Box key={genre._id} display="flex" justifyContent="center" mx="2">
+            <Box key={genre._id} display="flex" justifyContent="center" mx="2"  onClick={() => handleGenreClick(genre.genreName)} cursor="pointer">
               <Image
                 src={genre.image}
                 alt={`Genre ${genre._id}`}

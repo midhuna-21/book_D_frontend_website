@@ -12,7 +12,7 @@ const UserProfile:React.FC=()=>{
    return (
       <>
          <ProfileHeader />
-             <div className="flex flex-col md:flex-row gap-8 p-4">
+             <div className="flex flex-col md:flex-row">
                 <ProfileSideBar/>
                 <div className="flex-1">
                  
@@ -30,7 +30,7 @@ const NestedRoutes: React.FC = () => {
     return (
         <>
             <Routes>
-                <Route path="/my-books" element={<PrivateRoute><MyBooks /></PrivateRoute>} />
+                {/* <Route path="/my-books" element={<PrivateRoute><MyBooks /></PrivateRoute>} /> */}
                 {/* <Route path="/edit-my-book" element={<PrivateRoute><MyBooks /></PrivateRoute>} /> */}
                 <Route path="*" element={<Navigate to="/home/profile/my-profile" replace />} />
             </Routes>

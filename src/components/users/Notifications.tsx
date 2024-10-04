@@ -327,7 +327,11 @@ const Notifications: React.FC = () => {
                         );
 
                         return categoryNotifications.length > 0 ? (
+                            
                             <div key={category} className="w-full max-w-4xl">
+                                <p className="text-xl font-bold text-zinc-800">
+                        Notifications
+                    </p>
                                 <p className="text-lg font-semibold text-gray-700 my-4 text-left">
                                     {category}
                                 </p>

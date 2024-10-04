@@ -44,7 +44,7 @@ const [messageType, setMessageType] = useState<'success' | 'info' | null>(null);
 
     return (
   <>
-             <div className="bg-white rounded-lg shadow-xl p-7 w-full md:w-2/3 h-full mx-auto mt-5 md:mt-0">
+             <div className="bg-white rounded-lg shadow-xl p-7 w-full md:w-2/3 mx-auto mt-5 md:mt-0">
                <h2 className="text-s font-bold mb-5 text-gray-700 ">Email Address</h2>
                {message && (
                 <div

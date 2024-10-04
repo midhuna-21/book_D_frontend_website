@@ -9,6 +9,8 @@ import {AdminPrivateRoute} from '../../routes/AdminPrivateRoute'
 import RentalOrdersList from '../../components/admin/RentalOrders'
 import OrderDetail from '../../components/admin/OrderDetail';
 import WalletTransactionsList from '../../components/admin/Wallet'
+import EditGenre from '../../components/admin/EditGenre'
+import GenresList from '../../components/admin/GenresList'
 
 const AdminHome: React.FC = () => {
     return (
@@ -21,6 +23,8 @@ const AdminHome: React.FC = () => {
                         <Route path="dashboard" element={<AdminPrivateRoute><AdminDashboard /></AdminPrivateRoute>} />
                         <Route path="user-list" element={<AdminPrivateRoute><UsersList /></AdminPrivateRoute>} />
                         <Route path="add-genre" element={<AdminPrivateRoute><AddGenre /></AdminPrivateRoute>} />
+                        <Route path="genres-list" element={<AdminPrivateRoute><GenresList /></AdminPrivateRoute>} />
+                        <Route path="edit-genre/:genreId" element={<AdminPrivateRoute><EditGenre /></AdminPrivateRoute>} />
                         <Route path="rental-orders" element={<AdminPrivateRoute><RentalOrdersList /></AdminPrivateRoute>} />
                         <Route path="order-detail/:orderId" element={<AdminPrivateRoute><OrderDetail /></AdminPrivateRoute>} />
                         <Route path="wallet" element={<AdminPrivateRoute><WalletTransactionsList /></AdminPrivateRoute>} />

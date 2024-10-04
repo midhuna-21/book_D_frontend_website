@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import io, { Socket } from 'socket.io-client';
 import { useSelector } from 'react-redux';
+import config from '../../config/config'
 
 interface SocketContextType {
     socket: Socket | null;
@@ -20,7 +21,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
 
     useEffect(() => {
-        const newSocket = io('https://www.bookd.store');
+        const newSocket = io(config.API_URL);
         
         if (userId) {
             newSocket.emit('register', userId);

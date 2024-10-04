@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import {
     FaHome,
     FaUser,
@@ -23,7 +23,7 @@ const Header: React.FC = () => {
     const userInfo = useSelector(
         (state: RootState) => state.user.userInfo?.user
     );
-    const userId=userInfo?._id || "";
+    const userId = userInfo?._id || "";
     const name = userInfo?.name || "";
     const picture = userInfo?.image || userLogo;
     const [isHovered, setIsHovered] = useState(false);
@@ -33,7 +33,7 @@ const Header: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [messageCount, setMessageCount] = useState<number>(0);
-
+    const location = useLocation();
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -76,7 +76,6 @@ const Header: React.FC = () => {
         event: React.KeyboardEvent<HTMLInputElement>
     ) => {
         if (event.key === "Enter") {
-            console.log("Search for:", searchQuery);
             try {
                 navigate("/home/explore", { state: { searchQuery } });
             } catch (error) {
@@ -85,25 +84,30 @@ const Header: React.FC = () => {
         }
     };
 
+    useEffect(() => {
+        const fetchMessageCount = async () => {
+            try {
+                const response = await userAxiosInstance.get(
+                    `/unread-messages/${userId}`
+                );
+                console.log(response?.data);
+                setMessageCount(response?.data?.count);
+            } catch (error) {
+                console.error("Failed to fetch message count", error);
+            }
+        };
+        fetchMessageCount();
+    }, [userId]);
 
     useEffect(() => {
-
-    const fetchMessageCount = async () => {
-        try {
-            const response = await userAxiosInstance.get(`/unread-messages/${userId}`);
-            console.log(response?.data)
-            setMessageCount(response?.data?.count);
-        } catch (error) {
-            console.error("Failed to fetch message count", error);
-        }
-    };
-    fetchMessageCount()
-},[userId])
+        setIsSearchVisible(false);
+        setSearchQuery("");
+    }, [location]);
 
     return (
         <>
             <header
-                className={`flex items-center justify-between fixed top-0 w-full z-50 transition-all duration-300 bg-white shadow-2xl ${
+                className={`flex items-center justify-between fixed top-0 w-full z-50 transition-all duration-300 bg-white shadow-md ${
                     !visible && "transform -translate-y-full"
                 }`}
                 style={{ height: "80px" }}>
@@ -141,83 +145,75 @@ const Header: React.FC = () => {
                             </div>
                         )}
                         <div
-                            className="relative flex items-center justify-center cursor-pointer px-2"
+                            className="relative flex items-center justify-center cursor-pointer px-2 group"
                             onClick={toggleSearch}>
-                            <div className="relative flex flex-col items-center cursor-pointer">
-                                <div className="hover:bg-gray-200 hover:w-12 hover:h-12 hover:rounded-full flex items-center justify-center">
+                            <div className="relative flex flex-col items-center cursor-pointer ">
+                                <div className="flex items-center justify-center">
                                     <FaSearch />
                                 </div>
                             </div>
+                            <div className="absolute top-7 bg-gray-800 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-opacity">
+                                Search
+                            </div>
                         </div>
                     </div>
-
                     <Link to="/home">
-                        <div className="relative flex flex-col items-center cursor-pointer">
-                            <div className="hover:bg-gray-200 hover:w-12 hover:h-12 hover:rounded-full flex items-center justify-center">
-                                <FaHome className="text-gray-800 text-xl" />
+                        <div className="relative flex flex-col items-center cursor-pointer group">
+                            <div className="flex items-center justify-center">
+                                <FaHome className="text-gray-800 text-2xl" />
                             </div>
-                            <span className="text-xs hidden sm:block">
+                            <div className="absolute top-8 bg-gray-800 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-opacity">
                                 Home
-                            </span>
+                            </div>
                         </div>
                     </Link>
                     <Link to="/home/explore">
-                        <div className="relative flex flex-col items-center cursor-pointer ">
-                            <div className="hover:bg-gray-200 hover:w-12 hover:h-12 hover:rounded-full flex items-center justify-center">
+                        <div className="relative flex flex-col items-center cursor-pointer group">
+                            <div className="flex items-center justify-center">
                                 <FaCompass className="text-gray-800 text-xl" />
                             </div>
-                            <span className="text-xs">Explore</span>
+                            <div className="absolute top-8 bg-gray-800 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-opacity">
+                                Explore
+                            </div>
                         </div>
                     </Link>
                     <Link to="/home/add-book">
-                        <div className="relative flex flex-col items-center cursor-pointer ">
-                            <div className="hover:bg-gray-200 hover:w-12 hover:h-12 hover:rounded-full flex items-center justify-center">
+                        <div className="relative flex flex-col items-center cursor-pointer group">
+                            <div className="flex items-center justify-center">
                                 <FaBook className="text-gray-800 text-xl" />
                             </div>
-                            <span className="text-xs">Add Book</span>
+                            <div className="absolute top-8 bg-gray-800 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-opacity">
+                                RentBook
+                            </div>
                         </div>
                     </Link>
                     <Link to="/home/chat">
-                        <div className="relative flex flex-col items-center cursor-pointer ">
-                            <div className="hover:bg-gray-200 hover:w-12 hover:h-12 hover:rounded-full flex items-center justify-center">
+                        <div className="relative flex flex-col items-center cursor-pointer group">
+                            <div className="flex items-center justify-center">
                                 <FaEnvelope className="text-gray-800 text-xl" />
                                 {messageCount > 0 && (
-                            <span className="absolute top-0 right-0 bg-red-500 text-white rounded-full text-xs px-1">
-                                {messageCount}
-                            </span>
-                        )}
+                                    <span className="absolute top-0 right-0 bg-red-500 text-white rounded-full text-xs px-1">
+                                        {messageCount}
+                                    </span>
+                                )}
                             </div>
-                            <span className="text-xs">Messages</span>
+                            <div className="absolute top-8 bg-gray-800 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-opacity">
+                                Messages
+                            </div>
                         </div>
                     </Link>
 
                     <Link to="/home/notifications">
-                        <div className="relative flex flex-col items-center cursor-pointer">
-                            <div className="hover:bg-gray-200 hover:w-12 hover:h-12 hover:rounded-full flex items-center justify-center">
+                        <div className="relative flex flex-col items-center cursor-pointer group">
+                            <div className="flex items-center justify-center">
                                 <FaBell className="text-gray-800 text-xl" />
                             </div>
-                            <span className="text-xs">Notifications</span>
-                        </div>
-                    </Link>
-                    {/* <Link to="/home/profile">
-                        <div className="relative flex items-center justify-center cursor-pointer" onMouseEnter={() => setIsHovered('profile')} onMouseLeave={() => setIsHovered('')}>
-                            <FaUser className="text-gray-800" />
-                            {isHovered === 'profile' && (
-                                <div className="absolute flex items-center justify-center w-10 h-10 bg-gray-200 rounded-full">
-                                    <FaUser />
-                                </div>
-                            )}
-                        </div>
-                    </Link>
-                    */}
-                    {/* <div className="relative flex items-center justify-center cursor-pointer" onClick={handleLogout} onMouseEnter={() => setIsHovered('logout')} onMouseLeave={() => setIsHovered('')}>
-                        <FaSignOutAlt className="text-gray-800" />
-                        {isHovered === 'logout' && (
-                            <div className="absolute flex items-center justify-center w-10 h-10 bg-gray-200 rounded-full">
-                                <FaSignOutAlt />
+                            <div className="absolute top-8 bg-gray-800 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-opacity">
+                                Notifications
                             </div>
-                        )}
-                    </div> */}
+                        </div>
+                    </Link>
+
                     {name ? (
                         <div
                             className="relative flex items-center cursor-pointer"
