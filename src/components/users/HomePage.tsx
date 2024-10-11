@@ -1,6 +1,9 @@
 import backGroundImage from "../../assets/bookf1.webp";
 import React from "react";
 import Genre from "../../components/users/Genre";
+import HowItWorks from '../../components/users/HowItWorks'
+import Books from '../../components/users/Books'
+import Footer from '../../components/users/Footer'
 
 const CenterOfHome: React.FC = () => {
     return (
@@ -17,10 +20,10 @@ const CenterOfHome: React.FC = () => {
                     </span>
                 </div>
             </div>
-            <div className="w-full py-8 md:py-5 px-4 sm:px-8">
+            <div className="w-full">
                 <Genre />
-                {/* <HowItWorks />  */}
-                {/* <Books /> */}
+                <Books />
+                <HowItWorks /> 
             </div>
         </div>
     );

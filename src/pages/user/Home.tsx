@@ -14,18 +14,20 @@ import LenderDetails from '../../components/users/LenderDetails'
 import Successfull from '../../components/users/Successfull';
 import OrdersList from '../../components/users/OrdersList';
 import EditBookForm from '../../components/users/EditBookForm'; 
-import AddBookForm from '../../components/users/AddBookForm'
+import AddBookForm from '../../components/users/AddBookForm';
+import Footer from '../../components/users/Footer';
 
 const Home: React.FC = () => {
     return (
         <div className='flex flex-col min-h-screen'>
                   <Header />    
                  <div className="flex-grow pt-16"> 
-                    <div className='container mx-auto px-4'>
+                    <div className='container mx-auto'>
                 <Routes>
                     <Route path="/" element={<CenterOfHome />} />
                     <Route path="/*" element={<NestedRoutes />} />
                 </Routes>
+                <Footer />
          </div>
          </div>
          

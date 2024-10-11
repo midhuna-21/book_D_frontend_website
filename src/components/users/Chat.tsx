@@ -72,7 +72,7 @@ const Chat: React.FC = () => {
                                     ? chatRoom.messageId[
                                           chatRoom.messageId.length - 1
                                       ].content
-                                    : "No messages",
+                                    : "start messaging",
                             lastTimestamp:
                                 chatRoom.messageId.length > 0
                                     ? chatRoom.messageId[
@@ -122,14 +122,10 @@ const Chat: React.FC = () => {
                     userName: userDetails.name,
                     userImage: userDetails.image || photo,
                 });
-                console.log(selectedUserDetails, "setSelectedUserDetails");
                 setCurrentChatRoomId(chatRoomId);
                 fetchMessages(chatRoomId);
 
-                await userAxiosInstance.post(
-                    `/chatRoom-update/${chatRoomId}`
-                );
-
+                await userAxiosInstance.post(`/chatRoom-update/${chatRoomId}`);
             } else {
                 console.error("Chat data is not available");
             }
@@ -259,173 +255,186 @@ const Chat: React.FC = () => {
     };
 
     return (
-        <div className="mt-12 mx-auto w-full max-w-6xl flex flex-col md:flex-col space-y-8 md:space-y-0 md:space-x-8">
-     
-        <div className="text-center mb-12">
-        <h1 className="text-23xl font-bold text-gray-800 sm:text-2xl">
-
-            Chat with Your Readers
-          </h1>
-          <p className="text-base text-gray-600 mt-2">
-            Engage with lenders directly to discuss book rentals and more.
-          </p>
-        </div>
-         <div className="flex flex-row gap-6">
-         <div className="w-full md:w-1/2 h-[500px]">
+        <div className="mt-12 mx-auto w-full max-w-6xl flex flex-col md:flex-col space-y-8 md:space-y-0 md:space-x-8 mb-20">
+            <div className="text-center mb-12">
+                <h1 className="text-23xl font-bold text-gray-800 sm:text-2xl">
+                    Chat with Your Readers
+                </h1>
+                <p className="text-base text-gray-600 mt-2">
+                    Engage with lenders directly to discuss book rentals and
+                    more.
+                </p>
+            </div>
+            <div className="flex flex-row gap-6">
+                <div className="w-full md:w-1/2 h-[500px]">
                     <p className="px-2 text-lg font-bold text-zinc-800">
                         Messages
                     </p>
-                <div className="mt- border border-gray-200 rounded-lg shadow-md p-4 h-full">
-                    <div className="flex flex-col space-y-4 h-full overflow-y-auto">
-                        {chatRooms.length > 0 ? (
-                            chatRooms.map((chatRoom) => (
-                                <div
-                                    key={chatRoom.userId}
-                                    className="flex items-center shadow-md px-4 py-2 mb-4 p-2 hover:bg-gray-100 rounded-lg cursor-pointer"
-                                    onClick={() =>
-                                        handleUserClick(chatRoom.chatRoomId)
-                                    }>
-                                    <div className="w-16 h-16 rounded-full overflow-hidden mr-4 relative">
-                                        <img
-                                            src={chatRoom.userImage}
-                                            alt={chatRoom.userName}
-                                            className="w-full h-full object-cover"
-                                        />
-                                        {chatRoom.isOnline && (
-                                            <div className="absolute bottom-1 right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
-                                        )}
-                                    </div>
-                                    <div className="ml-2 flex-1 ">
-                                        <div className="font-medium text-gray-900">
-                                            {chatRoom.userName}
+                    <div className="mt- border border-gray-200 rounded-lg shadow-md p-4 h-full">
+                        <div className="flex flex-col space-y-4 h-full overflow-y-auto">
+                            {chatRooms.length > 0 ? (
+                                chatRooms.map((chatRoom) => (
+                                    <div
+                                        key={chatRoom.userId}
+                                        className="flex items-center shadow-md px-4 py-2 mb-4 p-2 hover:bg-gray-100 rounded-lg cursor-pointer"
+                                        onClick={() =>
+                                            handleUserClick(chatRoom.chatRoomId)
+                                        }>
+                                        <div className="w-16 h-16 rounded-full overflow-hidden mr-4 relative">
+                                            <img
+                                                src={chatRoom.userImage}
+                                                alt={chatRoom.userName}
+                                                className="w-full h-full object-cover"
+                                            />
+                                            {chatRoom.isOnline && (
+                                                <div className="absolute bottom-1 right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
+                                            )}
                                         </div>
-                                        <div
-                                            className={`p-2  ${
-                                                chatRoom.isRead
-                                                    ? "font-bold"
-                                                    : "font-normal"
-                                            } cursor-pointer`}>
-                                            {chatRoom.lastMessage}
-                                        </div>
-                                        {chatRoom.isOnline && (
-                                            <div className="text-xs text-green-500 flex justify-end ">
-                                                Online
+                                        <div className="ml-2 flex-1 ">
+                                            <div className="font-medium text-gray-900">
+                                                {chatRoom.userName}
                                             </div>
-                                        )}
-                                    </div>
-                                    {/* <div
+                                            <div
+                                                className={`p-2 ${
+                                                    chatRoom.isRead
+                                                        ? "font-bold"
+                                                        : "font-normal"
+                                                } cursor-pointer`}
+                                                style={{
+                                                    maxWidth: "200px",
+                                                    whiteSpace: "nowrap",
+                                                    overflow: "hidden",
+                                                    textOverflow: "ellipsis",
+                                                }}>
+                                                {chatRoom.lastMessage}
+                                            </div>
+                                            {chatRoom.isOnline && (
+                                                <div className="text-xs text-green-500 flex justify-end ">
+                                                    Online
+                                                </div>
+                                            )}
+                                        </div>
+                                        {/* <div
                                         className={`w-2.5 h-2.5 rounded-full ${chatRoom.isOnline ? 'bg-green-500' : ''}`}
                                     ></div> */}
+                                    </div>
+                                ))
+                            ) : (
+                                <p className="text-center text-gray-500">
+                                    Empty
+                                </p>
+                            )}
+                        </div>
+                    </div>
+                </div>
+                <div className="w-full md:w-1/2 h-[500px] mt-4 md:mt-0">
+                    {/* <h2 className="text-center text-lg md:py-0 py-12 font-bold text-gray-600">
+                    You can chat and enquire about your books
+                </h2> */}
+                    <div className="md:mt-6 border border-gray-200 rounded-lg shadow-md p-4 h-full flex flex-col">
+                        {selectedUserDetails ? (
+                            <div className="flex flex-col h-full">
+                                <div className="flex items-center mb-4 p-2">
+                                    <div className="w-16 h-16 rounded-full overflow-hidden mr-4">
+                                        <img
+                                            src={selectedUserDetails.userImage}
+                                            alt={selectedUserDetails.userName}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </div>
+                                    <div>
+                                        <p className="text-xl font-bold">
+                                            {selectedUserDetails.userName}
+                                        </p>
+                                    </div>
                                 </div>
-                            ))
+
+                                <div
+                                    className="flex flex-col space-y-4 overflow-y-auto flex-grow"
+                                    ref={messagesEndRef}>
+                                    {messages && messages.length > 0 ? (
+                                        messages.map((msg, msgIndex) => (
+                                            <div
+                                                key={msgIndex}
+                                                className={`flex flex-col mb-4 ${
+                                                    msg.senderId._id ===
+                                                        userId ||
+                                                    msg.senderId === userId
+                                                        ? "items-end"
+                                                        : "items-start"
+                                                }`}>
+                                                <p className="text-xs text-gray-500 mb-1">
+                                                    {formatTimestamp(
+                                                        msg.createdAt
+                                                    )}
+                                                </p>
+                                                <div
+                                                    className={`max-w-xs ${
+                                                        msg.senderId._id ===
+                                                            userId ||
+                                                        msg.senderId === userId
+                                                            ? "bg-blue-200 text-right"
+                                                            : "bg-gray-200 text-left"
+                                                    } p-3 rounded-lg shadow`}
+                                                    style={{
+                                                        maxWidth: "200px",
+                                                        wordBreak: "break-word",
+                                                        overflowWrap:
+                                                            "break-word",
+                                                    }}>
+                                                    <p className="text-sm">
+                                                        {msg.content}
+                                                    </p>
+                                                </div>
+                                                <div ref={messagesEndRef} />
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <p className="text-center text-gray-500">
+                                            Empty
+                                        </p>
+                                    )}
+                                </div>
+                                <div className="pt-4 flex items-center space-x-4 border-t border-gray-200 w-full">
+                                    <input
+                                        type="text"
+                                        className="flex-grow p-2 border border-gray-300 rounded-lg"
+                                        placeholder="Type a message..."
+                                        value={messageText}
+                                        onChange={(e) =>
+                                            setMessageText(e.target.value)
+                                        }
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter") {
+                                                handleSendMessage(
+                                                    messageText,
+                                                    currentChatRoomId
+                                                );
+                                            }
+                                        }}
+                                    />
+                                    <button
+                                        className="text-black rounded-lg"
+                                        onClick={() =>
+                                            handleSendMessage(
+                                                messageText,
+                                                currentChatRoomId
+                                            )
+                                        }>
+                                        <FaPaperPlane className="text-2xl" />
+                                    </button>
+                                </div>
+                            </div>
                         ) : (
-                            <p className="text-center text-gray-500">Empty</p>
+                            <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                                <p className="text-lg">Your messages</p>
+                                <FaEnvelope className="text-4xl mt-2" />
+                            </div>
                         )}
                     </div>
                 </div>
             </div>
-            <div className="w-full md:w-1/2 h-[500px] mt-4 md:mt-0">
-                {/* <h2 className="text-center text-lg md:py-0 py-12 font-bold text-gray-600">
-                    You can chat and enquire about your books
-                </h2> */}
-                <div className="md:mt-6 border border-gray-200 rounded-lg shadow-md p-4 h-full flex flex-col">
-                    {selectedUserDetails ? (
-                        <div className="flex flex-col h-full">
-                            <div className="flex items-center mb-4 p-2">
-                                <div className="w-16 h-16 rounded-full overflow-hidden mr-4">
-                                    <img
-                                        src={selectedUserDetails.userImage}
-                                        alt={selectedUserDetails.userName}
-                                        className="w-full h-full object-cover"
-                                    />
-                                </div>
-                                <div>
-                                    <p className="text-xl font-bold">
-                                        {selectedUserDetails.userName}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div
-                                className="flex flex-col space-y-4 overflow-y-auto flex-grow"
-                                ref={messagesEndRef}>
-                                {messages && messages.length > 0 ? (
-                                    messages.map((msg, msgIndex) => (
-                                        <div
-                                            key={msgIndex}
-                                            className={`flex flex-col mb-4 ${
-                                                msg.senderId._id === userId ||
-                                                msg.senderId === userId
-                                                    ? "items-end"
-                                                    : "items-start"
-                                            }`}>
-                                         
-                                            <p className="text-xs text-gray-500 mb-1">
-                                                {formatTimestamp(msg.createdAt)}
-                                            </p>
-                                            <div
-                                                className={`max-w-xs ${
-                                                    msg.senderId._id ===
-                                                        userId ||
-                                                    msg.senderId === userId
-                                                        ? "bg-blue-200 text-right"
-                                                        : "bg-gray-200 text-left"
-                                                } p-3 rounded-lg shadow`}>
-                                                <p className="text-sm">
-                                                    {msg.content}
-                                                </p>
-                                            </div>
-                                            <div ref={messagesEndRef} />
-                                        </div>
-                                    ))
-                                ) : (
-                                    <p className="text-center text-gray-500">
-                                        Empty
-                                    </p>
-                                )}
-                            </div>
-                            <div className="pt-4 flex items-center space-x-4 border-t border-gray-200 w-full">
-                                <input
-                                    type="text"
-                                  className="flex-grow p-2 border border-gray-300 rounded-lg"
-                                    placeholder="Type a message..."
-                                    value={messageText}
-                                    onChange={(e) =>
-                                        setMessageText(e.target.value)
-                                    }
-                                    onKeyDown={(e) => {
-                                        if (e.key === "Enter") {
-                                            handleSendMessage(
-                                                messageText,
-                                                currentChatRoomId
-                                            );
-                                        }
-                                    }}
-                                />
-                                <button
-                                    className="text-black rounded-lg"
-                                    onClick={() =>
-                                        handleSendMessage(
-                                            messageText,
-                                            currentChatRoomId
-                                        )
-                                    }>
-                                    <FaPaperPlane className="text-2xl" />
-                                </button>
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="flex flex-col items-center justify-center h-full text-gray-400">
-                            <p className="text-lg">Your messages</p>
-                            <FaEnvelope className="text-4xl mt-2" />
-                        </div>
-                    )}
-                </div>
-            </div>
-         </div>
         </div>
-
-       
     );
 };
 

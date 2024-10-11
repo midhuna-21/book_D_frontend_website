@@ -156,8 +156,8 @@ const BookDetail: React.FC = () => {
     };
 
     useEffect(() => {
-        const newSocket = io(config.API_URL);
-        console.log(config.API_URL,'api url')
+        const newSocket = io(config.API_BACKEND);
+        console.log(config.API_BACKEND,'api url')
         setSocket(newSocket);
 
         return () => {
@@ -217,11 +217,12 @@ const BookDetail: React.FC = () => {
                     );
 
                     const cartId = cartCreateResponse?.data?.cart?._id;
+                    console.log(cartId,'cartid')
                     if (cartCreateResponse.status == 200) {
                         const notificationData = {
                             cartId,
                             userId,
-                            ownerId: lender._id,
+                            receiverId: lender._id,
                             bookId: book._id,
                             status: "requested",
                         };
@@ -272,7 +273,7 @@ const BookDetail: React.FC = () => {
     if (!book) return <div>Loading...</div>;
 
     return (
-        <div className="flex flex-col items-center justify-center py-12">
+        <div className="flex flex-col items-center justify-center py-12 min-h-screen" >
             <div className="mb-12 text-center">
                 <h1 className="text-23xl font-bold text-gray-800 sm:text-2xl">
                     {myBook ? "Yours Books Store" : "Request and Get Your Book"}
@@ -326,7 +327,7 @@ const BookDetail: React.FC = () => {
                         ) : (
                             <button
                                 onClick={handleRequest}
-                                className={`mt-8 w-full md:w-1/2 items-center ${
+                                className={`mt-8 w-2/3 md:w-2/3 items-center ${
                                     requested
                                         ? "bg-gray-400 cursor-not-allowed"
                                         : "bg-gradient-to-r from-teal-900 via-zinc-700 to-gray-600"

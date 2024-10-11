@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { userAxiosInstance } from '../../utils/api/axiosInstance';
+import { FaStar } from "react-icons/fa";
 
 const Books: React.FC = () => {
   const [books, setBooks] = useState<any[]>([]);
@@ -19,35 +20,72 @@ const Books: React.FC = () => {
   }, []);
 
   return (
-    <div className="container mx-auto py-20 px-20 ">
+    <div className="container mb-14 mt-14">
     <div className="flex flex-col items-center">
-        <div className="bg- w-full px-12 py-6 mb-6 border-b border-gray-200">
-            <h2 className="text-3xl font-serif underline">Books For Sell</h2>
+        <div className="w-full py-6 mb-6 border-b border-gray-200">
+            <h2 className="text-2xl font-serif underline flex justify-center items-center md:text-3xl">Top Books</h2>
         </div>
-        
-        <div className="grid grid-cols-4 gap-8">
-            {books.slice(0, 8).map((book) => (
-                <div key={book._id} className="bg-white p-4 rounded-xl border border-gray-200 shadow-md" style={{ width: "250px", height: "370px" }}>
-                    <img src={book.images[0]} alt={book.name} className="rounded-md mb-2 w-full h-48 object-cover" />
-                    <div className="flex flex-col items-center justify-between h-full">
-                        <div className="text-center">
-                            <h3 className="text-lg font-bold mb-1">{book.bookTitle}</h3>
-                            <p className="text-sm text-gray-600 mb-2">{book.description.length > 100 ? `${book.description.substring(0, 100)}...` : book.description}</p>
-                        <button
-                            className="bg-stone-700 hover:bg-stone-400 hover:text-black text-white px-4 py-2 rounded-md transition-colors duration-300"
-                            onClick={() => console.log(`Chose ${book.name}`)}
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
+            {books.slice(0, 5).map((book) => (
+                <div
+                    key={book._id}
+                    className="bg-white p-4 rounded-xl hover:border border-gray-200 hover:shadow-md"
+                    style={{ width: "250px", height: "450px" }}
+                >
+                    <img
+                        src={book.images[0]}
+                        alt={book.name}
+                        className="rounded-md mb-4 w-full h-48 object-cover"
+                    />
+                    <div className="flex flex-col items-center text-center h-full">
+                  
+                        <h3
+                            className="text-lg font-bold mb-1 overflow-hidden"
+                            style={{
+                                height: "40px",
+                                lineHeight: "1.2em",
+                                display: "-webkit-box",
+                                WebkitLineClamp: 2,
+                                WebkitBoxOrient: "vertical",
+                            }}
+                        >
+                            {book.bookTitle.length > 40
+                                ? `${book.bookTitle.substring(0, 40)}...`
+                                : book.bookTitle}
+                        </h3>
+
+                        <p
+                            className="text-sm text-gray-600 mb-2 overflow-hidden"
+                            style={{ height: "60px", lineHeight: "1.5em", display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical" }}
+                        >
+                            {book.description.length > 100
+                                ? `${book.description.substring(0, 100)}...`
+                                : book.description}
+                        </p>
+
+                        <div className="flex items-center justify-center mb-2">
+                            <FaStar className="text-yellow-400" />
+                            <FaStar className="text-yellow-400" />
+                            <FaStar className="text-yellow-400" />
+                            <FaStar className="text-yellow-400" />
+                            <FaStar className="text-gray-300" />
+                        </div>
+
+                        <p className="text-sm text-gray-600 mb-4">4.0 (120 reviews)</p>
+                            <button
+                                className="bg-stone-700 hover:bg-stone-400 hover:text-black text-white px-4 py-2 rounded-md transition-colors duration-300"
+                                style={{ width: "100px", height: "40px" }}
+                                onClick={() => console.log(`Chose ${book.name}`)}
                             >
-                            Choose
-                        </button>
-                          </div>
+                                Choose
+                            </button>
                     </div>
                 </div>
             ))}
         </div>
     </div>
 </div>
-
-
   );
 };
 

@@ -10,6 +10,7 @@ function App() {
          <Toaster />
          <Router>
             <Routes>
+               
                <Route path="/*" element={<UserRouter />} />
                <Route path="/admin/*" element={<AdminRouter />} />
             </Routes>

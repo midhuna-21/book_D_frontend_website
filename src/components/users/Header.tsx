@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, Link, useLocation } from "react-router-dom";
+import config from '../../config/config'
+import { useSocket } from "../../utils/context/SocketProvider";
 import {
     FaHome,
     FaUser,
@@ -33,7 +35,9 @@ const Header: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [messageCount, setMessageCount] = useState<number>(0);
+    const [notificationCount, setNotificationCount] = useState(0);
     const location = useLocation();
+    const { socket } = useSocket();
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -85,6 +89,7 @@ const Header: React.FC = () => {
     };
 
     useEffect(() => {
+       if(userId){
         const fetchMessageCount = async () => {
             try {
                 const response = await userAxiosInstance.get(
@@ -97,7 +102,50 @@ const Header: React.FC = () => {
             }
         };
         fetchMessageCount();
-    }, [userId]);
+       }
+    });
+
+    useEffect(() => {
+        if(userId) {
+
+        const fetchNotificationCount = async () => {
+            try {
+                const response = await userAxiosInstance.get(
+                    `/unread-notifications/${userId}`
+                );
+                console.log(response?.data,'kkk');
+                setNotificationCount(response?.data?.count);
+            } catch (error) {
+                console.error("Failed to fetch message count", error);
+            }
+        };
+        fetchNotificationCount();
+    }
+    });
+
+
+    useEffect(() => {
+      if(socket){
+
+        socket.on('notification', (newNotification) => {
+            console.log('New notification received:', newNotification);
+            setNotificationCount((prevCount) => prevCount + 1);
+        });
+
+        socket.on('receive-message', (newMessage) => {
+            console.log('New messages received:', newMessage);
+            setMessageCount((prevCount) => prevCount + 1);
+        });
+    }
+
+        return () => {
+            if (socket) {
+                socket.off('notification'); 
+                socket.off('receive-message'); 
+
+            }
+        };
+    },[socket]);
 
     useEffect(() => {
         setIsSearchVisible(false);
@@ -207,6 +255,11 @@ const Header: React.FC = () => {
                         <div className="relative flex flex-col items-center cursor-pointer group">
                             <div className="flex items-center justify-center">
                                 <FaBell className="text-gray-800 text-xl" />
+                                {notificationCount > 0 && (
+                                    <span className="absolute top-0 right-0 bg-red-500 text-white rounded-full text-xs px-1">
+                                        {notificationCount}
+                                    </span>
+                                )}
                             </div>
                             <div className="absolute top-8 bg-gray-800 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-opacity">
                                 Notifications

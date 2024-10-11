@@ -20,7 +20,6 @@
       useEffect(() => {
           const fetchDetails = async () => {
               try {
-                console.log(cartId,'inncerscope')
                   const response = await userAxiosInstance.get(
                       `/lending-details/${cartId}`
                   );
@@ -74,16 +73,6 @@
               
             });
 
-            // console.log(result,'rsult')
-            // const data={
-            //   bookId:bookDetails?.bookId?._id,
-            //   userId:userId,
-            //     cartId:bookDetails?.cartId,
-            //   }
-            
-            // console.log(data,'data')
-            // const createOrder = await userAxiosInstance.post('/create-order',data,{withCredentials:true})
-             
             if (result.error) {
               console.error("Error redirecting to checkout:", result.error.message);
               return;
