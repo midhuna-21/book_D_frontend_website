@@ -1,0 +1,6 @@
+{
+   "rewrites": [
+     { "source": "/api/(.*)", "destination": "https://bookd.store/api/$1" },
+     { "source": "/(.*)", "destination": "/" }
+   ]
+ }
