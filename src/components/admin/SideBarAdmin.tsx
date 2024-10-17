@@ -16,9 +16,11 @@ const AdminSideBar: React.FC = () => {
   };
 
   const handleLogout = async () => {
-    localStorage.removeItem("useraccessToken");
-    localStorage.removeItem("userrefreshToken");
+    console.log('jk')
+    localStorage.removeItem("adminaccessToken");
+    localStorage.removeItem("adminrefreshToken");
     dispatch(clearAdmin());
+    console.log('llll')
     navigate('/admin/login');
  };
 

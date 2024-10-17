@@ -6,7 +6,7 @@ import googleimage from "../../assets/google.png";
 import { axiosUser } from "../api/baseUrl";
 import { useNavigate,useLocation } from "react-router-dom";
 import { toast } from "sonner";
-import axios from 'axios';
+import axios from 'axios'
 
 const SignInButton: React.FC = () => {
     const navigate = useNavigate();
@@ -14,7 +14,8 @@ const SignInButton: React.FC = () => {
     const dispatch = useDispatch()
     const isLoginRoute = location.pathname ==='/login'
  
-    const signin = useGoogleLogin({
+ 
+  const signin = useGoogleLogin({
             onSuccess: async (credentialResponse: any) => {
                 try {
                     const response = await axios.get(
@@ -25,48 +26,7 @@ const SignInButton: React.FC = () => {
                             },
                         }
                     );
-                    await axiosUser
-                    .post(
-                        "/google-login",
-                        {
-                            name: response.data.name,
-                            email: response.data.email,
-                            image: response.data.picture 
-                        },
-                        {
-                            withCredentials: true,
-                            headers: {
-                                "Content-Type": "application/json",
-                            },
-                        }
-                    ).then(function (response) {
-                            if (response.status === 200) {
-                            
-                                dispatch(addUser(response.data))
-                                console.log(response.data)
-                                localStorage.setItem(
-                                    "useraccessToken",
-                                    response.data.accessToken
-                                );
-                                localStorage.setItem(
-                                    "userrefreshToken",
-                                    response.data.refreshToken
-                                );
-                                navigate("/home");
-                            }
-                        })
-                        .catch(function (error) {
-                            if(error.response && error.response.status === 400){
-                             
-                                toast.error(error.response.data.message);
-                                navigate("/enter-password", { state: { email: response.data.email } });
-
-                            }
-                      
-                            if (error.response && error.response.status === 500 ||  error.response.status === 401) {
-                                toast.error(error.response.data.message);
-                            } 
-                        });
+                   navigate('/error')
                 } catch (error: any) {
                     console.log(error.message);
                 }   
@@ -75,6 +35,8 @@ const SignInButton: React.FC = () => {
                 console.error("Login Failed:", error);
             },
     });
+
+
 
     return (
         <div className="flex justify-center mb-3 md:mb-4">

@@ -14,14 +14,7 @@ import Error from '../components/users/Error';
 import LinkGoogleEmail from '../components/users/LinkGooleEmail';
 
 const UserRouter = () => {
-    
-    const userInfo = useSelector((state: RootState) => state.user.userInfo);
-
-    const isBlocked = userInfo?.isBlocked || false;
-
-    if (isBlocked) {
-        return <Navigate to="/login" />;
-    }
+  
     return (
         <Routes>
             <Route path='/' element={<PublicRoute><UserSignUp /></PublicRoute>} />

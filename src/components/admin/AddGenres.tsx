@@ -1,10 +1,7 @@
 import React, { useState, useRef } from "react";
 import { toast } from "sonner";
-import {useDispatch} from 'react-redux'
-import { addGenre } from "../../utils/ReduxStore/slice/adminSlice";
 import { adminAxiosInstance } from "../../utils/api/axiosInstance";
 import { FaPlus } from "react-icons/fa";
-import GenreList from '../../components/admin/GenresList'
 import GenresList from "../../components/admin/GenresList";
 
 const AddGenresWithList: React.FC = () => {
@@ -12,7 +9,6 @@ const AddGenresWithList: React.FC = () => {
     const [genreName, setGenreName] = useState("");
     const [file, setFile] = useState<File | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const dispatch = useDispatch()
 
     const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -43,7 +39,7 @@ const AddGenresWithList: React.FC = () => {
         formData.append("file", file);
 
         adminAxiosInstance
-            .post("/add-genre", formData, {   
+            .post("/add-genre", formData, {
                 withCredentials: true,
                 headers: {
                     "Content-Type": "multipart/form-data",
@@ -52,7 +48,7 @@ const AddGenresWithList: React.FC = () => {
             .then(function (response) {
                 if (response.status === 200) {
                     toast.success("Successfully added");
-                    dispatch(addGenre(response.data))
+
                     setGenreName("");
                     setSelectedImage(null);
                     setFile(null);
@@ -141,9 +137,8 @@ const AddGenresWithList: React.FC = () => {
                 </form>
             </div>
             <div className="p-8 rounded shadow-md w-1/2">
-            <GenresList />
+                <GenresList />
             </div>
-       
         </div>
     );
 };

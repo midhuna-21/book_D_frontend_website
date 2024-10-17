@@ -7,8 +7,13 @@ export default defineConfig({
   server: {
     port:5173,
     proxy: {
+    //   '/api': {
+    //   target:'https://www.bookd.store',
+    //   changeOrigin:true
+    //   }
+    // },
       '/api': {
-      target:'https://www.bookd.store',
+      target:'http://localhost:8000',
       changeOrigin:true
       }
     },

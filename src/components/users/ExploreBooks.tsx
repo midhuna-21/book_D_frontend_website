@@ -17,7 +17,7 @@ const ExploreBooks: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const booksPerPage = 8;
     const userInfo = useSelector(
-        (state: RootState) => state.user.userInfo?.user
+        (state: RootState) => state.user?.userInfo
     );
     const name = userInfo?.name || "";
     const location = useLocation();

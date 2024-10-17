@@ -50,26 +50,11 @@ const adminSlice = createSlice({
       state.users = [];
       updateLocalStorage(state);
     },
-    addGenre: (state, action: PayloadAction<Genre>) => {
-      state.genres.push(action.payload);
-      updateLocalStorage(state);
-    },
-    blockUser: (state, action: PayloadAction<string>) => {
-      state.users = state.users.map((user) =>
-          user._id === action.payload ? { ...user, isBlocked: true } : user
-      );
-      updateLocalStorage(state);
-    },
-    unblockUser: (state, action: PayloadAction<string>) => {
-      state.users = state.users.map((user) =>
-          user._id === action.payload ? { ...user, isBlocked: false } : user
-      );
-      updateLocalStorage(state);
-    },
+   
   }
 });
 
-export const { addAdmin, clearAdmin, addGenre, blockUser, unblockUser } = adminSlice.actions;
+export const { addAdmin, clearAdmin } = adminSlice.actions;
 
 export const adminName = adminSlice.name;
 export default adminSlice.reducer;
