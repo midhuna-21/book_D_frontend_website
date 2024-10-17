@@ -10,6 +10,7 @@ import { axiosUser } from "../../utils/api/baseUrl";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import SignInButton from "../../utils/authentication/Googlebutton";
 import { isValidateLogin } from "../../utils/validations/loginValidation";
+import config from '../../config/config';
 
 const UserLogin: React.FC = () => {
     const navigate = useNavigate();
@@ -17,6 +18,7 @@ const UserLogin: React.FC = () => {
     const [password, setPassword] = useState("");
     const dispatch = useDispatch();
 
+   
     const handleLogin = (
         e: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
@@ -95,7 +97,7 @@ const UserLogin: React.FC = () => {
                     <h1 className="text-3xl text-gray-700 mb-2 mt-3 font-serif text-center">
                         Login
                     </h1>
-                    <GoogleOAuthProvider clientId="971832646637-ogbabgsm5f2f47u2r2p7gveggefdg5uo.apps.googleusercontent.com">
+                    <GoogleOAuthProvider clientId={config.GOOGLE_CLIENT_ID}>
                         <SignInButton />
                     </GoogleOAuthProvider>
                     <form className="flex flex-col gap-5">

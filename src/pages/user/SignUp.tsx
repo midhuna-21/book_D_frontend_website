@@ -7,6 +7,7 @@ import { validate } from "../../utils/validations/signupValidation";
 import { axiosUser } from "../../utils/api/baseUrl";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import SignInButton from "../../utils/authentication/Googlebutton";
+import config from '../../config/config'
 
 const Register: React.FC = () => {
     const navigate = useNavigate();
@@ -96,7 +97,7 @@ const Register: React.FC = () => {
                     <h1 className="text-2xl md:text-3xl text-gray-700 font-serif mt-10 md:mt-20 text-center">
                         Sign up
                     </h1>
-                    <GoogleOAuthProvider clientId="971832646637-ogbabgsm5f2f47u2r2p7gveggefdg5uo.apps.googleusercontent.com">
+                    <GoogleOAuthProvider clientId={config.GOOGLE_CLIENT_ID}>
                         <SignInButton />
                     </GoogleOAuthProvider>
 
