@@ -373,6 +373,9 @@ const RentBookForm: React.FC = () => {
             toast.error(errors);
         }
     };
+    useEffect(() => {
+        console.log("rendered");
+      },[]);
     return (
         <div className="flex flex-col items-center justify-center py-12">
         <div className="mb-12 text-center">

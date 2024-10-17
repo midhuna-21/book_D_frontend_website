@@ -12,7 +12,9 @@ import Chat from '../../components/users/Chat';
 import MyBooks from '../../components/users/MyBooks';
 import LenderDetails from '../../components/users/LenderDetails'
 import Successfull from '../../components/users/Successfull';
-import OrdersList from '../../components/users/OrdersList';
+import Orders from '../../components/users/Orders';
+import LendList from '../../components/users/LendList';
+import RentList from '../../components/users/RentList';
 import EditBookForm from '../../components/users/EditBookForm'; 
 import AddBookForm from '../../components/users/AddBookForm';
 import Footer from '../../components/users/Footer';
@@ -51,7 +53,9 @@ const NestedRoutes: React.FC = () => {
                 <Route path="/book/:id" element={<PrivateRoute><BookDetail /></PrivateRoute>} />
                 <Route path="/payment-details/:cartId" element={<PrivateRoute><LenderDetails /></PrivateRoute>} />
                 <Route path="/payment-success" element={<PrivateRoute><Successfull /></PrivateRoute>} />
-                <Route path="/orders-list" element={<PrivateRoute><OrdersList /></PrivateRoute>} />
+                <Route path="/orders-list" element={<PrivateRoute><Orders /></PrivateRoute>} />
+                <Route path="/lend-list" element={<PrivateRoute><LendList /></PrivateRoute>} />
+                <Route path="/rent-list" element={<PrivateRoute><RentList /></PrivateRoute>} />
                 <Route path='/edit-book/:bookId' element={<PrivateRoute><EditBookForm /></PrivateRoute>} />
 
                 <Route path="*" element={<Navigate to="/home" replace />} />

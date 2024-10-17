@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState ,useRef} from "react";
 import { useLocation ,useNavigate} from "react-router-dom";
 import { AiOutlineCheckCircle } from "react-icons/ai"; 
 import { userAxiosInstance } from "../../utils/api/axiosInstance";
@@ -17,36 +17,43 @@ const PaymentSuccess = () => {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const bookId = searchParams.get("book_id");
+  const sessionId = searchParams.get("session_id");
   const userId = searchParams.get("user_id");
   const cartId = searchParams.get("cart_id");
   const [orderData, setOrderData] = useState<OrderData | null>(null);
+  const [isOrderCreated, setIsOrderCreated] = useState(false);
   const navigate = useNavigate()
-  useEffect(() => {
+  console.log(sessionId,'sessionid')
+  const hasFetchedData = useRef(false);
+
+  useEffect(() => { 
     const fetchSessionData = async () => {
       try {
-        if (bookId && userId) {
-          const response = await userAxiosInstance.post("/create-order", { bookId, userId,cartId });
+        if (sessionId && bookId && userId && cartId && !hasFetchedData.current) {
+          const response = await userAxiosInstance.post("/create-order", { bookId, userId,cartId,sessionId });
 
-          console.log(response,'ok da')
+          console.log('resinse',response)
           if (response.status==200) {
             setOrderData(response.data.order);
-
+            hasFetchedData.current = true;
           } else {
             console.error("Failed to retrieve session data");
           }
         }
+        
       } catch (error) {
         console.error("Error fetching session data:", error);
       }
     };
-
-    fetchSessionData();
-  }, []);
+    if (!hasFetchedData.current) {
+      fetchSessionData();
+      hasFetchedData.current = true;
+    }
+  }, [hasFetchedData]);
 
   const handleOkClick = () => {
-   navigate("/home/order-list"); 
- };
- console.log(orderData,'ordere')
+   navigate("/home/rent-list"); 
+ };   
 
   if (!orderData) {
     return <div className="flex items-center justify-center min-h-screen">Loading...</div>;

@@ -95,7 +95,6 @@ const Header: React.FC = () => {
                 const response = await userAxiosInstance.get(
                     `/unread-messages/${userId}`
                 );
-                console.log(response?.data);
                 setMessageCount(response?.data?.count);
             } catch (error) {
                 console.error("Failed to fetch message count", error);
@@ -113,7 +112,6 @@ const Header: React.FC = () => {
                 const response = await userAxiosInstance.get(
                     `/unread-notifications/${userId}`
                 );
-                console.log(response?.data,'kkk');
                 setNotificationCount(response?.data?.count);
             } catch (error) {
                 console.error("Failed to fetch message count", error);

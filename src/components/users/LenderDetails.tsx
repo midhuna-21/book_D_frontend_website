@@ -144,13 +144,16 @@
                 Book Name: {bookDetails?.bookId?.bookTitle}
               </p>
               <p className="text-gray-600">
-                Quantity: {bookDetails?.quantity}
+                Deposit Amount: {bookDetails?.bookId?.extraFee} ₹
               </p>
               <p className="text-gray-600">
                 Rental Price for a Day: {bookDetails?.bookId?.rentalFee} ₹
               </p>
               <p className="text-gray-600">
-                Deposit Amount: {bookDetails?.bookId?.extraFee} ₹
+                Quantity: {bookDetails?.quantity}
+              </p>
+              <p className="text-gray-600">
+                Total days: {bookDetails?.totalDays}
               </p>
               <p className="text-gray-600">
                 Total Rental Price: {bookDetails?.totalRentalPrice} ₹

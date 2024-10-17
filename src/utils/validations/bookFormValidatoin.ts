@@ -157,17 +157,17 @@ const validateFormData = (
         errors.push("Maximum distance must be a positive number.");
     }
 
-    if (!formData.maxDays || isNaN(formData.maxDays)) {
-        errors.push("Please enter Maximum Days.");
-    } else if (formData.maxDays <= 0) {
-        errors.push("Maximum Days must be a positive number.");
-    }
+    // if (!formData.maxDays || isNaN(formData.maxDays)) {
+    //     errors.push("Please enter Maximum Days.");
+    // } else if (formData.maxDays <= 0) {
+    //     errors.push("Maximum Days must be a positive number.");
+    // }
 
-    if (!formData.minDays || isNaN(formData.minDays)) {
-        errors.push("Please enter Minimum Days.");
-    } else if (formData.maxDays <= 0) {
-        errors.push("Minimum Days must be a positive number.");
-    }
+    // if (!formData.minDays || isNaN(formData.minDays)) {
+    //     errors.push("Please enter Minimum Days.");
+    // } else if (formData.maxDays <= 0) {
+    //     errors.push("Minimum Days must be a positive number.");
+    // }
     
 
     if (!formData.latitude || isNaN(formData.latitude)) {

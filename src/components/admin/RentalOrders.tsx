@@ -23,7 +23,7 @@ interface RentalOrder {
     bookStatus: string;
     rentalDate: string;
     returnDate: string;
-    reachedAtUserDate: string;
+    statusUpdateRenterDate: string;
 }
 
 const RentalOrdersList: React.FC = () => {
@@ -243,18 +243,18 @@ if (loading) {
                                             {order.bookStatus}
                                         </td>
                                         <td className="py-2 px-4 border-b text-slate-300 text-center">
-                                            {order.reachedAtUserDate
+                                            {order.statusUpdateRenterDate
                                                 ? new Date(
-                                                      order.reachedAtUserDate
+                                                      order.statusUpdateRenterDate
                                                   ).toLocaleDateString()
                                                 : "N/A"}
                                         </td>
                                         <td className="py-2 px-4 border-b text-slate-300 text-center">
-                                            {order.reachedAtUserDate &&
+                                            {order.statusUpdateRenterDate &&
                                             order?.cartId?.totalDays
                                                 ? new Date(
                                                       new Date(
-                                                          order.reachedAtUserDate
+                                                          order.statusUpdateRenterDate
                                                       ).getTime() +
                                                           order?.cartId
                                                               ?.totalDays *

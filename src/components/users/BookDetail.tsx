@@ -447,42 +447,52 @@ const BookDetail: React.FC = () => {
                     </p>
 
                     <div className="mb-4">
-                        <div className="flex flex-col md:flex-row mb-4">
-                            <label className="font-semibold text-gray-700 mr-4 whitespace-normal text-sm sm:text-base">
-                                Choose Rental Period (within {book?.minDays} -{" "}
-                                {book?.maxDays} days):
-                            </label>
+                    {myBook ? (
+                      <label className="font-semibold text-gray-700 mr-4 whitespace-normal text-sm sm:text-base">
+                      Rental Period:{" "}   
+                      {book?.maxDays} days:
+                  </label>
+                    ):(
+                
+                <div className="flex flex-col md:flex-row mb-4">
+                <label className="font-semibold text-gray-700 mr-4 whitespace-normal text-sm sm:text-base">
+                    Choose Rental Period (within {book?.minDays} -{" "}
+                    {book?.maxDays} days):
+                </label>
 
-                            <div className="flex items-center space-x-2">
-                                <button
-                                    onClick={decrementTotalDays}
-                                    className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:bg-gray-100"
-                                    disabled={
-                                        requested ||
-                                        totalDays <= (book?.minDays || 1)
-                                    }>
-                                    -
-                                </button>
-                                <span className="border border-gray-300 rounded px-3 py-1 bg-white text-center">
-                                    {totalDays}
-                                </span>
-                                <button
-                                    onClick={incrementTotalDays}
-                                    className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:bg-gray-100"
-                                    disabled={
-                                        requested ||
-                                        totalDays >= (book?.maxDays || 1)
-                                    }>
-                                    +
-                                </button>
-                            </div>
-                        </div>
+                <div className="flex items-center space-x-2">
+                    <button
+                        onClick={decrementTotalDays}
+                        className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:bg-gray-100"
+                        disabled={
+                            requested ||
+                            totalDays <= (book?.minDays || 1)
+                        }>
+                        -
+                    </button>
+                    <span className="border border-gray-300 rounded px-3 py-1 bg-white text-center">
+                        {totalDays}
+                    </span>
+                    <button
+                        onClick={incrementTotalDays}
+                        className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:bg-gray-100"
+                        disabled={
+                            requested ||
+                            totalDays >= (book?.maxDays || 1)
+                        }>
+                        +
+                    </button>
+                </div>
+            </div>)}
                     </div>
 
                     <div className="flex flex-col md:flex-row">
                         <label className="font-semibold text-gray-700 mr-2">
                             Quantity :
                         </label>
+                        {myBook ? (
+                             <span>{book?.quantity}</span>
+                        ):(
                         <div className="flex items-center space-x-2">
                             <button
                                 onClick={decrementQuantity}
@@ -503,6 +513,8 @@ const BookDetail: React.FC = () => {
                                 +
                             </button>
                         </div>
+                           
+                        )}
                     </div>
 
                     <p className="text-lg mb-4">

@@ -36,7 +36,7 @@ interface Order {
    lenderId: User;
    userId: User;
    cartId: Cart;
-   reachedAtUserDate: string;
+   statusUpdateRenterDate: string;
    bookStatus: string;
    totalPrice:number;
 }
@@ -64,12 +64,12 @@ const OrderDetail = () => {
         return <div>No order details available.</div>;
     }
 
-    const rentalStartDate = order.reachedAtUserDate
-        ? new Date(order?.reachedAtUserDate).toLocaleDateString()
+    const rentalStartDate = order.statusUpdateRenterDate
+        ? new Date(order?.statusUpdateRenterDate).toLocaleDateString()
         : 'N/A';
 
-    const rentalEndDate = order?.reachedAtUserDate && order?.cartId?.totalDays
-        ? new Date(new Date(order?.reachedAtUserDate).getTime() + order?.cartId?.totalDays * 24 * 60 * 60 * 1000).toLocaleDateString()
+    const rentalEndDate = order?.statusUpdateRenterDate && order?.cartId?.totalDays
+        ? new Date(new Date(order?.statusUpdateRenterDate).getTime() + order?.cartId?.totalDays * 24 * 60 * 60 * 1000).toLocaleDateString()
         : 'N/A';
 
     return (
