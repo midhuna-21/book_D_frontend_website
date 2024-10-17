@@ -6,6 +6,7 @@ import googleimage from "../../assets/google.png";
 import { axiosUser } from "../api/baseUrl";
 import { useNavigate,useLocation } from "react-router-dom";
 import { toast } from "sonner";
+import axios from 'axios';
 
 const SignInButton: React.FC = () => {
     const navigate = useNavigate();
@@ -16,9 +17,15 @@ const SignInButton: React.FC = () => {
     const signin = useGoogleLogin({
             onSuccess: async (credentialResponse: any) => {
                 try {
-                    const response = await axiosUser.post('/google',credentialResponse);
-
-                    axiosUser
+                    const response = await axios.get(
+                        "https://www.googleapis.com/oauth2/v1/userinfo",
+                        {
+                            headers: {
+                                Authorization: `Bearer ${credentialResponse.access_token}`,
+                            },
+                        }
+                    );
+                    await axiosUser
                     .post(
                         "/google-login",
                         {
