@@ -41,8 +41,6 @@ const UserLogin: React.FC = () => {
             )
             .then(function (response) {
                 if (response.status === 200) {
-                    const {user}= response.data
-                    console.log(user)
                     dispatch(addUser(response.data));
                   
                     localStorage.setItem(
