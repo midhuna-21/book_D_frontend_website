@@ -38,8 +38,8 @@ const SignInButton: React.FC = () => {
                     ).then(function (response) {
                             if (response.status === 200) {
                             
-                                dispatch(addUser(response.data));
-                  
+                                dispatch(addUser(response.data))
+                                console.log(response.data)
                                 localStorage.setItem(
                                     "useraccessToken",
                                     response.data.accessToken
@@ -48,7 +48,7 @@ const SignInButton: React.FC = () => {
                                     "userrefreshToken",
                                     response.data.refreshToken
                                 );
-                                navigate("/home", { replace: true });
+                                navigate("/home");
                             }
                         })
                         .catch(function (error) {
