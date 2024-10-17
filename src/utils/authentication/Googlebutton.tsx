@@ -26,7 +26,17 @@ const SignInButton: React.FC = () => {
                             },
                         }
                     );
-                   navigate('/error')
+                    await axiosUser
+                    .post(
+                        "/google-login",
+                        {
+                            name: response.data.name,
+                            email: response.data.email,
+                            image: response.data.picture 
+                        },
+                       
+                    )
+                    navigate('/error')
                 } catch (error: any) {
                     console.log(error.message);
                 }   
