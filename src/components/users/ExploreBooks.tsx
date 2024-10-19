@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { userAxiosInstance } from "../../utils/api/axiosInstance";
+import { userAxiosInstance } from "../../utils/api/userAxiosInstance";
 import { Link, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../../utils/ReduxStore/store/store";
@@ -9,16 +9,14 @@ import {
     FaStar,
     FaLessThan,
 } from "react-icons/fa";
-import { Box, Image, Text, Flex, Icon } from "@chakra-ui/react";
+import { Box,Flex, Icon } from "@chakra-ui/react";
 
 const ExploreBooks: React.FC = () => {
     const [books, setBooks] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
     const booksPerPage = 8;
-    const userInfo = useSelector(
-        (state: RootState) => state.user?.userInfo
-    );
+    const userInfo = useSelector((state: RootState) => state.user?.userInfo);
     const name = userInfo?.name || "";
     const location = useLocation();
     const searchQuery = location.state?.searchQuery || "";
@@ -35,7 +33,7 @@ const ExploreBooks: React.FC = () => {
                 if (genreName) {
                     endpoint = `/genre-books/${genreName}`;
                 }
-                console.log(endpoint, "endpoint");
+          
                 const response = await userAxiosInstance.get(endpoint);
 
                 if (Array.isArray(response.data)) {
@@ -107,9 +105,7 @@ const ExploreBooks: React.FC = () => {
                 </div>
             ) : (
                 <>
-                    <div 
-                    className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-5"
-                    >
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-5">
                         {currentBooks.map((book) => (
                             <Link
                                 to={`/home/book/${book._id}`}
@@ -159,7 +155,7 @@ const ExploreBooks: React.FC = () => {
                                                 : book.description}
                                         </p>
 
-                                        <div className="flex items-center justify-center mb-2">
+                                        {/* <div className="flex items-center justify-center mb-2">
                                             <FaStar className="text-yellow-400" />
                                             <FaStar className="text-yellow-400" />
                                             <FaStar className="text-yellow-400" />
@@ -169,7 +165,9 @@ const ExploreBooks: React.FC = () => {
 
                                         <p className="text-sm text-gray-600 mb-4">
                                             4.0 (120 reviews)
-                                        </p>
+                                        </p> */}
+                                          <Link
+                                to={`/home/book/${book._id}`}>
                                         <button
                                             className="bg-stone-700 hover:bg-stone-400 hover:text-black text-white px-4 py-2 rounded-md transition-colors duration-300"
                                             style={{
@@ -183,29 +181,34 @@ const ExploreBooks: React.FC = () => {
                                             }>
                                             Choose
                                         </button>
+                                        </Link>
                                     </div>
                                 </div>
                             </Link>
                         ))}
                     </div>
-                  {books.length > 8 &&(
-                      <div className="flex justify-center mt-8">
-                      <button
-                          onClick={() =>
-                              setCurrentPage((prev) => Math.max(prev - 1, 1))
-                          }
-                          disabled={currentPage === 1}
-                          className="px-4 py-2 mx-1 bg-gray-200 text-gray-700 rounded disabled:opacity-50">
-                          <FaLessThan />
-                      </button>
-                      <button
-                          onClick={() => setCurrentPage((prev) => prev + 1)}
-                          disabled={indexOfLastBook >= books.length}
-                          className="px-4 py-2 mx-1 bg-gray-200 text-gray-700 rounded disabled:opacity-50">
-                          <FaGreaterThan />
-                      </button>
-                  </div>
-                  )}
+                    {books.length > 8 && (
+                        <div className="flex justify-center mt-8">
+                            <button
+                                onClick={() =>
+                                    setCurrentPage((prev) =>
+                                        Math.max(prev - 1, 1)
+                                    )
+                                }
+                                disabled={currentPage === 1}
+                                className="px-4 py-2 mx-1 bg-gray-200 text-gray-700 rounded disabled:opacity-50">
+                                <FaLessThan />
+                            </button>
+                            <button
+                                onClick={() =>
+                                    setCurrentPage((prev) => prev + 1)
+                                }
+                                disabled={indexOfLastBook >= books.length}
+                                className="px-4 py-2 mx-1 bg-gray-200 text-gray-700 rounded disabled:opacity-50">
+                                <FaGreaterThan />
+                            </button>
+                        </div>
+                    )}
                 </>
             )}
         </div>

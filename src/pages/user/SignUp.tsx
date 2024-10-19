@@ -7,7 +7,7 @@ import { validate } from "../../utils/validations/signupValidation";
 import { axiosUser } from "../../utils/api/baseUrl";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import SignInButton from "../../utils/authentication/Googlebutton";
-import config from '../../config/config'
+import config from "../../config/config";
 
 const Register: React.FC = () => {
     const navigate = useNavigate();
@@ -38,7 +38,7 @@ const Register: React.FC = () => {
             toast.error(validationResult);
             return;
         }
-        console.log(validationResult,'validationResult')
+
         axiosUser
             .post(
                 "/sign-up",

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { adminAxiosInstance } from "../../utils/api/axiosInstance";
+import { adminAxiosInstance } from "../../utils/api/adminAxiosInstance";
 import { Pie, Line } from "react-chartjs-2";
 import {
     Chart as ChartJS,

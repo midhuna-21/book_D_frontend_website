@@ -7,27 +7,24 @@ interface FormData {
     genre: string;
     customGenre?: string;
     rentalFee?: number;
-    extraFee?:number
-    quantity:number;
+    extraFee?: number;
+    quantity: number;
     images?: File[] | null;
-   address:{
-    street:string;
-    city:string;
-    district:string;
-    state:string;
-    pincode:string;
-   }
-    maxDistance:number;
-    maxDays:number;
-    minDays:number;
-    latitude:number;
-    longitude:number;
+    address: {
+        street: string;
+        city: string;
+        district: string;
+        state: string;
+        pincode: string;
+    };
+    maxDistance: number;
+    maxDays: number;
+    minDays: number;
+    latitude: number;
+    longitude: number;
 }
 
-
-const validateFormData = (
-    formData: FormData
-): string[] => {
+const validateFormData = (formData: FormData): string[] => {
     const errors: string[] = [];
 
     const letterRegex = /[a-zA-Z]/;
@@ -36,7 +33,7 @@ const validateFormData = (
     const specialCharRegex = /[^a-zA-Z0-9\s]/g;
     const nonLetterRegex = /[^a-zA-Z\s]/;
     const currentYear = new Date().getFullYear();
-    const startingYear = 1440
+    const startingYear = 1440;
 
     if (!formData.bookTitle.trim()) {
         errors.push("Please enter Book title.");
@@ -67,7 +64,7 @@ const validateFormData = (
         errors.push("Please enter Author.");
     } else if (formData.author.length > 50) {
         errors.push("Author is too long.");
-    } 
+    }
 
     if (!formData.publisher.trim()) {
         errors.push("Please enter Publisher.");
@@ -85,12 +82,12 @@ const validateFormData = (
         errors.push("Please Provide Published year.");
     } else {
         const publishedYearInt = parseInt(formData.publishedYear, 10);
- 
+
         if (isNaN(publishedYearInt) || publishedYearInt > currentYear) {
             errors.push(
                 "Published year must be the current year or before the current year."
             );
-        }else if(startingYear>publishedYearInt){
+        } else if (startingYear > publishedYearInt) {
             errors.push("Please Provide Published year after 1440.");
         }
     }
@@ -107,25 +104,23 @@ const validateFormData = (
         errors.push("Custom genre is too long.");
     }
 
-        if (!formData.rentalFee || isNaN(formData.rentalFee)) {
-            errors.push("Please enter Rental fee");
-        } else if (formData.rentalFee <= 0) {
-            errors.push("Rental fee must be a positive number.");
-        } 
+    if (!formData.rentalFee || isNaN(formData.rentalFee)) {
+        errors.push("Please enter Rental fee");
+    } else if (formData.rentalFee <= 0) {
+        errors.push("Rental fee must be a positive number.");
+    }
 
-        if (!formData.extraFee || isNaN(formData.extraFee)) {
-            errors.push("Please enter Extra fee.");
-        }else if (formData.extraFee <= 0) {
-            errors.push("Rental fee must be a positive number.");
-        } 
-        else if (formData.extraFee < 0) {
-            errors.push("Extra fee cannot be negative.");
-        }
-    
+    if (!formData.extraFee || isNaN(formData.extraFee)) {
+        errors.push("Please enter Extra fee.");
+    } else if (formData.extraFee <= 0) {
+        errors.push("Rental fee must be a positive number.");
+    } else if (formData.extraFee < 0) {
+        errors.push("Extra fee cannot be negative.");
+    }
 
     if (!formData.images || formData.images.length === 0) {
         errors.push("Upload at least one image.");
-    } 
+    }
 
     if (!formData.address.street.trim()) {
         errors.push("Please enter Building Name.");
@@ -157,18 +152,17 @@ const validateFormData = (
         errors.push("Maximum distance must be a positive number.");
     }
 
-    // if (!formData.maxDays || isNaN(formData.maxDays)) {
-    //     errors.push("Please enter Maximum Days.");
-    // } else if (formData.maxDays <= 0) {
-    //     errors.push("Maximum Days must be a positive number.");
-    // }
+    if (!formData.maxDays || isNaN(formData.maxDays)) {
+        errors.push("Please enter Maximum Days.");
+    } else if (formData.maxDays <= 0) {
+        errors.push("Maximum Days must be a positive number.");
+    }
 
-    // if (!formData.minDays || isNaN(formData.minDays)) {
-    //     errors.push("Please enter Minimum Days.");
-    // } else if (formData.maxDays <= 0) {
-    //     errors.push("Minimum Days must be a positive number.");
-    // }
-    
+    if (!formData.minDays || isNaN(formData.minDays)) {
+        errors.push("Please enter Minimum Days.");
+    } else if (formData.maxDays <= 0) {
+        errors.push("Minimum Days must be a positive number.");
+    }
 
     if (!formData.latitude || isNaN(formData.latitude)) {
         errors.push("Error in getting location");

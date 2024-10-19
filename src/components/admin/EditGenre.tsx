@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
-import { adminAxiosInstance } from "../../utils/api/axiosInstance";
+import { adminAxiosInstance } from "../../utils/api/adminAxiosInstance";
 import { FaPlus } from "react-icons/fa";
-import { useParams,useNavigate } from "react-router-dom";
-import { toast } from 'sonner';
-
+import { useParams, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const EditGenre: React.FC = () => {
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -11,18 +10,19 @@ const EditGenre: React.FC = () => {
     const { genreId } = useParams();
     const [file, setFile] = useState<File | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchGenre = async () => {
             try {
-                const response = await adminAxiosInstance.get(`/genre/${genreId}`);
+                const response = await adminAxiosInstance.get(
+                    `/genre/${genreId}`
+                );
                 const fetchedGenre = response?.data;
-               
+
                 if (fetchedGenre) {
                     setGenreName(fetchedGenre.genreName);
                     setSelectedImage(fetchedGenre.image);
-                    
                 }
             } catch (error) {
                 console.error("Error fetching genre details", error);
@@ -51,31 +51,35 @@ const EditGenre: React.FC = () => {
         event.preventDefault();
         try {
             const formData = new FormData();
-             const name = genreName.toLowerCase();
+            const name = genreName.toLowerCase();
             formData.append("genreName", name);
             if (file) {
                 formData.append("file", file);
-            }else if(selectedImage){
+            } else if (selectedImage) {
                 formData.append("exisitingImage", selectedImage);
             }
 
-            const response = await adminAxiosInstance.post(`/genre-update/${genreId}`, formData, {
-                withCredentials: true,
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            });
+            const response = await adminAxiosInstance.post(
+                `/genre-update/${genreId}`,
+                formData,
+                {
+                    withCredentials: true,
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                }
+            );
 
             if (response.status === 200) {
                 const fetchedGenre = response?.data;
-               
+
                 if (fetchedGenre) {
                     setGenreName(fetchedGenre.genreName);
                     setSelectedImage(fetchedGenre.image);
-                    navigate('/admin/add-genre')
+                    navigate("/admin/add-genre");
                 }
             }
-        } catch (error:any) {
+        } catch (error: any) {
             console.error("Error updating genre:", error);
             if (error.response && error.response.status === 400) {
                 toast.error(error.response.data.message);
@@ -88,10 +92,14 @@ const EditGenre: React.FC = () => {
     return (
         <div className="flex items-start h-screen bg-stone-900 p-8 rounded-2xl">
             <div className="p-8 rounded shadow-md w-1/2 mr-4">
-                <h2 className="text-2xl font-custom mb-6 text-zinc-300">Edit Genre</h2>
+                <h2 className="text-2xl font-custom mb-6 text-zinc-300">
+                    Edit Genre
+                </h2>
                 <form onSubmit={handleUpdate}>
                     <div className="mb-4">
-                        <label htmlFor="genreName" className="block text-zinc-300 mb-2 font-custom">
+                        <label
+                            htmlFor="genreName"
+                            className="block text-zinc-300 mb-2 font-custom">
                             Genre Name
                         </label>
                         <input
@@ -105,7 +113,9 @@ const EditGenre: React.FC = () => {
                         />
                     </div>
                     <div className="mb-4">
-                        <label htmlFor="image" className="block text-zinc-300 mb-2 font-custom">
+                        <label
+                            htmlFor="image"
+                            className="block text-zinc-300 mb-2 font-custom">
                             Upload Image
                         </label>
                         <div className="flex items-center">
@@ -122,7 +132,7 @@ const EditGenre: React.FC = () => {
                                     Choose File
                                 </div>
                             </div>
-                            {(selectedImage) && (
+                            {selectedImage && (
                                 <div className="ml-4">
                                     <img
                                         src={selectedImage}

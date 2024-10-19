@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import sitelogo from "../../assets/siteLogo.png";
-import {useSelector,useDispatch} from 'react-redux';
-import {RootState} from '../../utils/ReduxStore/store/store';
-import {clearUser} from '../../utils/ReduxStore/slice/userSlice';
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../../utils/ReduxStore/store/store";
+import { clearUser } from "../../utils/ReduxStore/slice/userSlice";
 import { HiEye, HiEyeOff } from "react-icons/hi";
 import security from "../../assets/security-lock-icon-29.jpg";
 import { useState } from "react";
@@ -15,17 +15,16 @@ const ResetPassword: React.FC = () => {
     const [password, setPassword] = useState("");
     const [conformPassword, setConformPassword] = useState("");
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-    const user= useSelector((state:RootState)=>state?.user?.userInfo?.user)
-   
+    const user = useSelector((state: RootState) => state?.user?.userInfo?.user);
+
     const navigate = useNavigate();
     const location = useLocation();
     const dispatch = useDispatch();
     const searchParams = new URLSearchParams(location.search);
     const email = location.state?.response?.email || searchParams.get("email");
     const resetToken = searchParams.get("token");
-    const token = user?.resetToken
-    console.log(token)
-    const resetTokenExpiration = searchParams.get('expires')  
+    const token = user?.resetToken;
+    const resetTokenExpiration = searchParams.get("expires");
 
     const togglePasswordVisibility = () => {
         setIsPasswordVisible(!isPasswordVisible);
@@ -47,7 +46,7 @@ const ResetPassword: React.FC = () => {
 
         axiosUser
             .post("/update-password", {
-               resetToken,
+                resetToken,
                 resetTokenExpiration,
                 email: email,
                 password: password,
@@ -56,8 +55,8 @@ const ResetPassword: React.FC = () => {
                 localStorage.removeItem("useraccessToken");
                 localStorage.removeItem("userrefreshToken");
                 dispatch(clearUser());
-            //    dispatch(addUser(response.data))
-            toast.success("successfully unlinked your email account.")
+                //    dispatch(addUser(response.data))
+                toast.success("successfully unlinked your email account.");
                 navigate("/login", { replace: true });
                 localStorage.removeItem("otpSubmitted");
             })
@@ -68,21 +67,25 @@ const ResetPassword: React.FC = () => {
                     toast.error("An error occured try again later");
                 }
             });
-    };   
+    };
 
     useEffect(() => {
-        const otpSubmitted = localStorage.getItem("otpSubmitted");       
+        const otpSubmitted = localStorage.getItem("otpSubmitted");
         const email = searchParams.get("email");
 
-      
-        if (resetToken && email) { 
-         const currentTime = Date.now()
-         console.log(token,'resetToken')
-         if(resetTokenExpiration && currentTime > parseInt(resetTokenExpiration,10) || token==null){
-            navigate('/error',{state:{error: 'Token expired', from: location.pathname }})
-            return 
-         }
-         return;
+        if (resetToken && email) {
+            const currentTime = Date.now();
+            if (
+                (resetTokenExpiration &&
+                    currentTime > parseInt(resetTokenExpiration, 10)) ||
+                token == null
+            ) {
+                navigate("/error", {
+                    state: { error: "Token expired", from: location.pathname },
+                });
+                return;
+            }
+            return;
         }
 
         if (!otpSubmitted) {

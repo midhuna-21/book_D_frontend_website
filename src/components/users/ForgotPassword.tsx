@@ -50,19 +50,19 @@ const ForgotPassword: React.FC = () => {
     useEffect(() => {
         if (localStorage.getItem("otpSubmitted")) {
             localStorage.removeItem("otpSubmitted");
-        }   
+        }
     }, []);
-   
+
     useEffect(() => {
         const params = new URLSearchParams(location.search);
-        if (params.get('access') === 'true') {
-          console.log('hoooo')
+        if (params.get("access") === "true") {
+            console.log("true");
         } else {
-            navigate('/login', { replace: true });
+            navigate("/login", { replace: true });
         }
     }, [location, navigate]);
     return (
-        <div className="forgot h-[100vh] flex items-center justify-center"> 
+        <div className="forgot h-[100vh] flex items-center justify-center">
             <div
                 style={{ height: "500px", width: "600px" }}
                 className="border-2 border-gray-500 rounded-lg relative flex items-center justify-center">

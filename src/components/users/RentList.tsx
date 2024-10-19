@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { userAxiosInstance } from "../../utils/api/axiosInstance";
+import { userAxiosInstance } from "../../utils/api/userAxiosInstance";
 import { useSelector } from "react-redux";
 import { RootState } from "../../utils/ReduxStore/store/store";
-import { FaGreaterThan, FaLessThan,FaCheck } from "react-icons/fa";
-import {toast} from 'sonner';
+import { FaGreaterThan, FaLessThan, FaCheck } from "react-icons/fa";
+import { toast } from "sonner";
 
 interface Address {
     street: string;
@@ -12,12 +12,12 @@ interface Address {
     state: string;
     pincode: string;
 }
-interface Cart{
-    quantity:number;
-    totalRentalPrice:number;
-    totalAmount:number;
-    total_deposit_amount:number;
-    totalDays:number
+interface Cart {
+    quantity: number;
+    totalRentalPrice: number;
+    totalAmount: number;
+    total_deposit_amount: number;
+    totalDays: number;
 }
 interface Order {
     _id: string;
@@ -30,7 +30,7 @@ interface Order {
     lenderId: {
         name: string;
     };
-    cartId:Cart;
+    cartId: Cart;
     rentalStartDate: string;
     rentalEndDate: string;
     isMoneyTransactionStatus:
@@ -41,13 +41,12 @@ interface Order {
     totalPrice: number;
     quantity: number;
     bookStatusFromRenter: string;
-    bookStatusFromLender:string;
-    createdAt:Date;
-    statusUpdateRenterDate:Date;
+    bookStatusFromLender: string;
+    createdAt: Date;
+    statusUpdateRenterDate: Date;
 }
 
 const RentList: React.FC = () => {
-
     const [selectedOption, setSelectedOption] = useState("all");
     const options = [
         "all",
@@ -55,36 +54,34 @@ const RentList: React.FC = () => {
         "not_returned",
         "completed",
         "cancelled",
-        "overdue"
+        "overdue",
     ];
 
-    const handleSelection = (option:any) => {
+    const handleSelection = (option: any) => {
         setSelectedOption(option);
-        if(option === 'all'){
-           handleViewModeChange("all")
-        }else if(option === 'not_reached'){
-           handleViewModeChange("not_reached")
-        }else if(option === 'not_returned'){
-            handleViewModeChange("not_returned")
-        }else if(option == 'completed'){
-            handleViewModeChange("completed")
-        }else if(option === 'cancelled'){
-            handleViewModeChange("cancelled")
-        }else if(option === 'overdue'){
-            handleViewModeChange("overdue")
+        if (option === "all") {
+            handleViewModeChange("all");
+        } else if (option === "not_reached") {
+            handleViewModeChange("not_reached");
+        } else if (option === "not_returned") {
+            handleViewModeChange("not_returned");
+        } else if (option == "completed") {
+            handleViewModeChange("completed");
+        } else if (option === "cancelled") {
+            handleViewModeChange("cancelled");
+        } else if (option === "overdue") {
+            handleViewModeChange("overdue");
         }
 
         setCurrentPage(1);
         setVisiblePageStart(1);
-        
     };
-    const [viewMode, setViewMode] = useState<string>("all"); 
+    const [viewMode, setViewMode] = useState<string>("all");
 
     const handleViewModeChange = (mode: string) => {
         setViewMode(mode);
     };
-    
-    
+
     const userInfo = useSelector(
         (state: RootState) => state.user.userInfo?.user
     );
@@ -97,53 +94,59 @@ const RentList: React.FC = () => {
     const [currentOrderStatus, setCurrentOrderStatus] = useState<string | null>(
         null
     );
-    
+
     const filteredOrders = () => {
         let filtered = orders;
 
         switch (viewMode) {
             case "not_reached":
-                filtered = filtered.filter((orders) => orders?.bookStatusFromRenter == 'not_reached');
-                console.log(filtered,'not_reached')
+                filtered = filtered.filter(
+                    (orders) => orders?.bookStatusFromRenter == "not_reached"
+                );
 
                 break;
             case "not_returned":
-                filtered = filtered.filter((orders) => orders?.bookStatusFromRenter == 'not_returned');
-                console.log(filtered,'not_returned')
-
+                filtered = filtered.filter(
+                    (orders) => orders?.bookStatusFromRenter == "not_returned"
+                );
                 break;
             case "completed":
-                filtered = filtered.filter((orders) => orders?.bookStatusFromRenter == 'completed');
-                console.log(filtered,'completed')
+                filtered = filtered.filter(
+                    (orders) => orders?.bookStatusFromRenter == "completed"
+                );
 
                 break;
-                case "cancelled":
-                    filtered = filtered.filter((orders) => orders?.bookStatusFromRenter == 'cancelled');
-                console.log(filtered,'cancelled')
+            case "cancelled":
+                filtered = filtered.filter(
+                    (orders) => orders?.bookStatusFromRenter == "cancelled"
+                );
                 break;
-                case "overdue":
-                filtered = filtered.filter((orders) => orders?.bookStatusFromRenter == 'overdue');
-                console.log(filtered,'overdue')
+            case "overdue":
+                filtered = filtered.filter(
+                    (orders) => orders?.bookStatusFromRenter == "overdue"
+                );
 
-                  break;
-                    
+                break;
+
             default:
                 break;
         }
-        
-        
+
         return filtered;
     };
-    
+
     const [currentPage, setCurrentPage] = useState(1);
     const [visiblePageStart, setVisiblePageStart] = useState(1);
     const ordersPerPage = 7;
     const maxVisiblePages = 5;
-    
+
     const indexOfLastOrder = currentPage * ordersPerPage;
     const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
-    const currentOrders = filteredOrders().slice(indexOfFirstOrder, indexOfLastOrder);
-    
+    const currentOrders = filteredOrders().slice(
+        indexOfFirstOrder,
+        indexOfLastOrder
+    );
+
     const totalPages = Math.ceil(filteredOrders().length / ordersPerPage);
 
     const nextPage = () => {
@@ -163,7 +166,6 @@ const RentList: React.FC = () => {
             }
         }
     };
-
 
     const goToPage = (page: number) => {
         setCurrentPage(page);
@@ -194,70 +196,80 @@ const RentList: React.FC = () => {
         fetchOrders();
     }, [userId]);
 
-    const handleStatusUpdate = (orderId: string, bookStatusFromLender: string,bookStatusFromRenter:string,lenderName:string, orderDate: Date,statusUpdateRenterDate:Date,totalDays:number) => {
+    const handleStatusUpdate = (
+        orderId: string,
+        bookStatusFromLender: string,
+        bookStatusFromRenter: string,
+        lenderName: string,
+        orderDate: Date,
+        statusUpdateRenterDate: Date,
+        totalDays: number
+    ) => {
+        if (bookStatusFromRenter === "not_reached") {
+            const currentDate = new Date();
+            const orderCreationDate = new Date(orderDate);
+            const timeDifference =
+                currentDate.getTime() - orderCreationDate.getTime();
+            const dayDifference = Math.floor(
+                timeDifference / (1000 * 3600 * 24)
+            );
 
-    if(bookStatusFromRenter === 'not_reached'){
-        const currentDate = new Date();
-        const orderCreationDate = new Date(orderDate);
-        const timeDifference = currentDate.getTime() - orderCreationDate.getTime();
-        const dayDifference = Math.floor(timeDifference / (1000 * 3600 * 24));
-
-        if(dayDifference < 5){
-
-            setSelectedOrderId(orderId);
-            setCurrentOrderStatus(bookStatusFromRenter);
-            setShowModal(true);
-        }else{
-            toast.info("Your order has been cancelled. You can no longer receive this product. If not already credited, the amount will be refunded to your wallet within 7 days.");
-
+            if (dayDifference < 5) {
+                setSelectedOrderId(orderId);
+                setCurrentOrderStatus(bookStatusFromRenter);
+                setShowModal(true);
+            } else {
+                toast.info(
+                    "Your order has been cancelled. You can no longer receive this product. If not already credited, the amount will be refunded to your wallet within 7 days."
+                );
+            }
+        } else {
+            const currentDate = new Date();
+            const isReached = new Date(statusUpdateRenterDate);
+            const timeDifference = currentDate.getTime() - isReached.getTime();
+            const daysPassed = Math.floor(timeDifference / (1000 * 3600 * 24));
+            if (daysPassed < totalDays) {
+                const remainingDays = totalDays - daysPassed;
+                toast.info(
+                    `you canot return the book right now.You can return it after ${remainingDays} remaining days.`
+                );
+            } else if (daysPassed > totalDays + 10) {
+                toast.info(
+                    `You can't return the book anymore. The deposit amount has been credited to the ownership.`
+                );
+            } else if (bookStatusFromRenter === "not_returned") {
+                if (bookStatusFromLender === "not_returned") {
+                    toast.info(
+                        `The book has not been handed over to ${lenderName}. After the confirmation update, you will be able to update the status.`
+                    );
+                    return;
+                } else if (bookStatusFromLender === "not_reached") {
+                    toast.info("you already updated");
+                    return;
+                } else {
+                   
+                    setSelectedOrderId(orderId);
+                    setCurrentOrderStatus(bookStatusFromRenter);
+                    setShowModal(true);
+                }
+            } else {
+                setSelectedOrderId(orderId);
+                setCurrentOrderStatus(bookStatusFromRenter);
+                setShowModal(true);
+            }
         }
-    }else {
-     const currentDate = new Date();
-     const isReached = new Date(statusUpdateRenterDate)
-     const timeDifference = currentDate.getTime() - isReached.getTime();
-     const daysPassed = Math.floor(timeDifference / (1000 * 3600 * 24)); 
-     if(daysPassed < totalDays){
-        const remainingDays = totalDays - daysPassed 
-        toast.info(`you canot return the book right now.You can return it after ${remainingDays} remaining days.`)
-     }else if(daysPassed>totalDays+10){
-        toast.info(`You can't return the book anymore. The deposit amount has been credited to the ownership.`)
-     
-    }else if(bookStatusFromRenter === "not_returned"){
-        if (bookStatusFromLender === "not_returned") {
-
-            toast.info(`The book has not been handed over to ${lenderName}. After the confirmation update, you will be able to update the status.`);
-            return; 
-        }else if(bookStatusFromLender === "not_reached"){
-            toast.info('you already updated');
-            return; 
-        }
-        else {
-              console.log(bookStatusFromRenter,'bookStatusFromRenter')
-       
-            setSelectedOrderId(orderId);
-            setCurrentOrderStatus(bookStatusFromRenter); 
-            setShowModal(true);
-          }
-
-    }else{
-        setSelectedOrderId(orderId);
-        setCurrentOrderStatus(bookStatusFromRenter);
-        setShowModal(true);
-     }
-    }
     };
 
     const confirmStatusUpdate = async () => {
         if (selectedOrderId === null || isBookHandover === null) return;
         try {
-            console.log(isBookHandover,'isBookHandover')
             const response = await userAxiosInstance.post(
                 `/update-order-status/${selectedOrderId}`,
                 {
                     isBookHandover: isBookHandover,
                 }
             );
-        fetchOrders();
+            fetchOrders();
             setShowModal(false);
         } catch (error) {
             console.error("Error updating status:", error);
@@ -274,41 +286,43 @@ const RentList: React.FC = () => {
 
     return (
         <div className="flex flex-col items-center justify-center py-4 bg-gray-100">
-         <div className="bg-blue-950 text-white w-full">
-            <h1 className="text-3xl font-serif text-center">Rent list</h1>
-          </div>
-            <div className="bg-white rounded-lg w-full">
-                
-            <div className="">
-                
-                <div className=" bg-gray-200 p-2">
-                  <div className="flex ml-5">
-                  {options.map((option) => (
-                        <button
-                            key={option}
-                            className={`${
-                                selectedOption === option
-                                    ? "bg-gray-800 text-white"
-                                    : "bg-white text-gray-600"
-                            } px-4 py-2 text-sm font-semibold rounded-full transition-colors duration-200`}
-                            onClick={() => handleSelection(option)}
-                        >
-                            {option.replace("_", " ")}
-                        </button>
-                    ))}
-                  </div>
-                </div>
+            <div className="bg-blue-950 text-white w-full">
+                <h1 className="text-3xl font-serif text-center">Rent list</h1>
             </div>
-                        {currentOrders.length === 0 ? (
-                            <div className="flex items-center justify-center"style={{ height: '300px'}}>
-                    <p className="text-gray-600 text-lg">No rental orders.</p>
+            <div className="bg-white rounded-lg w-full">
+                <div className="">
+                    <div className=" bg-gray-200 p-2">
+                        <div className="flex ml-5">
+                            {options.map((option) => (
+                                <button
+                                    key={option}
+                                    className={`${
+                                        selectedOption === option
+                                            ? "bg-gray-800 text-white"
+                                            : "bg-white text-gray-600"
+                                    } px-4 py-2 text-sm font-semibold rounded-full transition-colors duration-200`}
+                                    onClick={() => handleSelection(option)}>
+                                    {option.replace("_", " ")}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+                {currentOrders.length === 0 ? (
+                    <div
+                        className="flex items-center justify-center"
+                        style={{ height: "300px" }}>
+                        <p className="text-gray-600 text-lg">
+                            No rental orders.
+                        </p>
                     </div>
                 ) : (
                     <>
                         <div className="overflow-x-auto p-3 ">
-                        <table className="min-w-full bg-white shadow-xl rounded-2xl" style={{ height: '300px' }}>
-
-                                <thead >
+                            <table
+                                className="min-w-full bg-white shadow-xl rounded-2xl"
+                                style={{ height: "300px" }}>
+                                <thead>
                                     <tr>
                                         <th className="text-center text-gray-600 font-bold text-sm p-4 border-b-2 border-t-2 border-black ">
                                             Book Title
@@ -330,6 +344,9 @@ const RentList: React.FC = () => {
                                         </th>
                                         <th className="text-center text-gray-600 font-bold text-sm p-4 border-b-2 border-l-2 border-t-2 border-black">
                                             Address
+                                        </th>
+                                        <th className="text-center text-gray-600 font-bold text-sm p-4 border-b-2 border-l-2 border-t-2 border-black">
+                                            Date
                                         </th>
                                         <th className="text-center text-gray-600 font-bold text-sm p-4 border-b-2 border-l-2 border-t-2 border-black">
                                             Status
@@ -354,10 +371,15 @@ const RentList: React.FC = () => {
                                                 {order.cartId?.quantity}
                                             </td>
                                             <td className="px-6 py-4 text-gray-600 text-sm max-w-[150px] truncate text-center">
-                                                {order.cartId?.totalRentalPrice} ₹
+                                                {order.cartId?.totalRentalPrice}{" "}
+                                                ₹
                                             </td>
                                             <td className="px-6 py-4 text-gray-600 text-sm max-w-[150px] truncate text-center">
-                                                {order.cartId?.total_deposit_amount} ₹
+                                                {
+                                                    order.cartId
+                                                        ?.total_deposit_amount
+                                                }{" "}
+                                                ₹
                                             </td>
                                             <td className="px-6 py-4 text-gray-600 text-sm max-w-[150px] truncate text-center">
                                                 {order.cartId?.totalAmount} ₹
@@ -396,78 +418,95 @@ const RentList: React.FC = () => {
                                                     }
                                                 </a>
                                             </td>
+                                            <td className="px-6 py-4 text-gray-600 text-sm max-w-[150px] truncate text-center">
+                                             
+                                                {new Date(order.createdAt).toLocaleDateString()}
+                                            </td>
                                             <td className="px-6 py-4 max-w-[150px] truncate text-center">
-                                                {order.bookStatusFromLender === "completed"? (
+                                                {order.bookStatusFromLender ===
+                                                "completed" ? (
                                                     <span className=" font-semibold text-sm bg-green-200 text-green-800 rounded-md p-1">
                                                         Returned
                                                     </span>
                                                 ) : order.bookStatusFromRenter ===
-                                                  "not_returned"     ? (
+                                                  "not_returned" ? (
                                                     <span className="font-semibold text-sm bg-red-200 text-red-800 rounded-md p-1">
                                                         Not Returned
                                                     </span>
-                                                ): order.bookStatusFromRenter === "cancelled"  ? (
-                                                    <span className="bg-red-300 text-red-900  font-semibold text-sm rounded-md p-1">Cancelled</span>
-                                                ) : order.bookStatusFromRenter === "overdue" ? (
-                                                    <span className="bg-yellow-200 text-yellow-800 font-semibold text-sm rounded-md p-1">Overdue</span>
+                                                ) : order.bookStatusFromRenter ===
+                                                  "cancelled" ? (
+                                                    <span className="bg-red-300 text-red-900  font-semibold text-sm rounded-md p-1">
+                                                        Cancelled
+                                                    </span>
+                                                ) : order.bookStatusFromRenter ===
+                                                  "overdue" ? (
+                                                    <span className="bg-yellow-200 text-yellow-800 font-semibold text-sm rounded-md p-1">
+                                                        Overdue
+                                                    </span>
                                                 ) : (
                                                     <span className="bg-orange-200 text-orange-800 font-semibold text-sm rounded-md p-1">
-                                                      pending
+                                                        pending
                                                     </span>
-                                                )
-                                                }
-                                                
+                                                )}
                                             </td>
-                                         <td>
-                                                        <td className="px-6 py-4">
-                                         { order.bookStatusFromLender ==="completed" ? (
-                                            <div className="flex items-center justify-center">
-                                          
-                                          <span className="text-green-600 font-semibold text-sm">
-                                            
-                                                        Completed 
-                                                    </span>
-                                                     <FaCheck className="text-green-600 text-lg ml-2" /> 
-                                                    </div>
-                                                    ): order.bookStatusFromRenter === "cancelled" ? (
+                                            <td>
+                                                <td className="px-6 py-4">
+                                                    {order.bookStatusFromLender ===
+                                                    "completed" ? (
+                                                        <div className="flex items-center justify-center">
+                                                            <span className="text-green-600 font-semibold text-sm">
+                                                                Completed
+                                                            </span>
+                                                            <FaCheck className="text-green-600 text-lg ml-2" />
+                                                        </div>
+                                                    ) : order.bookStatusFromRenter ===
+                                                      "cancelled" ? (
                                                         <div className="flex items-center justify-center">
                                                             <span className="text-red-600 font-semibold text-sm">
                                                                 Order Cancelled
                                                             </span>
                                                         </div>
-                                                    ) : order.bookStatusFromRenter === "overdue" ? (
+                                                    ) : order.bookStatusFromRenter ===
+                                                      "overdue" ? (
                                                         <div className="flex items-center justify-center">
-                                                          <span className="text-red-600 font-semibold text-sm">Order Incomplete</span>
+                                                            <span className="text-red-600 font-semibold text-sm">
+                                                                Order Incomplete
+                                                            </span>
                                                         </div>
-                                                      ) : (
-                                                      <div className="flex justify-center">
-                                                <button
-                                                    className="px-4 py-2 font-semibold text-white bg-green-800 rounded-lg hover:bg-green-600 transition-colors duration-200 text-sm"
-                                                    onClick={() =>
-                                                        handleStatusUpdate(
-                                                            order._id,
-                                                            order.bookStatusFromLender,
-                                                            order.bookStatusFromRenter,
-                                                            order.lenderId?.name,
-                                                            order.createdAt,
-                                                            order.statusUpdateRenterDate,
-                                                            order?.cartId?.totalDays
-                                                        )
-                                                    }>
-                                                    Update Status
-                                                </button>
-                                                </div>
-)}
+                                                    ) : (
+                                                        <div className="flex justify-center">
+                                                            <button
+                                                                className="px-4 py-2 font-semibold text-white bg-green-800 rounded-lg hover:bg-green-600 transition-colors duration-200 text-sm"
+                                                                onClick={() =>
+                                                                    handleStatusUpdate(
+                                                                        order._id,
+                                                                        order.bookStatusFromLender,
+                                                                        order.bookStatusFromRenter,
+                                                                        order
+                                                                            .lenderId
+                                                                            ?.name,
+                                                                        order.createdAt,
+                                                                        order.statusUpdateRenterDate,
+                                                                        order
+                                                                            ?.cartId
+                                                                            ?.totalDays
+                                                                    )
+                                                                }>
+                                                                Update Status
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                </td>
                                             </td>
-                                         </td>
                                         </tr>
                                     ))}
                                 </tbody>
                             </table>
-                           
                         </div>
 
-                       <div className="px-12 flex  items-center  justify-center" style={{height:'200px'}}>
+                        <div
+                            className="px-12 flex  items-center  justify-center"
+                            style={{ height: "200px" }}>
                             <button
                                 onClick={prevPage}
                                 disabled={currentPage === 1}
@@ -476,110 +515,106 @@ const RentList: React.FC = () => {
                             </button>
 
                             {pageNumbers.map((page) => (
-                    <button
-                        key={page}
-                        onClick={() => goToPage(page)}
-                        className={`px-3 py-1 mx-1 rounded ${
-                            currentPage === page
-                                ? "bg-cyan-800 text-white"
-                                : "bg-gray-200 text-gray-700"
-                        }`}
-                    >
-                        {page}
-                    </button>
-                ))}
+                                <button
+                                    key={page}
+                                    onClick={() => goToPage(page)}
+                                    className={`px-3 py-1 mx-1 rounded ${
+                                        currentPage === page
+                                            ? "bg-cyan-800 text-white"
+                                            : "bg-gray-200 text-gray-700"
+                                    }`}>
+                                    {page}
+                                </button>
+                            ))}
                             <button
                                 onClick={nextPage}
                                 disabled={currentPage === totalPages}
                                 className="px-3 py-1 text-gray-700 rounded disabled:opacity-50">
                                 <FaGreaterThan />
                             </button>
-                     
-                       </div>
+                        </div>
                     </>
                 )}
             </div>
 
             {showModal && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-                        <div className="bg-white rounded-lg shadow-lg p-8 max-w-lg w-full">
-                            <h2 className="text-xl font-semibold mb-4">
-                                {currentOrderStatus === "not_returned"
-                                    ? "Return to Ownership"
-                                    : "Confirm Book Handover"}
-                            </h2>
-                            <p className="mb-6">
-                                {currentOrderStatus === "not_returned"
-                                    ? "Please confirm whether the book has been returned to the lender's ownership."
-                                    : "Please confirm whether the book has been handed over to you at the owner's location."}
-                            </p>
-                            <div className="flex flex-col space-y-4 mb-6">
-                                {currentOrderStatus === "not_returned" ? (
-                                    <>
-                                        <label className="flex items-center">
-                                            <input
-                                                type="radio"
-                                                name="handoverStatus"
-                                                value="completed"
-                                                checked={
-                                                    isBookHandover === "completed"
-                                                }
-                                                onChange={() =>
-                                                    setIsBookHandover("completed")
-                                                }
-                                                className="form-radio text-green-500"
-                                            />
-                                            <span className="ml-2 text-gray-700">
-                                                Yes, the book has been returned
-                                            </span>
-                                        </label>
-                                    
-                                    </>
-                                ) : (
-                                    <>
-                                        <label className="flex items-center">
-                                            <input
-                                                type="radio"
-                                                name="handoverStatus"
-                                                value="not_returned"
-                                                checked={
-                                                    isBookHandover ===
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="bg-white rounded-lg shadow-lg p-8 max-w-lg w-full">
+                        <h2 className="text-xl font-semibold mb-4">
+                            {currentOrderStatus === "not_returned"
+                                ? "Return to Ownership"
+                                : "Confirm Book Handover"}
+                        </h2>
+                        <p className="mb-6">
+                            {currentOrderStatus === "not_returned"
+                                ? "Please confirm whether the book has been returned to the lender's ownership."
+                                : "Please confirm whether the book has been handed over to you at the owner's location."}
+                        </p>
+                        <div className="flex flex-col space-y-4 mb-6">
+                            {currentOrderStatus === "not_returned" ? (
+                                <>
+                                    <label className="flex items-center">
+                                        <input
+                                            type="radio"
+                                            name="handoverStatus"
+                                            value="completed"
+                                            checked={
+                                                isBookHandover === "completed"
+                                            }
+                                            onChange={() =>
+                                                setIsBookHandover("completed")
+                                            }
+                                            className="form-radio text-green-500"
+                                        />
+                                        <span className="ml-2 text-gray-700">
+                                            Yes, the book has been returned
+                                        </span>
+                                    </label>
+                                </>
+                            ) : (
+                                <>
+                                    <label className="flex items-center">
+                                        <input
+                                            type="radio"
+                                            name="handoverStatus"
+                                            value="not_returned"
+                                            checked={
+                                                isBookHandover ===
+                                                "not_returned"
+                                            }
+                                            onChange={() =>
+                                                setIsBookHandover(
                                                     "not_returned"
-                                                }
-                                                onChange={() =>
-                                                    setIsBookHandover(
-                                                        "not_returned"
-                                                    )
-                                                }
-                                                className="form-radio text-green-500"
-                                            />
-                                            <span className="ml-2 text-gray-700">
+                                                )
+                                            }
+                                            className="form-radio text-green-500"
+                                        />
+                                        <span className="ml-2 text-gray-700">
                                             Has this book been handed over?
-                                            </span>
-                                        </label>
-                                        
-                                    </>
-                                )}
-                            </div>
-                            <div className="flex justify-end mt-6">
-                                <button
-                                    onClick={confirmStatusUpdate}
-                                    disabled={isBookHandover === null}
-                                    className={`px-4 py-2 bg-blue-600 text-white rounded-lg mr-2 ${
-                                        isBookHandover === null
-                                            ? "opacity-50 cursor-not-allowed"
-                                            : ""
-                                    }`}>
-                                    Confirm
-                                </button>
-                                <button
-                                    onClick={() => setShowModal(false)}
-                                    className="px-4 py-2 bg-gray-400 text-white rounded-lg">
-                                    Cancel
-                                </button>
-                            </div>
+                                        </span>
+                                    </label>
+                                </>
+                            )}
+                        </div>
+                        <div className="flex justify-end mt-6">
+                            <button
+                                onClick={confirmStatusUpdate}
+                                disabled={isBookHandover === null}
+                                className={`px-4 py-2 bg-blue-600 text-white rounded-lg mr-2 ${
+                                    isBookHandover === null
+                                        ? "opacity-50 cursor-not-allowed"
+                                        : ""
+                                }`}>
+                                Confirm
+                            </button>
+                            <button
+                                onClick={() => setShowModal(false)}
+                                className="px-4 py-2 bg-gray-400 text-white rounded-lg">
+                                Cancel
+                            </button>
                         </div>
                     </div>
+                </div>
             )}
         </div>
     );

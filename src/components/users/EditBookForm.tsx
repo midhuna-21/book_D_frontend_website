@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { userAxiosInstance } from "../../utils/api/axiosInstance";
+import { userAxiosInstance } from "../../utils/api/userAxiosInstance";
 import { toast } from "sonner";
 import { validateFormData } from "../../utils/validations/bookFormValidatoin";
 import { useNavigate, useParams } from "react-router-dom";
@@ -92,7 +92,6 @@ const EditBookForm: React.FC = () => {
                 const fetchedBook = response?.data?.book;
                 if (fetchedBook) {
                     setBook(fetchedBook);
-
                 }
             } catch (error) {
                 console.error("Error fetching book details", error);
@@ -100,8 +99,6 @@ const EditBookForm: React.FC = () => {
         };
         fetchBook();
     }, [bookId]);
-
-    
 
     useEffect(() => {
         if (book) {
@@ -132,7 +129,7 @@ const EditBookForm: React.FC = () => {
             });
 
             if (book.images && Array.isArray(book.images)) {
-                 book.images
+                book.images
                     .map((image) => {
                         if (typeof image === "string") {
                             return { src: image, file: null };
@@ -143,8 +140,6 @@ const EditBookForm: React.FC = () => {
                         return null;
                     })
                     .filter((item) => item !== null);
-
-            
             }
         }
     }, [book]);
@@ -167,39 +162,39 @@ const EditBookForm: React.FC = () => {
         >
     ) => {
         const { name, value } = e.target;
-        if(name.startsWith("address")){
-            const fieldName = name.split(".")[1]
-            setFormData((prevState)=>({
+        if (name.startsWith("address")) {
+            const fieldName = name.split(".")[1];
+            setFormData((prevState) => ({
                 ...prevState,
-                address:{
+                address: {
                     ...prevState.address,
-                    [fieldName]:value,
+                    [fieldName]: value,
                 },
             }));
-        }else{
-        let sanitizedValue = value;
-        if (
-            [
-                "rentalFee",
-                "quantity",
-                "extraFee",
-                "maxDistance",
-                "maxDays",
-                "minDays",
-            ].includes(name)
-        ) {
-            let numericValue = parseFloat(value);
-            if (numericValue < 0 || isNaN(numericValue)) {
-                numericValue = 0;
+        } else {
+            let sanitizedValue = value;
+            if (
+                [
+                    "rentalFee",
+                    "quantity",
+                    "extraFee",
+                    "maxDistance",
+                    "maxDays",
+                    "minDays",
+                ].includes(name)
+            ) {
+                let numericValue = parseFloat(value);
+                if (numericValue < 0 || isNaN(numericValue)) {
+                    numericValue = 0;
+                }
+                sanitizedValue = numericValue.toString();
             }
-            sanitizedValue = numericValue.toString();
+            setFormData((prevState) => ({
+                ...prevState,
+                [name]: sanitizedValue,
+            }));
         }
-        setFormData((prevState) => ({
-            ...prevState,
-            [name]: sanitizedValue,
-        }));
     };
-    }
     const getLatLngFromAddress = async (address: string) => {
         try {
             const apiKey = "AIzaSyAw-4P7bBpkfYBigSCggZyNEMr4fkP0Z0M";
@@ -243,13 +238,9 @@ const EditBookForm: React.FC = () => {
 
     const handleGetLocation = () => {
         if (navigator.geolocation) {
-            // console.log(navigator,'navigator')
             navigator.geolocation.getCurrentPosition(
                 async (position) => {
-                    // console.log(navigator.geolocation,'geolocation navigator')
                     const { latitude, longitude } = position.coords;
-                    // console.log("Coordinates:", latitude, longitude);
-
                     const locationDetails = await getAddressFromCoordinates(
                         latitude,
                         longitude
@@ -385,31 +376,32 @@ const EditBookForm: React.FC = () => {
                 formData.longitude?.toString() || ""
             );
 
-                formDataWithImages.append(
-                    "rentalFee",
-                    formData.rentalFee?.toString() || ""
-                );
-                formDataWithImages.append(
-                    "maxDistance",
-                    formData.maxDistance?.toString() || ""
-                );
-                formDataWithImages.append(
-                    "maxDays",
-                    formData.maxDays?.toString() || ""
-                );
-                formDataWithImages.append(
-                    "minDays",
-                    formData.minDays?.toString() || ""
-                );
+            formDataWithImages.append(
+                "rentalFee",
+                formData.rentalFee?.toString() || ""
+            );
+            formDataWithImages.append(
+                "maxDistance",
+                formData.maxDistance?.toString() || ""
+            );
+            formDataWithImages.append(
+                "maxDays",
+                formData.maxDays?.toString() || ""
+            );
+            formDataWithImages.append(
+                "minDays",
+                formData.minDays?.toString() || ""
+            );
 
-                formDataWithImages.append(
-                    "extraFee",
-                    formData.extraFee?.toString() || ""
-                );
-            
+            formDataWithImages.append(
+                "extraFee",
+                formData.extraFee?.toString() || ""
+            );
 
             try {
-                const response = await userAxiosInstance.put(`/rent-book-update/${bookId}`,formDataWithImages,
+                const response = await userAxiosInstance.put(
+                    `/rent-book-update/${bookId}`,
+                    formDataWithImages,
                     {
                         withCredentials: true,
                         headers: {
@@ -419,8 +411,7 @@ const EditBookForm: React.FC = () => {
                 );
 
                 if (response.status === 200) {
-                   
-                  navigate('/home/profile/my-books')
+                    navigate("/home/my-books");
                 }
             } catch (error: any) {
                 if (error.response && error.response.status === 404) {
@@ -445,11 +436,9 @@ const EditBookForm: React.FC = () => {
                         <div className="flex  mb-6">
                             <button
                                 type="button"
-                                className="px-4 py-2 rounded-l-lg bg-gradient-to-r from-gray-300 to-gray-500 text-gray-800"
-                              >
+                                className="px-4 py-2 rounded-l-lg bg-gradient-to-r from-gray-300 to-gray-500 text-gray-800">
                                 Rent Book
                             </button>
-                          
                         </div>
                         <div className="flex flex-col sm:flex-row sm:space-x-6">
                             <div className="flex-1">
@@ -770,91 +759,90 @@ const EditBookForm: React.FC = () => {
                             </button>
                         </div>
 
-                                <div className="flex flex-col sm:flex-row sm:space-x-6 mt-4">
-                                    <div className="flex-1">
-                                        <label
-                                            className="block text-gray-700 font-medium mb-2"
-                                            htmlFor="rentalFee">
-                                            Rental Fee /day
-                                        </label>
-                                        <input
-                                            type="number"
-                                            id="rentalFee"
-                                            name="rentalFee"
-                                            // placeholder={book?.rentalFee !== undefined ? book.rentalFee.toString() : "Enter rental fee"}
-                                            value={formData.rentalFee || ""}
-                                            onChange={handleChange}
-                                            className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
-                                        />
-                                    </div>
-                                    <div className="flex-1">
-                                        <label
-                                            className="block text-gray-700 font-medium mb-2"
-                                            htmlFor="extraFee">
-                                            Extra Fee (for damages/issues)
-                                        </label>
-                                        <input
-                                            type="number"
-                                            id="extraFee"
-                                            name="extraFee"
-                                            // placeholder={book?.extraFee !== undefined ? book.extraFee.toString() : "Enter extraFee fee"}
-                                            value={formData.extraFee || ""}
-                                            onChange={handleChange}
-                                            className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
-                                        />
-                                    </div>
-                                </div>
-                                <div className="flex flex-col sm:flex-row sm:space-x-6 mt-4">
-                                    <div className="flex-1">
-                                        <label
-                                            className="block text-gray-700 font-medium mb-2"
-                                            htmlFor="maxDistance">
-                                            Maximum Distance (km)
-                                        </label>
-                                        <input
-                                            type="number"
-                                            id="maxDistance"
-                                            name="maxDistance"
-                                            // placeholder={book?.maxDistance !== undefined ? book.maxDistance.toString() : "Enter maximum distance"}
-                                            value={formData.maxDistance || ""}
-                                            onChange={handleChange}
-                                            className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
-                                        />
-                                    </div>{" "}
-                                    <div className="flex-1">
-                                        <label
-                                            className="block text-gray-700 font-medium mb-2"
-                                            htmlFor="maxDays">
-                                            Maximum Days
-                                        </label>
-                                        <input
-                                            type="number"
-                                            id="maxDays"
-                                            name="maxDays"
-                                            // placeholder={book?.maxDistance !== undefined ? book.maxDistance.toString() : "Enter maximum distance fee"}
-                                            value={formData.maxDays || ""}
-                                            onChange={handleChange}
-                                            className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
-                                        />
-                                    </div>
-                                    <div className="flex-1">
-                                        <label
-                                            className="block text-gray-700 font-medium mb-2"
-                                            htmlFor="minDays">
-                                            Minimum Days
-                                        </label>
-                                        <input
-                                            type="number"
-                                            id="minDays"
-                                            name="minDays"
-                                            // placeholder={book?.minDays !== undefined ? book.minDays.toString() : "Enter minimum days"}
-                                            value={formData.minDays || ""}
-                                            onChange={handleChange}
-                                            className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
-                                        />
-                                    </div>
-                                </div>
-                           
+                        <div className="flex flex-col sm:flex-row sm:space-x-6 mt-4">
+                            <div className="flex-1">
+                                <label
+                                    className="block text-gray-700 font-medium mb-2"
+                                    htmlFor="rentalFee">
+                                    Rental Fee /day
+                                </label>
+                                <input
+                                    type="number"
+                                    id="rentalFee"
+                                    name="rentalFee"
+                                    // placeholder={book?.rentalFee !== undefined ? book.rentalFee.toString() : "Enter rental fee"}
+                                    value={formData.rentalFee || ""}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
+                                />
+                            </div>
+                            <div className="flex-1">
+                                <label
+                                    className="block text-gray-700 font-medium mb-2"
+                                    htmlFor="extraFee">
+                                    Extra Fee (for damages/issues)
+                                </label>
+                                <input
+                                    type="number"
+                                    id="extraFee"
+                                    name="extraFee"
+                                    // placeholder={book?.extraFee !== undefined ? book.extraFee.toString() : "Enter extraFee fee"}
+                                    value={formData.extraFee || ""}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
+                                />
+                            </div>
+                        </div>
+                        <div className="flex flex-col sm:flex-row sm:space-x-6 mt-4">
+                            <div className="flex-1">
+                                <label
+                                    className="block text-gray-700 font-medium mb-2"
+                                    htmlFor="maxDistance">
+                                    Maximum Distance (km)
+                                </label>
+                                <input
+                                    type="number"
+                                    id="maxDistance"
+                                    name="maxDistance"
+                                    // placeholder={book?.maxDistance !== undefined ? book.maxDistance.toString() : "Enter maximum distance"}
+                                    value={formData.maxDistance || ""}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
+                                />
+                            </div>{" "}
+                            <div className="flex-1">
+                                <label
+                                    className="block text-gray-700 font-medium mb-2"
+                                    htmlFor="maxDays">
+                                    Maximum Days
+                                </label>
+                                <input
+                                    type="number"
+                                    id="maxDays"
+                                    name="maxDays"
+                                    // placeholder={book?.maxDistance !== undefined ? book.maxDistance.toString() : "Enter maximum distance fee"}
+                                    value={formData.maxDays || ""}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
+                                />
+                            </div>
+                            <div className="flex-1">
+                                <label
+                                    className="block text-gray-700 font-medium mb-2"
+                                    htmlFor="minDays">
+                                    Minimum Days
+                                </label>
+                                <input
+                                    type="number"
+                                    id="minDays"
+                                    name="minDays"
+                                    // placeholder={book?.minDays !== undefined ? book.minDays.toString() : "Enter minimum days"}
+                                    value={formData.minDays || ""}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
+                                />
+                            </div>
+                        </div>
 
                         <div className="flex justify-end mt-12">
                             <button

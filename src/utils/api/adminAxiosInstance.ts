@@ -5,21 +5,18 @@ import axios, {
     InternalAxiosRequestConfig,
 } from "axios";
 import { Store } from "../ReduxStore/store/store";
-import { clearUser } from "../ReduxStore/slice/userSlice";
 import { clearAdmin } from "../ReduxStore/slice/adminSlice";
-import { refreshTokenApi } from "./api";
+import { adminRefreshTokenApi } from "./api";
 import config from "../../config/config";
-import { userName } from "../ReduxStore/slice/userSlice";
 import { adminName } from "../ReduxStore/slice/adminSlice";
 
-const USER_API_URL = config.USER_API_URL || "";
 const ADMIN_API_URL = config.ADMIN_API_URL || "";
 
 const createAxiosInstance = (
     baseURL: string,
     accessTokenKey: string,
     refreshTokenKey: string,
-    userRole: string,
+    role: string,
     logoutAction: () => any
 ): AxiosInstance => {
     const instance = axios.create({
@@ -27,7 +24,7 @@ const createAxiosInstance = (
         headers: { "Content-Type": "application/json" },
         withCredentials: true,
     });
- 
+
     instance.interceptors.request.use(
         (config: InternalAxiosRequestConfig) => {
             const accessToken = localStorage.getItem(accessTokenKey);
@@ -42,17 +39,19 @@ const createAxiosInstance = (
             return Promise.reject(error);
         }
     );
-    
+
     instance.interceptors.response.use(
         (response: AxiosResponse) => response,
         async (error: AxiosError) => {
-            console.error("Response error:", error.response ? error.response.data : error.message);
+            console.error(
+                "Response error:",
+                error.response ? error.response.data : error.message
+            );
             const originalRequest =
-            error.config as InternalAxiosRequestConfig & {
-                _retry?: boolean;
-            };
-            // const refreshToken = localStorage.getItem(refreshTokenKey);
-        
+                error.config as InternalAxiosRequestConfig & {
+                    _retry?: boolean;
+                };
+
             if (
                 error.response &&
                 error.response.status === 401 &&
@@ -61,10 +60,9 @@ const createAxiosInstance = (
                 originalRequest._retry = true;
                 try {
                     const response = await axios.post(
-                        refreshTokenApi,
+                        adminRefreshTokenApi,
                         {
-                            // token: refreshToken,
-                            userRole: userRole,
+                            role,
                         },
                         {
                             withCredentials: true,
@@ -74,6 +72,7 @@ const createAxiosInstance = (
                         response.data;
                     localStorage.setItem(accessTokenKey, accessToken);
                     localStorage.setItem(refreshTokenKey, newRefreshToken);
+
                     originalRequest.headers[
                         "Authorization"
                     ] = `Bearer ${accessToken}`;
@@ -92,23 +91,15 @@ const createAxiosInstance = (
                 );
             } else {
                 console.error("Error data:", error.response.data);
-                Store.dispatch(logoutAction())
+                Store.dispatch(logoutAction());
             }
 
             return Promise.reject(error);
-        }   
+        }
     );
 
     return instance;
 };
-
-export const userAxiosInstance = createAxiosInstance(
-    USER_API_URL,
-    "useraccessToken",
-    "userrefreshToken",
-    userName,
-    clearUser
-);
 
 export const adminAxiosInstance = createAxiosInstance(
     ADMIN_API_URL,

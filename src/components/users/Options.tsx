@@ -24,26 +24,29 @@ const Options: React.FC = () => {
             <div className="flex flex-wrap justify-center gap-5 py-10">
                 <button
                     className={`border-2 border-slate-600 px-4 py-2 rounded-md text-black font-serif hover:bg-gray-800 hover:border-gray-900 hover:text-white ${
-                        activeOption === "addBooks" ? "bg-gray-800 text-white" : ""
+                        activeOption === "addBooks"
+                            ? "bg-gray-800 text-white"
+                            : ""
                     }`}
-                    onClick={() => handleOptionClick("addBooks")}
-                >
+                    onClick={() => handleOptionClick("addBooks")}>
                     Add Books
                 </button>
                 <button
                     className={`border-2 border-slate-600 px-4 py-2 rounded-md text-black font-serif hover:bg-gray-800 hover:border-gray-900 hover:text-white ${
-                        activeOption === "rentedBooks" ? "bg-gray-800 text-white" : ""
+                        activeOption === "rentedBooks"
+                            ? "bg-gray-800 text-white"
+                            : ""
                     }`}
-                    onClick={() => handleOptionClick("rentedBooks")}
-                >
+                    onClick={() => handleOptionClick("rentedBooks")}>
                     Rented Books
                 </button>
                 <button
                     className={`border-2 border-slate-600 px-4 py-2 rounded-md text-black font-serif hover:bg-gray-800 hover:border-gray-900 hover:text-white ${
-                        activeOption === "soldBooks" ? "bg-gray-800 text-white" : ""
+                        activeOption === "soldBooks"
+                            ? "bg-gray-800 text-white"
+                            : ""
                     }`}
-                    onClick={() => handleOptionClick("soldBooks")}
-                >
+                    onClick={() => handleOptionClick("soldBooks")}>
                     Sold Books
                 </button>
             </div>

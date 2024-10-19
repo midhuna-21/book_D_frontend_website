@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { FaPaperPlane, FaEnvelope } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { RootState } from "../../utils/ReduxStore/store/store";
-import { userAxiosInstance } from "../../utils/api/axiosInstance";
+import { userAxiosInstance } from "../../utils/api/userAxiosInstance";
 import { useSocket } from "../../utils/context/SocketProvider";
 
 interface Receiver {
@@ -17,11 +17,13 @@ interface Receiver {
 }
 
 interface MessageProps {
-   selectedUser: Receiver | null; 
+    selectedUser: Receiver | null;
 }
 
 const Message: React.FC<MessageProps> = ({ selectedUser }) => {
-    const userInfo = useSelector((state: RootState) => state?.user?.userInfo?.user);
+    const userInfo = useSelector(
+        (state: RootState) => state?.user?.userInfo?.user
+    );
     const userId = userInfo?._id;
 
     const [messages, setMessages] = useState<any[]>([]);
@@ -31,22 +33,17 @@ const Message: React.FC<MessageProps> = ({ selectedUser }) => {
 
     useEffect(() => {
         if (socket) {
-            console.log("Socket initialized");
-
-            // Listen for incoming messages
+        
             socket.on("receive-message", (message) => {
-                console.log("Received message:", message);
                 setMessages((prevMessages) => [...prevMessages, message]);
             });
 
             return () => {
-                console.log("Cleaning up socket listeners");
                 socket.off("receive-message");
             };
         }
     }, [socket]);
 
-    // Scroll to the bottom of the messages when new messages arrive
     useEffect(() => {
         if (messagesEndRef.current) {
             messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -64,12 +61,15 @@ const Message: React.FC<MessageProps> = ({ selectedUser }) => {
                 chatRoomId: selectedUser.chatRoomId,
             };
 
-            const response = await userAxiosInstance.post("/send-message", data);
+            const response = await userAxiosInstance.post(
+                "/send-message",
+                data
+            );
 
             if (response.status === 200) {
-                socket?.emit("send-message", data); // Emit the message to the server
-                setMessages((prevMessages) => [...prevMessages, data]); // Optionally add the sent message locally
-                setMessageText(""); // Clear input field
+                socket?.emit("send-message", data); 
+                setMessages((prevMessages) => [...prevMessages, data]); 
+                setMessageText("");
             } else {
                 console.error("Failed to send message");
             }
@@ -80,14 +80,15 @@ const Message: React.FC<MessageProps> = ({ selectedUser }) => {
 
     const fetchMessages = async (chatRoomId: string) => {
         try {
-            const response = await userAxiosInstance.get(`/messages/${chatRoomId}`);
+            const response = await userAxiosInstance.get(
+                `/messages/${chatRoomId}`
+            );
             setMessages(response.data.messages || []);
         } catch (error) {
             console.log("Error fetching messages:", error);
         }
     };
 
-    // Fetch messages when a new user is selected
     useEffect(() => {
         if (selectedUser) {
             fetchMessages(selectedUser.chatRoomId);
@@ -102,8 +103,12 @@ const Message: React.FC<MessageProps> = ({ selectedUser }) => {
 
         if (diffMinutes < 1) return "Just now";
         else if (diffMinutes < 60) return `${diffMinutes} minutes ago`;
-        else if (diffMinutes < 1440) return `${Math.floor(diffMinutes / 60)} hours ago`;
-        else return `${messageDate.getMonth() + 1}/${messageDate.getDate()}/${messageDate.getFullYear()}`;
+        else if (diffMinutes < 1440)
+            return `${Math.floor(diffMinutes / 60)} hours ago`;
+        else
+            return `${
+                messageDate.getMonth() + 1
+            }/${messageDate.getDate()}/${messageDate.getFullYear()}`;
     };
 
     return (
@@ -121,23 +126,45 @@ const Message: React.FC<MessageProps> = ({ selectedUser }) => {
                                     />
                                 </div>
                                 <div>
-                                    <p className="text-xl font-bold">{selectedUser.userName}</p>
+                                    <p className="text-xl font-bold">
+                                        {selectedUser.userName}
+                                    </p>
                                 </div>
                             </div>
-                            <div className="flex flex-col space-y-4 overflow-y-auto flex-grow" ref={messagesEndRef}>
+                            <div
+                                className="flex flex-col space-y-4 overflow-y-auto flex-grow"
+                                ref={messagesEndRef}>
                                 {messages.length > 0 ? (
                                     messages.map((msg, index) => (
-                                        <div key={index} className={`flex flex-col mb-4 ${msg.senderId === userId ? "items-end" : "items-start"}`}>
-                                            <p className="text-xs text-gray-500 mb-1">{formatTimestamp(msg.createdAt)}</p>
-                                            <div className={`max-w-xs ${msg.senderId === userId ? "bg-blue-200 text-right" : "bg-gray-200 text-left"} p-3 rounded-lg shadow`}>
-                                                <p className="text-sm">{msg.content}</p>
+                                        <div
+                                            key={index}
+                                            className={`flex flex-col mb-4 ${
+                                                msg.senderId === userId
+                                                    ? "items-end"
+                                                    : "items-start"
+                                            }`}>
+                                            <p className="text-xs text-gray-500 mb-1">
+                                                {formatTimestamp(msg.createdAt)}
+                                            </p>
+                                            <div
+                                                className={`max-w-xs ${
+                                                    msg.senderId === userId
+                                                        ? "bg-blue-200 text-right"
+                                                        : "bg-gray-200 text-left"
+                                                } p-3 rounded-lg shadow`}>
+                                                <p className="text-sm">
+                                                    {msg.content}
+                                                </p>
                                             </div>
                                         </div>
                                     ))
                                 ) : (
-                                    <p className="text-center text-gray-500">Empty</p>
+                                    <p className="text-center text-gray-500">
+                                        Empty
+                                    </p>
                                 )}
-                                <div ref={messagesEndRef} /> {/* Ensure this is at the bottom */}
+                                <div ref={messagesEndRef} />{" "}
+                                {/* Ensure this is at the bottom */}
                             </div>
                             <div className="pt-4 flex items-center space-x-4 border-t border-gray-200 w-full">
                                 <input
@@ -145,12 +172,17 @@ const Message: React.FC<MessageProps> = ({ selectedUser }) => {
                                     className="flex-grow p-2 border border-gray-300 rounded-lg"
                                     placeholder="Type a message..."
                                     value={messageText}
-                                    onChange={(e) => setMessageText(e.target.value)}
+                                    onChange={(e) =>
+                                        setMessageText(e.target.value)
+                                    }
                                     onKeyDown={(e) => {
-                                        if (e.key === "Enter") handleSendMessage();
+                                        if (e.key === "Enter")
+                                            handleSendMessage();
                                     }}
                                 />
-                                <button className="text-black rounded-lg" onClick={handleSendMessage}>
+                                <button
+                                    className="text-black rounded-lg"
+                                    onClick={handleSendMessage}>
                                     <FaPaperPlane className="text-2xl" />
                                 </button>
                             </div>

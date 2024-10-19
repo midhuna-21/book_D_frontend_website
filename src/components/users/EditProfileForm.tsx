@@ -8,7 +8,7 @@ type EditProfileFormProps = {
         city: string;
         district: string;
         state: string;
-        image?: File | null; 
+        image?: File | null;
     };
     handleInputChange: (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -52,10 +52,14 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({
             },
         } as React.ChangeEvent<HTMLInputElement>;
 
-        handleInputChange(event as React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>);
+        handleInputChange(
+            event as React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+        );
     };
 
-    const handleImageChangeWrapper = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleImageChangeWrapper = (
+        event: React.ChangeEvent<HTMLInputElement>
+    ) => {
         handleImageChange(event);
         if (event.target.files && event.target.files[0]) {
             const imageFile = event.target.files[0];
@@ -71,8 +75,7 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({
     return (
         <form
             onSubmit={handleSubmit}
-            className="w-full max-w-full p-4 bg-white rounded-lg shadow-md mx-auto"
-        >
+            className="w-full max-w-full p-4 bg-white rounded-lg shadow-md mx-auto">
             <div className="mb-4">
                 <div className="flex flex-col items-center mt-1">
                     <input
@@ -93,15 +96,13 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({
                             <button
                                 type="button"
                                 className="absolute top-0 right-0 bg-gray-800 text-white rounded-full p-1 m-1 hover:bg-gray-600 transition duration-300"
-                                onClick={handleRemoveImage}
-                            >
+                                onClick={handleRemoveImage}>
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     className="h-4 w-4"
                                     fill="none"
                                     viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                >
+                                    stroke="currentColor">
                                     <path
                                         strokeLinecap="round"
                                         strokeLinejoin="round"
@@ -114,8 +115,7 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({
                     )}
                     <label
                         htmlFor="image"
-                        className="cursor-pointer bg-slate-500 text-white px-4 py-2 rounded-md hover:bg-slate-800 transition duration-300"
-                    >
+                        className="cursor-pointer bg-slate-500 text-white px-4 py-2 rounded-md hover:bg-slate-800 transition duration-300">
                         Upload Photo
                     </label>
                 </div>
@@ -125,8 +125,7 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({
                 <div>
                     <label
                         htmlFor="name"
-                        className="block text-sm font-medium text-gray-700"
-                    >
+                        className="block text-sm font-medium text-gray-700">
                         Name
                     </label>
                     <input
@@ -142,8 +141,7 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({
                 <div>
                     <label
                         htmlFor="email"
-                        className="block text-sm font-medium text-gray-700"
-                    >
+                        className="block text-sm font-medium text-gray-700">
                         Email
                     </label>
                     <input
@@ -161,8 +159,7 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({
                 <div>
                     <label
                         htmlFor="phone"
-                        className="block text-sm font-medium text-gray-700"
-                    >
+                        className="block text-sm font-medium text-gray-700">
                         Phone
                     </label>
                     <input
@@ -177,8 +174,7 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({
                 <div>
                     <label
                         htmlFor="city"
-                        className="block text-sm font-medium text-gray-700"
-                    >
+                        className="block text-sm font-medium text-gray-700">
                         City
                     </label>
                     <input
@@ -195,8 +191,7 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({
                 <div>
                     <label
                         htmlFor="district"
-                        className="block text-sm font-medium text-gray-700"
-                    >
+                        className="block text-sm font-medium text-gray-700">
                         District
                     </label>
                     <input
@@ -211,8 +206,7 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({
                 <div>
                     <label
                         htmlFor="state"
-                        className="block text-sm font-medium text-gray-700"
-                    >
+                        className="block text-sm font-medium text-gray-700">
                         State
                     </label>
                     <input
@@ -229,15 +223,13 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({
             <div className="flex justify-end">
                 <button
                     type="submit"
-                    className="bg-blue-700 text-white px-4 py-2 rounded-md mr-2 hover:bg-blue-900 transition duration-300"
-                >
+                    className="bg-blue-700 text-white px-4 py-2 rounded-md mr-2 hover:bg-blue-900 transition duration-300">
                     Save
                 </button>
                 <button
                     type="button"
                     className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"
-                    onClick={handleCancelClick}
-                >
+                    onClick={handleCancelClick}>
                     Cancel
                 </button>
             </div>

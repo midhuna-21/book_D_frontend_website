@@ -3,7 +3,7 @@ import { FaPaperPlane, FaEnvelope } from "react-icons/fa";
 import photo from "../../assets/th.jpeg";
 import { useSelector } from "react-redux";
 import { RootState } from "../../utils/ReduxStore/store/store";
-import { userAxiosInstance } from "../../utils/api/axiosInstance";
+import { userAxiosInstance } from "../../utils/api/userAxiosInstance";
 import { useSocket } from "../../utils/context/SocketProvider";
 
 interface Receivers {
@@ -40,7 +40,6 @@ const Chat: React.FC = () => {
 
     useEffect(() => {
         if (messagesEndRef.current) {
-            console.log(messagesEndRef, "messagesEndRef");
             messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
         }
     }, [messages]);
@@ -113,10 +112,6 @@ const Chat: React.FC = () => {
 
                 const userDetails = isSender ? receiverId : senderId;
 
-                console.log(messages, "messages");
-                console.log(isSender, "isSender");
-                console.log(userDetails, "userDetails");
-
                 setSelectedUserDetails({
                     userId: userDetails._id,
                     userName: userDetails.name,
@@ -135,10 +130,8 @@ const Chat: React.FC = () => {
     };
     useEffect(() => {
         if (socket) {
-            console.log("socket initialized");
 
             socket.on("receive-message", (message) => {
-                console.log("Received message:", message);
                 setMessages((prevMessages) => [...prevMessages, message]);
             });
 
@@ -156,7 +149,6 @@ const Chat: React.FC = () => {
             });
 
             socket.on("user-offline", (userId: string) => {
-                console.log(`User ${userId} is offline`);
                 setChatRooms((prevChatRooms) =>
                     prevChatRooms.map((chatRoom) =>
                         chatRoom.userId === userId
@@ -167,7 +159,6 @@ const Chat: React.FC = () => {
             });
 
             return () => {
-                console.log("Cleaning up socket listeners");
                 socket.off("receive-message");
                 socket.off("user-online");
                 socket.off("user-offline");
@@ -205,7 +196,6 @@ const Chat: React.FC = () => {
                         chatRoomId: chatRoomId,
                     });
                 }
-                // setMessages((prevMessages) => [...prevMessages, newMessage]);
 
                 setMessageText("");
             } else {
@@ -257,7 +247,7 @@ const Chat: React.FC = () => {
     return (
         <div className="mt-12 mx-auto w-full max-w-6xl flex flex-col md:flex-col space-y-8 md:space-y-0 md:space-x-8 mb-20">
             <div className="text-center mb-12">
-                <h1 className="text-23xl font-bold text-gray-800 sm:text-2xl">
+                <h1 className="text-2xl font-bold text-gray-800 sm:text-2xl">
                     Chat with Your Readers
                 </h1>
                 <p className="text-base text-gray-600 mt-2">
@@ -265,8 +255,10 @@ const Chat: React.FC = () => {
                     more.
                 </p>
             </div>
-            <div className="flex flex-row gap-6">
-                <div className="w-full md:w-1/2 h-[500px]">
+            <div className="flex flex-col md:flex-row gap-6">
+
+            <div className="w-full md:w-1/2 h-[500px] mt-4 md:mt-0 flex flex-col">
+
                     <p className="px-2 text-lg font-bold text-zinc-800">
                         Messages
                     </p>
@@ -314,13 +306,11 @@ const Chat: React.FC = () => {
                                                 </div>
                                             )}
                                         </div>
-                                        {/* <div
-                                        className={`w-2.5 h-2.5 rounded-full ${chatRoom.isOnline ? 'bg-green-500' : ''}`}
-                                    ></div> */}
+                                      
                                     </div>
                                 ))
                             ) : (
-                                <p className="text-center text-gray-500">
+                                <p className="text-center text-gray-500 justify-center">
                                     Empty
                                 </p>
                             )}

@@ -1,4 +1,10 @@
-import { List, Datagrid, TextField, DateField, BooleanField } from 'react-admin';
+import {
+    List,
+    Datagrid,
+    TextField,
+    DateField,
+    BooleanField,
+} from "react-admin";
 
 export const BooksPosts = () => (
     <List>

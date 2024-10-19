@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { userAxiosInstance } from "../../utils/api/axiosInstance";
+import { userAxiosInstance } from "../../utils/api/userAxiosInstance";
 import { useSelector } from "react-redux";
 import { RootState } from "../../utils/ReduxStore/store/store";
 import { FaGreaterThan, FaLessThan, FaCheck } from "react-icons/fa";
@@ -49,7 +49,7 @@ interface Order {
     statusUpdateRenterDate: Date;
 }
 
-const RentList: React.FC = () => {
+const LendList: React.FC = () => {
     const [selectedOption, setSelectedOption] = useState("all");
     const options = [
         "all",
@@ -106,34 +106,28 @@ const RentList: React.FC = () => {
                 filtered = filtered.filter(
                     (orders) => orders?.bookStatusFromLender == "not_reached"
                 );
-                console.log(filtered, "not_reached");
 
                 break;
             case "not_returned":
                 filtered = filtered.filter(
                     (orders) => orders?.bookStatusFromLender == "not_returned"
                 );
-                console.log(filtered, "not_returned");
-
                 break;
             case "completed":
                 filtered = filtered.filter(
                     (orders) => orders?.bookStatusFromLender == "completed"
                 );
-                console.log(filtered, "completed");
-
                 break;
             case "cancelled":
                 filtered = filtered.filter(
                     (orders) => orders?.bookStatusFromRenter == "cancelled"
                 );
-                console.log(filtered, "cancelled");
+
                 break;
             case "overdue":
                 filtered = filtered.filter(
                     (orders) => orders?.bookStatusFromRenter == "overdue"
                 );
-                console.log(filtered, "overdue");
 
                 break;
 
@@ -207,33 +201,32 @@ const RentList: React.FC = () => {
 
     const handleStatusUpdate = (
         orderId: string,
-        rentername:string,
+        rentername: string,
         bookStatusFromLender: string,
-        bookStatusFromRenter:string,
+        bookStatusFromRenter: string,
         orderDate: Date,
         statusUpdateRenterDate: Date,
         totalDays: number
     ) => {
-        if (bookStatusFromLender === "not_reached"){
+        if (bookStatusFromLender === "not_reached") {
             if (bookStatusFromRenter === "not_reached") {
-                toast.info(`The book has not been received by the ${rentername}. You cannot update the status.`);
-                return; 
-              }
-            
+                toast.info(
+                    `The book has not been received by the ${rentername}. You cannot update the status.`
+                );
+                return;
+            }
         }
 
-                setSelectedOrderId(orderId);
-                setCurrentOrderStatus(bookStatusFromLender);
-                setShowModal(true);
-            
+        setSelectedOrderId(orderId);
+        setCurrentOrderStatus(bookStatusFromLender);
+        setShowModal(true);
     };
 
     const confirmStatusUpdate = async () => {
         if (selectedOrderId === null || isBookHandover === null) return;
         try {
-            console.log(isBookHandover,'isBookHandover')
             const response = await userAxiosInstance.post(
-                `/update-order-status-from-renter/${selectedOrderId}`,
+                `/update-order-status-from-lender/${selectedOrderId}`,
                 {
                     isBookHandover: isBookHandover,
                 }
@@ -386,13 +379,12 @@ const RentList: React.FC = () => {
                                             </td>
                                             <td className="px-6 py-4 max-w-[150px] truncate text-center">
                                                 {order.bookStatusFromLender ===
-                                                    "completed" ? (
+                                                "completed" ? (
                                                     <span className=" font-semibold text-sm bg-green-200 text-green-800 rounded-md p-1">
                                                         Returned
                                                     </span>
-                                                ) : 
-                                                  order.bookStatusFromRenter ===
-                                                      "not_returned" ? (
+                                                ) : order.bookStatusFromRenter ===
+                                                  "not_returned" ? (
                                                     <span className="font-semibold text-sm bg-red-200 text-red-800 rounded-md p-1">
                                                         Not Returned
                                                     </span>
@@ -408,7 +400,7 @@ const RentList: React.FC = () => {
                                                     </span>
                                                 ) : (
                                                     <span className="bg-orange-200 text-orange-800 font-semibold text-sm rounded-md p-1">
-                                                       pending
+                                                        pending
                                                     </span>
                                                 )}
                                             </td>
@@ -427,9 +419,8 @@ const RentList: React.FC = () => {
                                             </td> */}
                                             <td>
                                                 <td className="px-6 py-4">
-                                                    {
-                                                    order.bookStatusFromLender ==
-                                                        "completed" ? (
+                                                    {order.bookStatusFromLender ==
+                                                    "completed" ? (
                                                         <div className="flex items-center justify-center">
                                                             <span className="text-green-600 font-semibold text-sm">
                                                                 Completed
@@ -457,7 +448,9 @@ const RentList: React.FC = () => {
                                                                 onClick={() =>
                                                                     handleStatusUpdate(
                                                                         order._id,
-                                                                        order.userId?.name,
+                                                                        order
+                                                                            .userId
+                                                                            ?.name,
                                                                         order.bookStatusFromLender,
                                                                         order.bookStatusFromRenter,
                                                                         order.createdAt,
@@ -631,4 +624,4 @@ const RentList: React.FC = () => {
     );
 };
 
-export default RentList;
+export default LendList;

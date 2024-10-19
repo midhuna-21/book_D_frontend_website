@@ -10,7 +10,7 @@ import { axiosUser } from "../../utils/api/baseUrl";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import SignInButton from "../../utils/authentication/Googlebutton";
 import { isValidateLogin } from "../../utils/validations/loginValidation";
-import config from '../../config/config';
+import config from "../../config/config";
 
 const UserLogin: React.FC = () => {
     const navigate = useNavigate();
@@ -18,7 +18,6 @@ const UserLogin: React.FC = () => {
     const [password, setPassword] = useState("");
     const dispatch = useDispatch();
 
-   
     const handleLogin = (
         e: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
@@ -42,7 +41,7 @@ const UserLogin: React.FC = () => {
             .then(function (response) {
                 if (response.status === 200) {
                     dispatch(addUser(response.data));
-                  
+
                     localStorage.setItem(
                         "useraccessToken",
                         response.data.accessToken
@@ -56,8 +55,11 @@ const UserLogin: React.FC = () => {
                 window.history.replaceState(null, "");
             })
             .catch(function (error) {
-                if (error.response && error.response.status === 400 || error.response.status === 401 ) {
-                    toast.error(error.response.data.message)
+                if (
+                    (error.response && error.response.status === 400) ||
+                    error.response.status === 401
+                ) {
+                    toast.error(error.response.data.message);
                 } else {
                     toast.error("An error occured try again later");
                 }
@@ -67,7 +69,6 @@ const UserLogin: React.FC = () => {
         window.history.replaceState(null, "");
     }, []);
 
-   
     return (
         <div className="login min-h-screen grid items-center justify-center px-5 py-3">
             <div className="card flex flex-col md:flex-row border-gray-300 border-solid border-2 rounded-xl overflow-hidden w-full max-w-2xl h-10/12 md:h-/7 ">

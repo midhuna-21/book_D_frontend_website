@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { AiOutlineCheckCircle } from "react-icons/ai";
 import { userAxiosInstance } from "../../utils/api/userAxiosInstance";
 
-interface OrderData {
+interface WalletData {
     userId: {
         name: string;
     };
@@ -15,12 +15,10 @@ interface OrderData {
 const PaymentSuccess = () => {
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
-    const bookId = searchParams.get("book_id");
     const sessionId = searchParams.get("session_id");
     const userId = searchParams.get("user_id");
-    const cartId = searchParams.get("cart_id");
-    const [orderData, setOrderData] = useState<OrderData | null>(null);
-    const [isOrderCreated, setIsOrderCreated] = useState(false);
+    const walletId = searchParams.get("wallet_id");
+    const amount = searchParams.get("amount")
     const navigate = useNavigate();
     const hasFetchedData = useRef(false);
 
@@ -29,21 +27,15 @@ const PaymentSuccess = () => {
             try {
                 if (
                     sessionId &&
-                    bookId &&
                     userId &&
-                    cartId &&
+                    walletId &&
                     !hasFetchedData.current
                 ) {
                     const response = await userAxiosInstance.post(
-                        "/create-order",
-                        { bookId, userId, cartId, sessionId }
+                        "/update-wallet",
+                        { userId, walletId, sessionId,amount }
                     );
-                    if (response.status == 200) {
-                        setOrderData(response.data.order);
-                        hasFetchedData.current = true;
-                    } else {
-                        console.error("Failed to retrieve session data");
-                    }
+           
                 }
             } catch (error) {
                 console.error("Error fetching session data:", error);
@@ -59,13 +51,7 @@ const PaymentSuccess = () => {
         navigate("/home/rent-list");
     };
 
-    if (!orderData) {
-        return (
-            <div className="flex items-center justify-center min-h-screen">
-                Loading...
-            </div>
-        );
-    }
+   
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
@@ -77,8 +63,8 @@ const PaymentSuccess = () => {
                     Payment Successful!
                 </h1>
                 <p className="text-gray-600 mb-6">
-                    {orderData?.userId?.name}, your rental for the book{" "}
-                    <strong>{orderData?.bookId?.bookTitle}</strong> has been
+                
+                  
                     successfull.
                 </p>
                 <div className="text-center mt-6">

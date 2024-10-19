@@ -21,16 +21,12 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
 
     useEffect(() => {
-        console.log(config.API_BACKEND,'api url')
         const newSocket = io(config.API_BACKEND);
         
         if (userId) {
             newSocket.emit('register', userId);
-
-            console.log(`User ${userId} registered with socket ID ${newSocket.id}`);
             
             newSocket.on('user-status', (data: { userId: string; isOnline: boolean }) => {
-                console.log(`Received user-status update: ${data.userId} is ${data.isOnline ? 'online' : 'offline'}`);
                 setOnlineUsers((prevOnlineUsers) => {
                     const updatedOnlineUsers = new Set(prevOnlineUsers);
                     if (data.isOnline) {

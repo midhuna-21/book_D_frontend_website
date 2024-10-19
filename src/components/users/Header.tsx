@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, Link, useLocation } from "react-router-dom";
-import config from '../../config/config'
+import config from "../../config/config";
 import { useSocket } from "../../utils/context/SocketProvider";
 import {
     FaHome,
@@ -19,7 +19,7 @@ import { clearUser } from "../../utils/ReduxStore/slice/userSlice";
 import logo from "../../assets/logo.png";
 import userLogo from "../../assets/userLogo.png";
 import { RootState } from "../../utils/ReduxStore/store/store";
-import { userAxiosInstance } from "../../utils/api/axiosInstance";
+import { userAxiosInstance } from "../../utils/api/userAxiosInstance";
 
 const Header: React.FC = () => {
     const userInfo = useSelector(
@@ -89,61 +89,55 @@ const Header: React.FC = () => {
     };
 
     useEffect(() => {
-       if(userId){
-        const fetchMessageCount = async () => {
-            try {
-                const response = await userAxiosInstance.get(
-                    `/unread-messages/${userId}`
-                );
-                setMessageCount(response?.data?.count);
-            } catch (error) {
-                console.error("Failed to fetch message count", error);
-            }
-        };
-        fetchMessageCount();
-       }
+        if (userId) {
+            const fetchMessageCount = async () => {
+                try {
+                    const response = await userAxiosInstance.get(
+                        `/unread-messages/${userId}`
+                    );
+                    setMessageCount(response?.data?.count);
+                } catch (error) {
+                    console.error("Failed to fetch message count", error);
+                }
+            };
+            fetchMessageCount();
+        }
     });
 
     useEffect(() => {
-        if(userId) {
-
-        const fetchNotificationCount = async () => {
-            try {
-                const response = await userAxiosInstance.get(
-                    `/unread-notifications/${userId}`
-                );
-                setNotificationCount(response?.data?.count);
-            } catch (error) {
-                console.error("Failed to fetch message count", error);
-            }
-        };
-        fetchNotificationCount();
-    }
+        if (userId) {
+            const fetchNotificationCount = async () => {
+                try {
+                    const response = await userAxiosInstance.get(
+                        `/unread-notifications/${userId}`
+                    );
+                    setNotificationCount(response?.data?.count);
+                } catch (error) {
+                    console.error("Failed to fetch message count", error);
+                }
+            };
+            fetchNotificationCount();
+        }
     });
 
-
     useEffect(() => {
-      if(socket){
+        if (socket) {
+            socket.on("notification", (newNotification) => {
+                setNotificationCount((prevCount) => prevCount + 1);
+            });
 
-        socket.on('notification', (newNotification) => {
-            console.log('New notification received:', newNotification);
-            setNotificationCount((prevCount) => prevCount + 1);
-        });
-
-        socket.on('receive-message', (newMessage) => {
-            console.log('New messages received:', newMessage);
-            setMessageCount((prevCount) => prevCount + 1);
-        });
-    }
+            socket.on("receive-message", (newMessage) => {
+                setMessageCount((prevCount) => prevCount + 1);
+            });
+        }
 
         return () => {
             if (socket) {
-                socket.off('notification'); 
-                socket.off('receive-message'); 
-
+                socket.off("notification");
+                socket.off("receive-message");
             }
         };
-    },[socket]);
+    }, [socket]);
 
     useEffect(() => {
         setIsSearchVisible(false);

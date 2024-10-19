@@ -10,27 +10,30 @@ const Otp: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const dispatch = useDispatch();
-    const response = location.state?.response?.user || location.state?.response || ""
-    const origin = location.state?.origin
+    const response =
+        location.state?.response?.user || location.state?.response || "";
+    const origin = location.state?.origin;
     const email = response.email;
 
     const [isSendOtp, setIsSendOtp] = useState(false);
     const [isOtpOnce, setIsOtpOnce] = useState(false);
     const [timer, setTimer] = useState(60);
     const [otp, setOtp] = useState(["", "", "", ""]);
-    
 
-    const otpGenerated = useRef(false); 
-    const intervalId = useRef<NodeJS.Timeout | null>(null);  
+    const otpGenerated = useRef(false);
+    const intervalId = useRef<NodeJS.Timeout | null>(null);
 
     const inputRefs = [
         useRef<HTMLInputElement>(null),
         useRef<HTMLInputElement>(null),
         useRef<HTMLInputElement>(null),
-        useRef<HTMLInputElement>(null)
+        useRef<HTMLInputElement>(null),
     ];
 
-    const handleChangeOtp = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    const handleChangeOtp = (
+        e: React.ChangeEvent<HTMLInputElement>,
+        index: number
+    ) => {
         const value = e.target.value;
         if (/^\d$/.test(value)) {
             const newOtp = [...otp];
@@ -46,7 +49,10 @@ const Otp: React.FC = () => {
         }
     };
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+    const handleKeyDown = (
+        e: React.KeyboardEvent<HTMLInputElement>,
+        index: number
+    ) => {
         if (e.key === "Backspace" && otp[index] === "") {
             if (index > 0) {
                 inputRefs[index - 1].current!.focus();
@@ -57,7 +63,9 @@ const Otp: React.FC = () => {
         }
     };
 
-    const handleVerify = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const handleVerify = (
+        e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    ) => {
         e.preventDefault();
         const otpValue = otp.join("");
 
@@ -65,8 +73,8 @@ const Otp: React.FC = () => {
             .post("/verify-otp", { response, otp: otpValue, origin })
             .then((response) => {
                 const { user } = response.data;
-                if(origin === "sign-up"){
-                    dispatch(addUser(response.data))
+                if (origin === "sign-up") {
+                    dispatch(addUser(response.data));
                     localStorage.setItem(
                         "useraccessToken",
                         response.data.accessToken
@@ -75,15 +83,14 @@ const Otp: React.FC = () => {
                         "userrefreshToken",
                         response.data.refreshToken
                     );
-                    
-                    navigate('/home');
-                    localStorage.removeItem("otpPageVisited"); 
-                }else{
-                    console.log('response to new password',user)
-                    navigate('/new-password',{state:{response:user} }) 
-                    localStorage.setItem("otpSubmitted","true")
+
+                    navigate("/home");
+                    localStorage.removeItem("otpPageVisited");
+                } else {
+                 
+                    navigate("/new-password", { state: { response: user } });
+                    localStorage.setItem("otpSubmitted", "true");
                 }
-               
             })
             .catch((error) => {
                 if (error.response && error.response.status === 400) {
@@ -97,7 +104,9 @@ const Otp: React.FC = () => {
     useEffect(() => {
         window.history.replaceState(null, "");
     }, []);
-    const handleResentOtp = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const handleResentOtp = (
+        e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    ) => {
         e.preventDefault();
 
         if (isSendOtp) {
@@ -165,22 +174,22 @@ const Otp: React.FC = () => {
 
     useEffect(() => {
         const emailEntered = localStorage.getItem("emailEntered");
-    
+
         if (!emailEntered) {
-            navigate('/forgot-password');
+            navigate("/forgot-password");
         } else {
             const handleBeforeUnload = () => {
                 localStorage.setItem("otpPageReloaded", "true");
             };
-    
+
             const handlePopState = () => {
                 localStorage.removeItem("emailEntered");
-                navigate('/forgot-password');
+                navigate("/forgot-password");
             };
-    
+
             window.addEventListener("beforeunload", handleBeforeUnload);
             window.addEventListener("popstate", handlePopState);
-    
+
             return () => {
                 window.removeEventListener("beforeunload", handleBeforeUnload);
                 window.removeEventListener("popstate", handlePopState);
@@ -193,10 +202,10 @@ const Otp: React.FC = () => {
 
         if (otpPageReloaded) {
             localStorage.removeItem("otpPageReloaded");
-            navigate('/forgot-password');
+            navigate("/forgot-password");
         } else {
             if (!response || !email) {
-                navigate('/forgot-password'); 
+                navigate("/forgot-password");
             } else if (!otpGenerated.current) {
                 generateOtp();
                 otpGenerated.current = true;
@@ -214,10 +223,17 @@ const Otp: React.FC = () => {
         <div className="min-h-screen flex items-center justify-center">
             <div className="flex border-gray-300 border-solid border-2 rounded-xl min-h-96 overflow-hidden">
                 <div className="flex-1 flex flex-col gap-5 p-12">
-                    <img src={emailImage} alt="Email Notification" className="h-32 w-32 mx-auto opacity-75" />
-                    <h1 className="text-3xl text-gray-700 mb-2 mt-3 font-serif text-center">OTP Verification</h1>
+                    <img
+                        src={emailImage}
+                        alt="Email Notification"
+                        className="h-32 w-32 mx-auto opacity-75"
+                    />
+                    <h1 className="text-3xl text-gray-700 mb-2 mt-3 font-serif text-center">
+                        OTP Verification
+                    </h1>
                     <p className="text-gray-600 text-center mb-4 font-custom text-xs">
-                        Please check your email for the OTP. Enter the code below to verify your account.
+                        Please check your email for the OTP. Enter the code
+                        below to verify your account.
                     </p>
                     <div className="flex justify-center items-center mb-4">
                         {otp.map((digit, index) => (
@@ -231,12 +247,17 @@ const Otp: React.FC = () => {
                                 className="border-b border-gray-300 px-5 py-3 w-16 text-center otp-input"
                                 onChange={(e) => handleChangeOtp(e, index)}
                                 onKeyDown={(e) => handleKeyDown(e, index)}
-                                style={{ marginRight: index < otp.length - 1 ? '5px' : '0' }}
+                                style={{
+                                    marginRight:
+                                        index < otp.length - 1 ? "5px" : "0",
+                                }}
                             />
                         ))}
                     </div>
                     {isSendOtp && (
-                        <span className="text-gray-500 text-center mb-4" style={{ fontFamily: "serif" }}>
+                        <span
+                            className="text-gray-500 text-center mb-4"
+                            style={{ fontFamily: "serif" }}>
                             Resend OTP in {timer} seconds
                         </span>
                     )}

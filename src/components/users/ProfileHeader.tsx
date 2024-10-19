@@ -8,7 +8,7 @@ import photo from "../../assets/th.jpeg";
 import { FaCamera, FaTrashAlt } from "react-icons/fa";
 import "../../styles/tailwind.css";
 import { Box } from "@chakra-ui/react";
-import { userAxiosInstance } from "../../utils/api/axiosInstance";
+import { userAxiosInstance } from "../../utils/api/userAxiosInstance";
 
 const ProfileHeader: React.FC = () => {
     const user = useSelector((state: RootState) => state?.user?.userInfo?.user);
@@ -77,8 +77,7 @@ const ProfileHeader: React.FC = () => {
     const handleRemove = async (e: React.FormEvent) => {
         e.preventDefault();
         const imageToRemove = user?.image;
-        console.log(imageToRemove, "imageToRemove");
-
+        
         if (!imageToRemove) {
             toast.error("No image to remove.");
             return;

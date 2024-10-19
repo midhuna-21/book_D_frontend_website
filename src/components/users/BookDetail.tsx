@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { userAxiosInstance } from "../../utils/api/axiosInstance";
+import { userAxiosInstance } from "../../utils/api/userAxiosInstance";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -31,7 +31,6 @@ const BookDetail: React.FC = () => {
     const [quantity, setQuantity] = useState<number>(1);
     const location = useLocation();
     const myBook = location?.state?.from;
-    console.log(location?.state, "l ");
     const [isExpanded, setIsExpanded] = useState(false);
 
     const toggleReadMore = () => {
@@ -107,7 +106,6 @@ const BookDetail: React.FC = () => {
                 await userAxiosInstance
                     .get(`/check-request/${userId}/${bookId}`)
                     .then((response) => {
-                        console.log(response?.data);
                         if (response.status == 200) {
                             const isRequested = response?.data?.isRequested;
 
@@ -157,7 +155,6 @@ const BookDetail: React.FC = () => {
 
     useEffect(() => {
         const newSocket = io(config.API_BACKEND);
-        console.log(config.API_BACKEND,'api url')
         setSocket(newSocket);
 
         return () => {
@@ -217,7 +214,6 @@ const BookDetail: React.FC = () => {
                     );
 
                     const cartId = cartCreateResponse?.data?.cart?._id;
-                    console.log(cartId,'cartid')
                     if (cartCreateResponse.status == 200) {
                         const notificationData = {
                             cartId,
@@ -234,7 +230,6 @@ const BookDetail: React.FC = () => {
                         if (notificationResponse.status === 200) {
                             setRequested(true);
                             if (socket) {
-                                console.log(socket,'socket653')
                                 socket.emit("send-notification", {
                                     receiverId: lender._id,
                                     notification:
@@ -273,7 +268,7 @@ const BookDetail: React.FC = () => {
     if (!book) return <div>Loading...</div>;
 
     return (
-        <div className="flex flex-col items-center justify-center py-12 min-h-screen" >
+        <div className="flex flex-col items-center justify-center py-12 min-h-screen">
             <div className="mb-12 text-center">
                 <h1 className="text-23xl font-bold text-gray-800 sm:text-2xl">
                     {myBook ? "Yours Books Store" : "Request and Get Your Book"}
@@ -447,43 +442,42 @@ const BookDetail: React.FC = () => {
                     </p>
 
                     <div className="mb-4">
-                    {myBook ? (
-                      <label className="font-semibold text-gray-700 mr-4 whitespace-normal text-sm sm:text-base">
-                      Rental Period:{" "}   
-                      {book?.maxDays} days:
-                  </label>
-                    ):(
-                
-                <div className="flex flex-col md:flex-row mb-4">
-                <label className="font-semibold text-gray-700 mr-4 whitespace-normal text-sm sm:text-base">
-                    Choose Rental Period (within {book?.minDays} -{" "}
-                    {book?.maxDays} days):
-                </label>
+                        {myBook ? (
+                            <label className="font-semibold text-gray-700 mr-4 whitespace-normal text-sm sm:text-base">
+                                Rental Period: {book?.maxDays} days:
+                            </label>
+                        ) : (
+                            <div className="flex flex-col md:flex-row mb-4">
+                                <label className="font-semibold text-gray-700 mr-4 whitespace-normal text-sm sm:text-base">
+                                    Choose Rental Period (within {book?.minDays}{" "}
+                                    - {book?.maxDays} days):
+                                </label>
 
-                <div className="flex items-center space-x-2">
-                    <button
-                        onClick={decrementTotalDays}
-                        className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:bg-gray-100"
-                        disabled={
-                            requested ||
-                            totalDays <= (book?.minDays || 1)
-                        }>
-                        -
-                    </button>
-                    <span className="border border-gray-300 rounded px-3 py-1 bg-white text-center">
-                        {totalDays}
-                    </span>
-                    <button
-                        onClick={incrementTotalDays}
-                        className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:bg-gray-100"
-                        disabled={
-                            requested ||
-                            totalDays >= (book?.maxDays || 1)
-                        }>
-                        +
-                    </button>
-                </div>
-            </div>)}
+                                <div className="flex items-center space-x-2">
+                                    <button
+                                        onClick={decrementTotalDays}
+                                        className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:bg-gray-100"
+                                        disabled={
+                                            requested ||
+                                            totalDays <= (book?.minDays || 1)
+                                        }>
+                                        -
+                                    </button>
+                                    <span className="border border-gray-300 rounded px-3 py-1 bg-white text-center">
+                                        {totalDays}
+                                    </span>
+                                    <button
+                                        onClick={incrementTotalDays}
+                                        className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:bg-gray-100"
+                                        disabled={
+                                            requested ||
+                                            totalDays >= (book?.maxDays || 1)
+                                        }>
+                                        +
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     <div className="flex flex-col md:flex-row">
@@ -491,29 +485,28 @@ const BookDetail: React.FC = () => {
                             Quantity :
                         </label>
                         {myBook ? (
-                             <span>{book?.quantity}</span>
-                        ):(
-                        <div className="flex items-center space-x-2">
-                            <button
-                                onClick={decrementQuantity}
-                                className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:bg-gray-100"
-                                disabled={requested || quantity <= 1}>
-                                -
-                            </button>
-                            <span className="border border-gray-300 rounded px-3 py-1 bg-white text-center">
-                                {quantity}
-                            </span>
-                            <button
-                                onClick={incrementQuantity}
-                                className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:bg-gray-100"
-                                disabled={
-                                    requested ||
-                                    quantity >= (book?.quantity || 1)
-                                }>
-                                +
-                            </button>
-                        </div>
-                           
+                            <span>{book?.quantity}</span>
+                        ) : (
+                            <div className="flex items-center space-x-2">
+                                <button
+                                    onClick={decrementQuantity}
+                                    className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:bg-gray-100"
+                                    disabled={requested || quantity <= 1}>
+                                    -
+                                </button>
+                                <span className="border border-gray-300 rounded px-3 py-1 bg-white text-center">
+                                    {quantity}
+                                </span>
+                                <button
+                                    onClick={incrementQuantity}
+                                    className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:bg-gray-100"
+                                    disabled={
+                                        requested ||
+                                        quantity >= (book?.quantity || 1)
+                                    }>
+                                    +
+                                </button>
+                            </div>
                         )}
                     </div>
 

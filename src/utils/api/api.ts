@@ -1,3 +1,4 @@
-import config from '../../config/config'
+import config from "../../config/config";
 
-export const refreshTokenApi =`${config.API_URL}/refresh-token`
+export const userRefreshTokenApi = `${config.API_URL}/user-refresh-token`;
+export const adminRefreshTokenApi = `${config.API_URL}/admin-refresh-token`;

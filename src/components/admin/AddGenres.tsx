@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import { toast } from "sonner";
-import { adminAxiosInstance } from "../../utils/api/axiosInstance";
+import { adminAxiosInstance } from "../../utils/api/adminAxiosInstance";
 import { FaPlus } from "react-icons/fa";
 import GenresList from "../../components/admin/GenresList";
 

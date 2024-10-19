@@ -8,7 +8,7 @@ import { axiosUser } from "../../utils/api/baseUrl";
 import { toast } from "sonner";
 import { isValidatePasswords } from "../../utils/validations/new-password";
 
-const   NewPassword: React.FC = () => {
+const NewPassword: React.FC = () => {
     const [password, setPassword] = useState("");
     const [conformPassword, setConformPassword] = useState("");
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -34,16 +34,15 @@ const   NewPassword: React.FC = () => {
             return;
         }
 
-        console.log('update')
         axiosUser
             .post("/update-password", {
                 email: email,
                 password: password,
             })
             .then(function (response) {
-                if(response.status==200){
-                navigate("/login");
-                localStorage.removeItem("otpSubmitted");
+                if (response.status == 200) {
+                    navigate("/login");
+                    localStorage.removeItem("otpSubmitted");
                 }
             })
             .catch(function (error) {

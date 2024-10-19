@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { userAxiosInstance } from "../../utils/api/axiosInstance";
+import { userAxiosInstance } from "../../utils/api/userAxiosInstance";
 import { toast } from "sonner";
 import { validateFormData } from "../../utils/validations/bookFormValidatoin";
 import images from "../../assets/images.png";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import axios from "axios";
+import {useNavigate} from 'react-router-dom'
 
 interface Genre {
     genreName: string;
@@ -24,13 +25,13 @@ type FormData = {
     rentalFee?: number;
     extraFee?: number;
     quantity: number;
-   address:{
-    street: string;
-    city: string;
-    district: string;
-    state: string;
-    pincode: string;
-   }
+    address: {
+        street: string;
+        city: string;
+        district: string;
+        state: string;
+        pincode: string;
+    };
     maxDistance: number;
     maxDays: number;
     minDays: number;
@@ -51,13 +52,13 @@ const RentBookForm: React.FC = () => {
         rentalFee: 0,
         extraFee: 0,
         quantity: 0,
-       address:{
-        street: "",
-        city: "",
-        district: "",
-        state: "",
-        pincode: "",
-       },
+        address: {
+            street: "",
+            city: "",
+            district: "",
+            state: "",
+            pincode: "",
+        },
         maxDistance: 0,
         maxDays: 0,
         minDays: 0,
@@ -68,6 +69,8 @@ const RentBookForm: React.FC = () => {
     const [formData, setFormData] = useState<FormData>(initialFormData);
 
     const [genres, setGenres] = useState<Genre[]>([]);
+
+    const navigate = useNavigate();
 
     const clearInput = () => {
         setFormData(initialFormData);
@@ -97,24 +100,22 @@ const RentBookForm: React.FC = () => {
         }
     };
 
-    
     const handleChange = (
         e: React.ChangeEvent<
             HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
         >
     ) => {
         const { name, value } = e.target;
-        if(name.startsWith("address")){
-            const fieldName = name.split(".")[1]
-            setFormData((prevState)=>({
+        if (name.startsWith("address")) {
+            const fieldName = name.split(".")[1];
+            setFormData((prevState) => ({
                 ...prevState,
-                address:{
+                address: {
                     ...prevState.address,
-                    [fieldName]:value,
+                    [fieldName]: value,
                 },
             }));
-        }else{
-
+        } else {
             let sanitizedValue = value;
             if (
                 [
@@ -182,13 +183,9 @@ const RentBookForm: React.FC = () => {
 
     const handleGetLocation = () => {
         if (navigator.geolocation) {
-            // console.log(navigator,'navigator')
             navigator.geolocation.getCurrentPosition(
                 async (position) => {
-                    // console.log(navigator.geolocation,'geolocation navigator')
                     const { latitude, longitude } = position.coords;
-                    // console.log("Coordinates:", latitude, longitude);
-
                     const locationDetails = await getAddressFromCoordinates(
                         latitude,
                         longitude
@@ -198,13 +195,13 @@ const RentBookForm: React.FC = () => {
                             ...formData,
                             latitude: latitude,
                             longitude: longitude,
-                           address:{
-                            street: locationDetails.street || "",
-                            city: locationDetails.city || "",
-                            district: locationDetails.district || "",
-                            state: locationDetails.state || "",
-                            pincode: locationDetails.pincode || "",
-                           }
+                            address: {
+                                street: locationDetails.street || "",
+                                city: locationDetails.city || "",
+                                district: locationDetails.district || "",
+                                state: locationDetails.state || "",
+                                pincode: locationDetails.pincode || "",
+                            },
                         });
                     }
                 },
@@ -229,18 +226,16 @@ const RentBookForm: React.FC = () => {
 
         try {
             const response = await axios.get(url);
-            console.log(response, "response");
             const results = response.data.results;
 
             if (results.length > 0) {
-                console.log(results, "results");
                 const addressComponents = results[0].address_components;
                 let street = "",
                     city = "",
                     district = "",
                     state = "",
                     pincode = "";
-                console.log(addressComponents, "addressComponents");
+              
                 addressComponents.forEach((component: any) => {
                     if (component.types.includes("sublocality_level_2")) {
                         street = component.long_name;
@@ -273,7 +268,6 @@ const RentBookForm: React.FC = () => {
             return null;
         }
     };
-
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -309,9 +303,15 @@ const RentBookForm: React.FC = () => {
             );
             formDataWithImages.append("street", formData.address.street || "");
             formDataWithImages.append("city", formData.address.city || "");
-            formDataWithImages.append("district", formData.address.district || "");
+            formDataWithImages.append(
+                "district",
+                formData.address.district || ""
+            );
             formDataWithImages.append("state", formData.address.state || "");
-            formDataWithImages.append("pincode", formData.address.pincode || "");
+            formDataWithImages.append(
+                "pincode",
+                formData.address.pincode || ""
+            );
             formDataWithImages.append(
                 "latitude",
                 formData.latitude?.toString() || ""
@@ -321,32 +321,31 @@ const RentBookForm: React.FC = () => {
                 formData.longitude?.toString() || ""
             );
 
-                formDataWithImages.append(
-                    "rentalFee",
-                    formData.rentalFee?.toString() || ""
-                );
-                formDataWithImages.append(
-                    "maxDistance",
-                    formData.maxDistance?.toString() || ""
-                );
-                formDataWithImages.append(
-                    "maxDays",
-                    formData.maxDays?.toString() || ""
-                );
-                formDataWithImages.append(
-                    "minDays",
-                    formData.minDays?.toString() || ""
-                );
+            formDataWithImages.append(
+                "rentalFee",
+                formData.rentalFee?.toString() || ""
+            );
+            formDataWithImages.append(
+                "maxDistance",
+                formData.maxDistance?.toString() || ""
+            );
+            formDataWithImages.append(
+                "maxDays",
+                formData.maxDays?.toString() || ""
+            );
+            formDataWithImages.append(
+                "minDays",
+                formData.minDays?.toString() || ""
+            );
 
-                formDataWithImages.append(
-                    "extraFee",
-                    formData.extraFee?.toString() || ""
-                );
-            
+            formDataWithImages.append(
+                "extraFee",
+                formData.extraFee?.toString() || ""
+            );
 
             try {
                 const response = await userAxiosInstance.post(
-                   "/rent-book",
+                    "/rent-book",
                     formDataWithImages,
                     {
                         withCredentials: true,
@@ -357,8 +356,7 @@ const RentBookForm: React.FC = () => {
                 );
 
                 if (response.status === 200) {
-                  
-
+                    navigate('/home/my-books')
                     clearInput();
                 }
             } catch (error: any) {
@@ -373,30 +371,27 @@ const RentBookForm: React.FC = () => {
             toast.error(errors);
         }
     };
-    useEffect(() => {
-        console.log("rendered");
-      },[]);
+ 
     return (
         <div className="flex flex-col items-center justify-center py-12">
-        <div className="mb-12 text-center">
-            <h1 className="text-23xl font-bold text-gray-800 sm:text-2xl">
-            Rent Out Your Books
-            </h1>
-            <p className="text-sm text-gray-600 mt-2 sm:text-base">
-            Share your favorite reads and let others enjoy them while earning along the way.
-            </p>
-        </div>
+            <div className="mb-12 text-center">
+                <h1 className="text-23xl font-bold text-gray-800 sm:text-2xl">
+                    Rent Out Your Books
+                </h1>
+                <p className="text-sm text-gray-600 mt-2 sm:text-base">
+                    Share your favorite reads and let others enjoy them while
+                    earning along the way.
+                </p>
+            </div>
             <form className="space-y-6">
                 <div className="flex flex-col md:flex-row gap-3 px-12">
                     <div className="bg-white opacity-95 shadow-lg rounded-lg px-8 py-6">
                         <div className="flex  mb-6">
                             <button
                                 type="button"
-                                className="px-4 py-2 rounded-l-lg bg-gradient-to-r from-sky-900 to-gray-800 text-white"
-                                >
+                                className="px-4 py-2 rounded-l-lg bg-gradient-to-r from-sky-900 to-gray-800 text-white">
                                 Rent Book
                             </button>
-                           
                         </div>
                         <div className="flex flex-col sm:flex-row sm:space-x-6">
                             <div className="flex-1">
@@ -691,91 +686,90 @@ const RentBookForm: React.FC = () => {
                                 Get your current Location
                             </button>
                         </div>
-                            
-                                <div className="flex flex-col sm:flex-row sm:space-x-6 mt-4">
-                                    <div className="flex-1">
-                                        <label
-                                            className="block text-gray-700 font-medium mb-2"
-                                            htmlFor="rentalFee">
-                                            Rental Fee /day
-                                        </label>
-                                        <input
-                                            type="number"
-                                            id="rentalFee"
-                                            name="rentalFee"
-                                            placeholder="e.g., 20 rs"
-                                            value={formData.rentalFee || ""}
-                                            onChange={handleChange}
-                                            className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
-                                        />
-                                    </div>
-                                    <div className="flex-1">
-                                        <label
-                                            className="block text-gray-700 font-medium mb-2"
-                                            htmlFor="extraFee">
-                                            Extra Fee (for damages/issues)
-                                        </label>
-                                        <input
-                                            type="number"
-                                            id="extraFee"
-                                            name="extraFee"
-                                            value={formData.extraFee || ""}
-                                            onChange={handleChange}
-                                            className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
-                                        />
-                                    </div>
-                                </div>
-                                <div className="flex flex-col sm:flex-row sm:space-x-6 mt-4">
-                                    <div className="flex-1">
-                                        <label
-                                            className="block text-gray-700 font-medium mb-2"
-                                            htmlFor="maxDistance">
-                                            Maximum Distance (km)
-                                        </label>
-                                        <input
-                                            type="number"
-                                            id="maxDistance"
-                                            name="maxDistance"
-                                            placeholder="e.g., 50 km"
-                                            value={formData.maxDistance || ""}
-                                            onChange={handleChange}
-                                            className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
-                                        />
-                                    </div>{" "}
-                                    <div className="flex-1">
-                                        <label
-                                            className="block text-gray-700 font-medium mb-2"
-                                            htmlFor="maxDays">
-                                            Maximum Days
-                                        </label>
-                                        <input
-                                            type="number"
-                                            id="maxDays"
-                                            name="maxDays"
-                                            placeholder="e.g., 30 days"
-                                            value={formData.maxDays || ""}
-                                            onChange={handleChange}
-                                            className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
-                                        />
-                                    </div>
-                                    <div className="flex-1">
-                                        <label
-                                            className="block text-gray-700 font-medium mb-2"
-                                            htmlFor="minDays">
-                                            Minimum Days
-                                        </label>
-                                        <input
-                                            type="number"
-                                            id="minDays"
-                                            name="minDays"
-                                            placeholder="e.g., 30 days"
-                                            value={formData.minDays || ""}
-                                            onChange={handleChange}
-                                            className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
-                                        />
-                                    </div>
-                                </div>
-                            
+
+                        <div className="flex flex-col sm:flex-row sm:space-x-6 mt-4">
+                            <div className="flex-1">
+                                <label
+                                    className="block text-gray-700 font-medium mb-2"
+                                    htmlFor="rentalFee">
+                                    Rental Fee /day
+                                </label>
+                                <input
+                                    type="number"
+                                    id="rentalFee"
+                                    name="rentalFee"
+                                    placeholder="e.g., 20 rs"
+                                    value={formData.rentalFee || ""}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
+                                />
+                            </div>
+                            <div className="flex-1">
+                                <label
+                                    className="block text-gray-700 font-medium mb-2"
+                                    htmlFor="extraFee">
+                                    Extra Fee (for damages/issues)
+                                </label>
+                                <input
+                                    type="number"
+                                    id="extraFee"
+                                    name="extraFee"
+                                    value={formData.extraFee || ""}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
+                                />
+                            </div>
+                        </div>
+                        <div className="flex flex-col sm:flex-row sm:space-x-6 mt-4">
+                            <div className="flex-1">
+                                <label
+                                    className="block text-gray-700 font-medium mb-2"
+                                    htmlFor="maxDistance">
+                                    Maximum Distance (km)
+                                </label>
+                                <input
+                                    type="number"
+                                    id="maxDistance"
+                                    name="maxDistance"
+                                    placeholder="e.g., 50 km"
+                                    value={formData.maxDistance || ""}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
+                                />
+                            </div>{" "}
+                            <div className="flex-1">
+                                <label
+                                    className="block text-gray-700 font-medium mb-2"
+                                    htmlFor="maxDays">
+                                    Maximum Days
+                                </label>
+                                <input
+                                    type="number"
+                                    id="maxDays"
+                                    name="maxDays"
+                                    placeholder="e.g., 30 days"
+                                    value={formData.maxDays || ""}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
+                                />
+                            </div>
+                            <div className="flex-1">
+                                <label
+                                    className="block text-gray-700 font-medium mb-2"
+                                    htmlFor="minDays">
+                                    Minimum Days
+                                </label>
+                                <input
+                                    type="number"
+                                    id="minDays"
+                                    name="minDays"
+                                    placeholder="e.g., 30 days"
+                                    value={formData.minDays || ""}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
+                                />
+                            </div>
+                        </div>
 
                         <div className="flex justify-end mt-12">
                             <button

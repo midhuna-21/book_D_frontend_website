@@ -7,15 +7,14 @@ export default defineConfig({
   server: {
     port:5173,
     proxy: {
-    //   '/api': {
-    //   target:'https://www.bookd.store',
-    //   changeOrigin:true
-    //   }
-    // },
       '/api': {
-      target:'http://localhost:8000',
+      target:'https://www.bookd.store',
       changeOrigin:true
       }
+      // '/api': {
+      // target:'http://localhost:8000',
+      // changeOrigin:true
+      // }
     },
     watch: {
       usePolling:true

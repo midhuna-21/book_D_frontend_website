@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../utils/ReduxStore/store/store";
-import { userAxiosInstance } from "../../utils/api/axiosInstance";
+import { userAxiosInstance } from "../../utils/api/userAxiosInstance";
 import Swal from "sweetalert2";
 import { useSocket } from "../../utils/context/SocketProvider";
 import ConfirmationRequest from "./ConfirmationRequest";
@@ -13,7 +13,7 @@ interface User {
 interface Book {
     _id: string;
     bookTitle: string;
-    lenderId:string;
+    lenderId: string;
 }
 interface Cart {
     _id: string;
@@ -46,11 +46,12 @@ const Notifications: React.FC = () => {
         (state: RootState) => state?.user?.userInfo?.user
     );
     const userid = userInfo?._id;
- 
+
     const fetchNotification = async () => {
         try {
-
-            const update = await userAxiosInstance.post('/update-notification-status')
+            const update = await userAxiosInstance.post(
+                "/update-notification-status"
+            );
             const response = await userAxiosInstance.get("/notifications");
             const fetchedNotifications = response.data.notifications;
 
@@ -121,7 +122,7 @@ const Notifications: React.FC = () => {
                 userId: userid,
                 receiverId: userId,
                 bookId,
-                cartId:cartId,
+                cartId: cartId,
                 status: "accepted",
             };
 
@@ -167,7 +168,6 @@ const Notifications: React.FC = () => {
         }
     };
 
-    console.log(notifications,'fronend')
     const handleModalConfirm = () => {
         if (selectedNotification) {
             handleAccept(
@@ -230,15 +230,9 @@ const Notifications: React.FC = () => {
                     data,
                     { headers: { "Content-Type": "application/json" } }
                 );
-                // console.log(cart,'cart')
-                // Swal.fire({
-                //     title: "Rejected!",
-                //     text: "The request has been rejected.",
-                //     icon: "success",
-                //     confirmButtonColor: "#3085d6",
-                // });
+             
                 fetchNotification();
-                // setStatus(true);
+               
             }
         } catch (error) {
             console.error("Error at Internal server", error);
@@ -296,7 +290,7 @@ const Notifications: React.FC = () => {
 
     const handlePayment = () => {
         setIsModalOpenPayment(true);
-    };      
+    };
 
     if (notifications.length === 0) {
         return (
@@ -360,16 +354,16 @@ const Notifications: React.FC = () => {
                                                 </div>
                                                 <div>
                                                     <p className="text-gray-600">
-                                                    <strong>
-                                                        {notification.userId
-                                                            ._id === userid
-                                                            ? notification
-                                                                  ?.receiverId
-                                                                  .name
-                                                            : notification
-                                                                  ?.userId
-                                                                  ?.name}
-                                                    </strong> 
+                                                        <strong>
+                                                            {notification.userId
+                                                                ._id === userid
+                                                                ? notification
+                                                                      ?.receiverId
+                                                                      .name
+                                                                : notification
+                                                                      ?.userId
+                                                                      ?.name}
+                                                        </strong>
                                                         {notification.status ===
                                                         "requested" ? (
                                                             notification
@@ -391,24 +385,25 @@ const Notifications: React.FC = () => {
                                                             ) : null
                                                         ) : notification.status ===
                                                           "rejected" ? (
-                                                            notification
-                                                                .bookId?.lenderId
-                                                                 ===
+                                                            notification.bookId
+                                                                ?.lenderId ===
                                                             userid ? (
-                                                                <>{" "}
-                                                                requested to
-                                                                rent the
-                                                                book{" "}
-                                                                <strong>
-                                                                    {
-                                                                        notification
-                                                                            ?.bookId
-                                                                            ?.bookTitle
-                                                                    }
-                                                                </strong>
-                                                            </>
+                                                                <>
+                                                                    {" "}
+                                                                    requested to
+                                                                    rent the
+                                                                    book{" "}
+                                                                    <strong>
+                                                                        {
+                                                                            notification
+                                                                                ?.bookId
+                                                                                ?.bookTitle
+                                                                        }
+                                                                    </strong>
+                                                                </>
                                                             ) : (
-                                                                <>{" "}
+                                                                <>
+                                                                    {" "}
                                                                     Your request
                                                                     to rent the
                                                                     book{" "}
@@ -436,11 +431,11 @@ const Notifications: React.FC = () => {
                                                             )
                                                         ) : notification.status ===
                                                           "accepted" ? (
-                                                            notification.
-                                                                bookId.lenderId
-                                                                 ===
+                                                            notification.bookId
+                                                                .lenderId ===
                                                             userid ? (
-                                                                <>{" "}
+                                                                <>
+                                                                    {" "}
                                                                     requested to
                                                                     rent the
                                                                     book{" "}
@@ -453,7 +448,8 @@ const Notifications: React.FC = () => {
                                                                     </strong>
                                                                 </>
                                                             ) : (
-                                                                <>{" "}
+                                                                <>
+                                                                    {" "}
                                                                     Your request
                                                                     to rent the
                                                                     book{" "}
@@ -561,17 +557,25 @@ const Notifications: React.FC = () => {
                                                         </button>
                                                     </>
                                                 )}
-                                                 {notification.status === "accepted" && notification.bookId?.lenderId === userid && (
-        <span className="text-green-600 font-bold ml-4">
-            Accepted
-        </span>
-    )}
+                                                {notification.status ===
+                                                    "accepted" &&
+                                                    notification.bookId
+                                                        ?.lenderId ===
+                                                        userid && (
+                                                        <span className="text-green-600 font-bold ml-4">
+                                                            Accepted
+                                                        </span>
+                                                    )}
 
-    {notification.status === "rejected" && notification.bookId?.lenderId === userid &&  (
-        <span className="text-red-600 font-bold ml-4">
-            Rejected
-        </span>
-    )}
+                                                {notification.status ===
+                                                    "rejected" &&
+                                                    notification.bookId
+                                                        ?.lenderId ===
+                                                        userid && (
+                                                        <span className="text-red-600 font-bold ml-4">
+                                                            Rejected
+                                                        </span>
+                                                    )}
                                             </div>
 
                                             {/* <span className="mt-12 ml-3 text-sm text-gray-500">
