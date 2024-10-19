@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { userAxiosInstance } from "../../utils/api/userAxiosInstance";
 import { FaStar } from "react-icons/fa";
+import {Link} from 'react-router-dom';
 
 const Books: React.FC = () => {
     const [books, setBooks] = useState<any[]>([]);
@@ -30,6 +31,8 @@ const Books: React.FC = () => {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
                     {books.slice(0, 5).map((book) => (
+                            <Link
+                            to={`/home/book/${book._id}`}>
                         <div
                             key={book._id}
                             className="bg-white p-4 rounded-xl hover:border border-gray-200 hover:shadow-md"
@@ -85,7 +88,8 @@ const Books: React.FC = () => {
                                 <p className="text-sm text-gray-600 mb-4">
                                     4.0 (120 reviews)
                                 </p> */}
-                                
+                                      <Link
+                                to={`/home/book/${book._id}`}>
                                 <button
                                     className="bg-stone-700 hover:bg-stone-400 hover:text-black text-white px-4 py-2 rounded-md transition-colors duration-300"
                                     style={{ width: "100px", height: "40px" }}
@@ -94,8 +98,10 @@ const Books: React.FC = () => {
                                     }>
                                     Choose
                                 </button>
+                                </Link>
                             </div>
                         </div>
+                        </Link>
                     ))}
                 </div>
             </div>
