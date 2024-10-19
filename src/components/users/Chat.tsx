@@ -44,56 +44,56 @@ const Chat: React.FC = () => {
         }
     }, [messages]);
 
-    useEffect(() => {
-        const fetchReceivers = async () => {
-            try {
-                const response = await userAxiosInstance.get(
-                    `/users-messages-list/${userId}`
+    const fetchReceivers = async () => {
+        try {
+            const response = await userAxiosInstance.get(
+                `/users-messages-list/${userId}`
+            );
+
+            const conversations = response.data.conversations;
+
+            if (Array.isArray(conversations)) {
+                const chatRooms = conversations.map((chatRoom: any) => {
+                    const isSender = chatRoom.senderId._id === userId;
+
+                    const userDetails = isSender
+                        ? chatRoom.receiverId
+                        : chatRoom.senderId;
+
+                    return {
+                        chatRoomId: chatRoom._id,
+                        userId: userDetails._id,
+                        userName: userDetails.name,
+                        userImage: userDetails.image,
+                        lastMessage:
+                            chatRoom.messageId.length > 0
+                                ? chatRoom.messageId[
+                                      chatRoom.messageId.length - 1
+                                  ].content
+                                : "start messaging",
+                        lastTimestamp:
+                            chatRoom.messageId.length > 0
+                                ? chatRoom.messageId[
+                                      chatRoom.messageId.length - 1
+                                  ].createdAt
+                                : "",
+                        isRead: false,
+                    };
+                });
+
+                setChatRooms(chatRooms);
+            } else {
+                console.error(
+                    "Expected conversations to be an array, got",
+                    typeof conversations
                 );
-
-                const conversations = response.data.conversations;
-
-                if (Array.isArray(conversations)) {
-                    const chatRooms = conversations.map((chatRoom: any) => {
-                        const isSender = chatRoom.senderId._id === userId;
-
-                        const userDetails = isSender
-                            ? chatRoom.receiverId
-                            : chatRoom.senderId;
-
-                        return {
-                            chatRoomId: chatRoom._id,
-                            userId: userDetails._id,
-                            userName: userDetails.name,
-                            userImage: userDetails.image,
-                            lastMessage:
-                                chatRoom.messageId.length > 0
-                                    ? chatRoom.messageId[
-                                          chatRoom.messageId.length - 1
-                                      ].content
-                                    : "start messaging",
-                            lastTimestamp:
-                                chatRoom.messageId.length > 0
-                                    ? chatRoom.messageId[
-                                          chatRoom.messageId.length - 1
-                                      ].createdAt
-                                    : "",
-                            isRead: false,
-                        };
-                    });
-
-                    setChatRooms(chatRooms);
-                } else {
-                    console.error(
-                        "Expected conversations to be an array, got",
-                        typeof conversations
-                    );
-                }
-            } catch (error) {
-                console.error("Error fetching conversations", error);
             }
-        };
-
+        } catch (error) {
+            console.error("Error fetching conversations", error);
+        }
+    };
+    useEffect(() => {
+      
         fetchReceivers();
     }, [userId]);
 
@@ -198,6 +198,7 @@ const Chat: React.FC = () => {
                 }
 
                 setMessageText("");
+                fetchReceivers();
             } else {
                 console.error("Failed to send message");
             }
