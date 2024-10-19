@@ -184,7 +184,7 @@ const Chat: React.FC = () => {
                 "/send-message",
                 data
             );
-
+            fetchReceivers();
             const chat = response?.data?.message;
 
             if (response.status === 200 && chat) {
@@ -198,7 +198,7 @@ const Chat: React.FC = () => {
                 }
 
                 setMessageText("");
-                fetchReceivers();
+               
             } else {
                 console.error("Failed to send message");
             }
