@@ -99,14 +99,20 @@ const Chat: React.FC = () => {
 
     const handleUserClick = async (chatRoomId: string) => {
         try {
+         
             const response = await userAxiosInstance.get(
                 `/chat-room/${chatRoomId}`
             );
 
-            const chat = response?.data?.chat;
+            const res = response?.data?.chat[0];
 
-            if (chat) {
-                const { messages, senderId, receiverId } = chat;
+            if (res) {
+                const { messages, senderId, 
+                    receiverId
+                 } = res;
+
+                console.log(senderId,'senderId')
+                console.log(receiverId,'receiverId')
 
                 const isSender = senderId._id === userId;
 
@@ -118,6 +124,9 @@ const Chat: React.FC = () => {
                     userImage: userDetails.image || photo,
                 });
                 setCurrentChatRoomId(chatRoomId);
+
+                console.log("Selected User Details:", userDetails);
+            console.log("Current Chat Room ID:", chatRoomId);
                 fetchMessages(chatRoomId);
 
                 await userAxiosInstance.post(`/chatRoom-update/${chatRoomId}`);

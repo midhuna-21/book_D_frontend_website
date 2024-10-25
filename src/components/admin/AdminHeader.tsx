@@ -2,7 +2,7 @@ import React from "react";
 
 const AdminHeader: React.FC = () => {
     return (
-        <div className="w-1/2 flex items-center justify-between p-4 bg-stone-900 text-white md:w-full">
+        <div className="w-full flex items-center justify-between p-4 bg-stone-900 text-white">
             <div className="flex items-center space-x-4">
                 <input
                     type="text"

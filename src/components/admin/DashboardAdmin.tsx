@@ -131,6 +131,8 @@ const CenterAdmin: React.FC = () => {
         fetchData();
     }, []);
 
+    
+
     return (
         <div className="bg-stone-800 shadow-md rounded p-4 h-full">
             <div className="container mx-auto">
@@ -149,25 +151,28 @@ const CenterAdmin: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="flex flex-row gap-4">
-                    <div className="bg-white p-4 rounded shadow w-1/2">
+                <div className="flex flex-col lg:flex-row gap-4">
+
+                <div className="bg-white p-4 rounded shadow w-full lg:w-1/2">
                         <h3 className="text-lg font-bold mb-4">Genres</h3>
                         <div className="flex justify-center">
                             <Pie
                                 data={genreData}
-                                options={{ maintainAspectRatio: false }}
-                                style={{ height: "500px", width: "300px" }}
+                                options={{ maintainAspectRatio: false ,  responsive: true,}}
+                                className="w-[200px] h-[250px] sm:w-[300px] sm:h-[350px] md:w-[400px] md:h-[450px] lg:w-[600px] lg:h-[500px]" 
+                              
                             />
+                            
                         </div>
                     </div>
 
-                    <div className="bg-white p-4 rounded shadow w-1/2">
+                    <div className="bg-white p-4 rounded shadow w-full lg:w-1/2">
                         <h3 className="text-lg font-bold mb-4">User Growth</h3>
                         <div className="flex justify-center">
                             <Line
                                 data={userGrowthData}
-                                options={{ maintainAspectRatio: false }}
-                                style={{ height: "500px", width: "500px" }}
+                                options={{ maintainAspectRatio: false,  responsive: true, }}
+                                className="w-[200px] h-[250px] sm:w-[300px] sm:h-[350px] md:w-[400px] md:h-[450px] lg:w-[600px] lg:h-[500px]" 
                             />
                         </div>
                     </div>

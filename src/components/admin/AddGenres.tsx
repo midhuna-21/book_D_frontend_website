@@ -29,6 +29,10 @@ const AddGenresWithList: React.FC = () => {
     const handleAddGenre = (e: React.FormEvent) => {
         e.preventDefault();
 
+        if(!genreName.trim()){
+            toast.error("Please enter genre name.");
+            return;
+        }
         if (!genreName || !file) {
             toast.error("Please fill in all fields and select an image.");
             return;
@@ -68,8 +72,9 @@ const AddGenresWithList: React.FC = () => {
     };
 
     return (
-        <div className="flex items-start min-h-scree bg-stone-900 p-8 rounded-2xl ">
-            <div className="p-8 rounded shadow-md w-1/2 mr-4">
+        <div className="flex items-start min-h-screen bg-stone-900 p-8 rounded-2xl ">
+         <div className="p-8 rounded shadow-md w-full sm:w-1/2 mr-4">
+
                 <h2 className="text-2xl font-custom mb-6 text-zinc-300">
                     Add New Genre
                 </h2>
@@ -125,8 +130,8 @@ const AddGenresWithList: React.FC = () => {
                     <div className="flex justify-end space-x-4">
                         <button
                             type="submit"
-                            className="bg-green-950 hover:bg-green-800 text-zinc-300 font-bold py-2 px-4 rounded flex items-center justify-center space-x-2">
-                            <span>Add</span> <FaPlus />
+                            className="bg-green-950 hover:bg-green-800 text-zinc-300 font-bold py-2 px-4 rounded flex items-center justify-center space-x-2 w-full sm:w-auto"
+> <span>Add</span> <FaPlus />
                         </button>
                         <button
                             type="button"
@@ -136,7 +141,8 @@ const AddGenresWithList: React.FC = () => {
                     </div>
                 </form>
             </div>
-            <div className="p-8 rounded shadow-md w-1/2">
+            <div className="p-8 rounded shadow-md w-full sm:w-1/2">
+
                 <GenresList />
             </div>
         </div>

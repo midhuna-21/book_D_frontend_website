@@ -14,7 +14,8 @@ import GenresList from "../../components/admin/GenresList";
 
 const AdminHome: React.FC = () => {
     return (
-        <div className="flex min-h-screen bg-stone-950">
+        <div className="flex flex-row min-h-screen bg-stone-950">
+
             <AdminSideBar />
             <div className="flex flex-col flex-1">
                 <AdminHeader />

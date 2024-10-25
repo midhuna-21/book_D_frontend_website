@@ -35,10 +35,12 @@ const BookWallet: React.FC = () => {
         const fetchWalletData = async () => {
             try {
                 const response = await adminAxiosInstance.get("/bookd-wallet");
-
-                if (response?.data) {
-                    setBalance(response?.data?.balance);
-                    setWallet(response.data);
+                console.log(response?.data,'resoins')
+                if (Array.isArray(response?.data) && response.data.length > 0) {
+                    const walletData = response.data[0]; 
+                    setBalance(walletData.balance); 
+                    setWallet(walletData); 
+                    console.log(walletData.balance);
                 } else {
                     console.error("Wallet data not found in the response");
                 }
@@ -50,6 +52,7 @@ const BookWallet: React.FC = () => {
     }, [userId]);
 
     const transactions = wallet?.transactions ?? [];
+    console.log(transactions,'transactions')
 
     const totalPages =
         transactions.length > 0
@@ -63,6 +66,7 @@ const BookWallet: React.FC = () => {
         indexOfFirstTransaction,
         indexOfLastTransaction
     );
+    console.log(transactions,'currentTransactions')
 
     const prevPage = () => {
         if (currentPage > 1) setCurrentPage(currentPage - 1);

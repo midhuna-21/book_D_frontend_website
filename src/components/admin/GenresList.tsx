@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useRef } from "react";
 import {
     Box,
     Image,
@@ -21,6 +21,9 @@ interface Genres {
 const GenresList: React.FC = () => {
     const [genres, setGenres] = useState<Genres[]>([]);
     const [loading, setLoading] = useState(false);
+    const [hasMore, setHasMore] = useState(true);
+    const [offset, setOffset] = useState(0);
+    const genresContainerRef = useRef<HTMLDivElement | null>(null);
 
     const navigate = useNavigate();
 
@@ -30,6 +33,7 @@ const GenresList: React.FC = () => {
             try {
                 const response = await adminAxiosInstance.get("/genres");
                 setGenres(response.data);
+                setHasMore(response.data.length > 0);
             } catch (error) {
                 toast.error("Error fetching genres");
                 console.error(error);
@@ -41,26 +45,27 @@ const GenresList: React.FC = () => {
         fetchGenres();
     }, []);
 
-    const handleDeleteGenre = async (genreId: string) => {
-        if (!window.confirm("Are you sure you want to delete this genre?"))
-            return;
-
-        try {
-            const response = await adminAxiosInstance.delete(
-                `/genres/${genreId}`,
-                {
-                    withCredentials: true,
-                }
-            );
-            if (response.status === 200) {
-                toast.success("Genre deleted successfully");
-                setGenres(genres.filter((genre) => genre._id !== genreId));
+    const handleScroll = () => {
+        const container = genresContainerRef.current;
+        if (container) {
+            if (
+                container.scrollTop + container.clientHeight >=
+                container.scrollHeight - 5 && !loading && hasMore
+            ) {
+                setOffset((prev) => prev + 10); 
             }
-        } catch (error) {
-            console.error(error);
-            toast.error("Error deleting genre");
         }
     };
+
+    useEffect(() => {
+        const container = genresContainerRef.current;
+        if (container) {
+            container.addEventListener("scroll", handleScroll);
+            return () => {
+                container.removeEventListener("scroll", handleScroll);
+            };
+        }
+    }, [loading, hasMore]);
 
     const handleEditGenre = (genreId: string) => {
         navigate(`/admin/edit-genre/${genreId}`);
@@ -79,7 +84,9 @@ const GenresList: React.FC = () => {
             <Text className="text-2xl font-custom text-zinc-300 mb-4">
                 List of Genres
             </Text>
-            <Box className="space-y-6">
+            <Box   ref={genresContainerRef}
+                className="max-h-80 overflow-y-auto space-y-6" 
+            >
                 {genres.map((genre) => (
                     <Box
                         key={genre._id}
@@ -105,12 +112,7 @@ const GenresList: React.FC = () => {
                                 onClick={() => handleEditGenre(genre._id)}
                                 size="sm"
                             />
-                            <Button
-                                colorScheme="red"
-                                color="white"
-                                onClick={() => handleDeleteGenre(genre._id)}
-                                leftIcon={<FaTrashAlt />}
-                                size="sm"></Button>
+                     
                         </Box>
                     </Box>
                 ))}

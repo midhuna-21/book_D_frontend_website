@@ -28,6 +28,7 @@ const userSlice = createSlice({
         clearResetToken: (state) => {
             state.resetToken = null;
         },
+        
     },
 });
 

@@ -75,6 +75,7 @@ const UsersList: React.FC = () => {
     };
 
     const handleBlock = (userId: string) => {
+        
         adminAxiosInstance
             .post("/block-user", { _id: userId })
             .then(() => {
@@ -122,10 +123,12 @@ const UsersList: React.FC = () => {
         return <div className="text-gray-500 text-center">Loading...</div>;
     }
     return (
-        <div className="bg-stone-800 shadow-md rounded p-4 h-full ">
+        <div className="bg-stone-800 shadow-md rounded p-4 h-full w-4xl max-w-full mx-auto">
+
             <h2 className="text-xl font-bold mb-4 text-zinc-300">Users List</h2>
             <div className="mb-4 flex justify-between">
-                <div className="flex flex-wrap mb-4 sm:mb-0">
+            <div className="flex flex-col sm:flex-row mb-4 space-y-2 sm:space-y-0 sm:space-x-2">
+
                     <button
                         onClick={() => handleViewModeChange("all")}
                         className={`px-4 py-2 rounded ${
@@ -173,8 +176,8 @@ const UsersList: React.FC = () => {
                                 "No reported users found"}
                         </div>
                     ) : (
-                        <div className="table-container">
-                            <table className="min-w-full bg-stone-800">
+                        <div className="overflow-x-auto">
+    <table className="min-w-full bg-stone-800">
                                 <thead className="sticky top-0 bg-gray-200 shadow">
                                     <tr>
                                         {/* <th className="py-2 px-4 border-b text-center">
