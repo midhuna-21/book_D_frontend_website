@@ -173,52 +173,52 @@ const Otp: React.FC = () => {
         }
     };
 
-    // useEffect(() => {
-    //     const emailEntered = localStorage.getItem("emailEntered");
-
-    //     if (!emailEntered) {
-    //         navigate("/forgot-password");
-    //     } else {
-    //         const handleBeforeUnload = () => {
-    //             localStorage.setItem("otpPageReloaded", "true");
-    //         };
-
-    //         const handlePopState = () => {
-    //             localStorage.removeItem("emailEntered");
-    //             navigate("/forgot-password");
-    //         };
-
-    //         window.addEventListener("beforeunload", handleBeforeUnload);
-    //         window.addEventListener("popstate", handlePopState);
-
-    //         return () => {
-    //             window.removeEventListener("beforeunload", handleBeforeUnload);
-    //             window.removeEventListener("popstate", handlePopState);
-    //         };
-    //     }
-    // }, [navigate]);
-
     useEffect(() => {
-        const otpPageReloaded = localStorage.getItem("otpPageReloaded");
+        const emailEntered = localStorage.getItem("emailEntered");
 
-        if (otpPageReloaded) {
-            localStorage.removeItem("otpPageReloaded");
+        if (!emailEntered) {
             navigate("/forgot-password");
         } else {
-            if (!response || !email) {
-                navigate("/forgot-password");
-            } else if (!otpGenerated.current) {
-                generateOtp();
-                otpGenerated.current = true;
-            }
-        }
+            const handleBeforeUnload = () => {
+                localStorage.setItem("otpPageReloaded", "true");
+            };
 
-        return () => {
-            if (intervalId.current) {
-                clearInterval(intervalId.current);
-            }
-        };
-    }, [response, email, navigate]);
+            const handlePopState = () => {
+                localStorage.removeItem("emailEntered");
+                navigate("/forgot-password");
+            };
+
+            window.addEventListener("beforeunload", handleBeforeUnload);
+            window.addEventListener("popstate", handlePopState);
+
+            return () => {
+                window.removeEventListener("beforeunload", handleBeforeUnload);
+                window.removeEventListener("popstate", handlePopState);
+            };
+        }
+    }, [navigate]);
+
+    // useEffect(() => {
+    //     const otpPageReloaded = localStorage.getItem("otpPageReloaded");
+
+    //     if (otpPageReloaded) {
+    //         localStorage.removeItem("otpPageReloaded");
+    //         navigate("/forgot-password");
+    //     } else {
+    //         if (!response || !email) {
+    //             navigate("/forgot-password");
+    //         } else if (!otpGenerated.current) {
+    //             generateOtp();
+    //             otpGenerated.current = true;
+    //         }
+    //     }
+
+    //     return () => {
+    //         if (intervalId.current) {
+    //             clearInterval(intervalId.current);
+    //         }
+    //     };
+    // }, [response, email, navigate]);
 
     return (
         <div className="min-h-screen flex items-center justify-center">
