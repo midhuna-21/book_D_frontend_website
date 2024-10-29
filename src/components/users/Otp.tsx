@@ -101,10 +101,10 @@ const Otp: React.FC = () => {
             });
     };
 
-    // useEffect(() => {
-    //     window.history.replaceState(null, "");
-    // }, []);
-    
+    useEffect(() => {
+        window.history.replaceState(null, "");
+    }, []);
+
     const handleResentOtp = (
         e: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
@@ -173,30 +173,30 @@ const Otp: React.FC = () => {
         }
     };
 
-    useEffect(() => {
-        const emailEntered = localStorage.getItem("emailEntered");
+    // useEffect(() => {
+    //     const emailEntered = localStorage.getItem("emailEntered");
 
-        if (!emailEntered) {
-            navigate("/forgot-password");
-        } else {
-            const handleBeforeUnload = () => {
-                localStorage.setItem("otpPageReloaded", "true");
-            };
+    //     if (!emailEntered) {
+    //         navigate("/forgot-password");
+    //     } else {
+    //         const handleBeforeUnload = () => {
+    //             localStorage.setItem("otpPageReloaded", "true");
+    //         };
 
-            const handlePopState = () => {
-                localStorage.removeItem("emailEntered");
-                navigate("/forgot-password");
-            };
+    //         const handlePopState = () => {
+    //             localStorage.removeItem("emailEntered");
+    //             navigate("/forgot-password");
+    //         };
 
-            window.addEventListener("beforeunload", handleBeforeUnload);
-            window.addEventListener("popstate", handlePopState);
+    //         window.addEventListener("beforeunload", handleBeforeUnload);
+    //         window.addEventListener("popstate", handlePopState);
 
-            return () => {
-                window.removeEventListener("beforeunload", handleBeforeUnload);
-                window.removeEventListener("popstate", handlePopState);
-            };
-        }
-    }, [navigate]);
+    //         return () => {
+    //             window.removeEventListener("beforeunload", handleBeforeUnload);
+    //             window.removeEventListener("popstate", handlePopState);
+    //         };
+    //     }
+    // }, [navigate]);
 
     useEffect(() => {
         const otpPageReloaded = localStorage.getItem("otpPageReloaded");
