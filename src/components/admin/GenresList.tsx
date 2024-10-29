@@ -32,6 +32,7 @@ const GenresList: React.FC = () => {
             setLoading(true);
             try {
                 const response = await adminAxiosInstance.get("/genres");
+                console.log(response,'resposen')
                 setGenres(response.data);
                 setHasMore(response.data.length > 0);
             } catch (error) {
@@ -67,10 +68,22 @@ const GenresList: React.FC = () => {
         }
     }, [loading, hasMore]);
 
-    const handleEditGenre = (genreId: string) => {
+    const handleEditGenre    = (genreId: string) => {
         navigate(`/admin/edit-genre/${genreId}`);
     };
 
+
+    const handleDeleteGenre = async (genreId: string) => {
+        try {
+            await adminAxiosInstance.post('/delete-genre', { genreId });
+            setGenres((prevGenres) => prevGenres.filter((genre) => genre._id !== genreId));
+            toast.success("Genre deleted successfully");
+        } catch (error) {
+            console.error('Error deleting genre:', error);
+            toast.error("Failed to delete genre");
+        }
+    };
+    
     if (loading) {
         return (
             <Box className="flex justify-center items-center h-full">
@@ -80,12 +93,12 @@ const GenresList: React.FC = () => {
     }
 
     return (
-        <Box className="w-full p-6 bg-stone-900 rounded-lg mt-4">
+        <Box className="w-full bg-stone-900 rounded-lg">
             <Text className="text-2xl font-custom text-zinc-300 mb-4">
                 List of Genres
             </Text>
             <Box   ref={genresContainerRef}
-                className="max-h-80 overflow-y-auto space-y-6" 
+                className="max-h-80 overflow-y-auto" 
             >
                 {genres.map((genre) => (
                     <Box
@@ -103,7 +116,7 @@ const GenresList: React.FC = () => {
                                 {genre.genreName}
                             </Text>
                         </Box>
-                        <Box className="flex space-x-9">
+                        <Box className="flex items-center space-x-8">
                             <IconButton
                                 aria-label="Edit Genre"
                                 icon={<FaEdit />}
@@ -112,8 +125,16 @@ const GenresList: React.FC = () => {
                                 onClick={() => handleEditGenre(genre._id)}
                                 size="sm"
                             />
-                     
+                            <IconButton
+                                aria-label="delete Genre"
+                                icon={<FaTrashAlt />}
+                                colorScheme="white"
+                                color="white"
+                                onClick={() => handleDeleteGenre(genre._id)}
+                                size="sm"
+                            />
                         </Box>
+                     
                     </Box>
                 ))}
             </Box>

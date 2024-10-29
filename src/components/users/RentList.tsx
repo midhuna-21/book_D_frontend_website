@@ -263,7 +263,7 @@ const RentList: React.FC = () => {
     const confirmStatusUpdate = async () => {
         if (selectedOrderId === null || isBookHandover === null) return;
         try {
-            const response = await userAxiosInstance.post(
+             await userAxiosInstance.post(
                 `/update-order-status/${selectedOrderId}`,
                 {
                     isBookHandover: isBookHandover,

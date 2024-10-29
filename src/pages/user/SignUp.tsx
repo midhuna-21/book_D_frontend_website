@@ -53,9 +53,9 @@ const Register: React.FC = () => {
             .then(function (response) {
                 if (response.status === 200) {
                     navigate("/otp-verification", {
-                        state: { response: response.data, origin: "sign-up" },
+                        state: { response: response.data },
                     });
-                    localStorage.setItem("originPage", "sign-up");
+                    // localStorage.setItem("originPage", "sign-up");
                 }
             })
             .catch(function (error) {

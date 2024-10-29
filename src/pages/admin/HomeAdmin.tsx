@@ -5,6 +5,7 @@ import AdminSideBar from "../../components/admin/SideBarAdmin";
 import AdminDashboard from "../../components/admin/DashboardAdmin";
 import AddGenre from "../../components/admin/AddGenres";
 import UsersList from "../../components/admin/UsersList";
+import Users from "../../components/admin/Users";
 import { AdminPrivateRoute } from "../../routes/AdminPrivateRoute";
 import RentalOrdersList from "../../components/admin/RentalOrders";
 import OrderDetail from "../../components/admin/OrderDetail";
@@ -34,6 +35,14 @@ const AdminHome: React.FC = () => {
                             element={
                                 <AdminPrivateRoute>
                                     <UsersList />
+                                </AdminPrivateRoute>
+                            }
+                        />
+                         <Route
+                            path="users"
+                            element={
+                                <AdminPrivateRoute>
+                                    <Users />
                                 </AdminPrivateRoute>
                             }
                         />

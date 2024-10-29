@@ -64,7 +64,7 @@ const AdminSideBar: React.FC = () => {
                                 )}
                             </li>
                         </Link>
-                        <Link to="/admin/user-list">
+                        <Link to="/admin/users">
                             <li className="px-4 py-2 hover:bg-gray-700 flex items-center">
                                 <FaUser />
                                 {!isCollapsed && (

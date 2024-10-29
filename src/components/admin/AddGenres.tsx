@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import { toast } from "sonner";
 import { adminAxiosInstance } from "../../utils/api/adminAxiosInstance";
 import { FaPlus } from "react-icons/fa";
+import AddGenre from './Genn'
 import GenresList from "../../components/admin/GenresList";
 
 const AddGenresWithList: React.FC = () => {
@@ -72,79 +73,14 @@ const AddGenresWithList: React.FC = () => {
     };
 
     return (
-        <div className="flex items-start min-h-screen bg-stone-900 p-8 rounded-2xl ">
-         <div className="p-8 rounded shadow-md w-full sm:w-1/2 mr-4">
-
-                <h2 className="text-2xl font-custom mb-6 text-zinc-300">
-                    Add New Genre
-                </h2>
-                <form onSubmit={handleAddGenre}>
-                    <div className="mb-4">
-                        <label
-                            htmlFor="genreName"
-                            className="block text-zinc-300 mb-2 font-custom">
-                            Genre Name
-                        </label>
-                        <input
-                            type="text"
-                            id="genreName"
-                            className="w-full px-3 py-2 border rounded bg-zinc-300"
-                            placeholder="Enter genre name"
-                            value={genreName}
-                            onChange={(e) => setGenreName(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div className="mb-4">
-                        <label
-                            htmlFor="image"
-                            className="block text-zinc-300 mb-2 font-custom">
-                            Upload Image
-                        </label>
-                        <div className="flex items-center">
-                            <div className="relative">
-                                <input
-                                    type="file"
-                                    id="file"
-                                    className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
-                                    accept="image/*"
-                                    onChange={handleImageChange}
-                                    ref={fileInputRef}
-                                    required
-                                />
-                                <div className="bg-blue-900 text-white px-3 py-2 rounded-md w-32 text-center cursor-pointer">
-                                    Choose File
-                                </div>
-                            </div>
-                            {selectedImage && (
-                                <div className="ml-4">
-                                    <img
-                                        src={selectedImage}
-                                        alt="Selected"
-                                        className="h-16 w-16 object-cover rounded-md"
-                                    />
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                    <div className="flex justify-end space-x-4">
-                        <button
-                            type="submit"
-                            className="bg-green-950 hover:bg-green-800 text-zinc-300 font-bold py-2 px-4 rounded flex items-center justify-center space-x-2 w-full sm:w-auto"
-> <span>Add</span> <FaPlus />
-                        </button>
-                        <button
-                            type="button"
-                            className="bg-gray-500 hover:bg-gray-600 text-zinc-300 font-bold py-2 px-4 rounded">
-                            Cancel
-                        </button>
-                    </div>
-                </form>
-            </div>
-            <div className="p-8 rounded shadow-md w-full sm:w-1/2">
-
+        <div className="flex md:flex-row flex-col items-start min-h-screen bg-stone-900 p-8 rounded-2xl ">
+             <div className="p-8 rounded shadow-md w-full sm:w-1/2">
                 <GenresList />
             </div>
+         <div className="p-8 rounded shadow-md w-full sm:w-1/2 ">
+             <AddGenre />
+            </div>
+           
         </div>
     );
 };
