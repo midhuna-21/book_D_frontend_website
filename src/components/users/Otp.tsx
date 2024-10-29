@@ -101,9 +101,10 @@ const Otp: React.FC = () => {
             });
     };
 
-    useEffect(() => {
-        window.history.replaceState(null, "");
-    }, []);
+    // useEffect(() => {
+    //     window.history.replaceState(null, "");
+    // }, []);
+    
     const handleResentOtp = (
         e: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
