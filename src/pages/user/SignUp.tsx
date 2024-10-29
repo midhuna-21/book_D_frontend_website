@@ -51,6 +51,7 @@ const Register: React.FC = () => {
                 { withCredentials: true }
             )
             .then(function (response) {
+                console.log(response,'response')
                 if (response.status === 200) {
                     navigate("/otp-verification", {
                         state: { response: response.data },
