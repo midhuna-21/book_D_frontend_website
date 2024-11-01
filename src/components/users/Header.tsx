@@ -332,7 +332,7 @@ const Header: React.FC = () => {
                         className="py-2"
                         onClick={() => setIsMenuOpen(false)}>
                         <span className="text-gray-800 font-semibold">
-                            Add Book
+                            Lend Book
                         </span>
                     </Link>
                     <Link

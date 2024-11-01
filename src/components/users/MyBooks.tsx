@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { userAxiosInstance } from "../../utils/api/userAxiosInstance";
 import { useNavigate } from "react-router-dom";
-import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import {
     FaGreaterThan,
     FaLessThan,
     FaPlusCircle,
     FaBookReader,
-    FaStar,
 } from "react-icons/fa";
 import { Box, Flex, Icon } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
@@ -20,11 +18,8 @@ const MyBooks: React.FC = () => {
     const [books, setBooks] = useState<any[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-    const [expanded, setExpanded] = useState<{ [key: string]: boolean }>({});
     const [currentPage, setCurrentPage] = useState(1);
-    const [dropdownOpen, setDropdownOpen] = useState<{
-        [key: string]: boolean;
-    }>({});
+   
     const navigate = useNavigate();
 
     useEffect(() => {

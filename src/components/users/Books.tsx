@@ -31,8 +31,7 @@ const Books: React.FC = () => {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
                     {books.slice(0, 5).map((book) => (
-                            <Link
-                            to={`/home/book/${book._id}`}>
+                            
                         <div
                             key={book._id}
                             className="bg-white p-4 rounded-xl hover:border border-gray-200 hover:shadow-md"
@@ -99,7 +98,7 @@ const Books: React.FC = () => {
                                 </Link>
                             </div>
                         </div>
-                        </Link>
+                       
                     ))}
                 </div>
             </div>

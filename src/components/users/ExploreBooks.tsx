@@ -15,7 +15,7 @@ const ExploreBooks: React.FC = () => {
     const [books, setBooks] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
-    const booksPerPage = 8;
+    const booksPerPage = 10;
     const userInfo = useSelector((state: RootState) => state.user?.userInfo);
     const name = userInfo?.name || "";
     const location = useLocation();
@@ -107,10 +107,7 @@ const ExploreBooks: React.FC = () => {
                 <>
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-5 gap-5 justify-items-center">
                   {currentBooks.map((book) => (
-                            <Link
-                                to={`/home/book/${book._id}`}
-                                key={book._id}
-                                className="relative group">
+                     
                                 <div
                                     key={book._id}
                                     className="bg-white p-4 border border-gray-200 shadow-md mt-5"
@@ -169,7 +166,7 @@ const ExploreBooks: React.FC = () => {
                                         </Link>
                                     </div>
                                 </div>
-                            </Link>
+                           
                         ))}
                     </div>
                     {books.length > 8 && (
