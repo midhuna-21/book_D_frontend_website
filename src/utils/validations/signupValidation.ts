@@ -21,9 +21,9 @@ export const validatePassword = (password: string) => {
 
 export const validateConfirmPassword = (
     password: string,
-    conformPassword: string
+    confirmPassword: string
 ): boolean => {
-    return password === conformPassword;
+    return password === confirmPassword;
 };
 
 export const validate = (
@@ -48,9 +48,9 @@ export const validate = (
     }
     if (!validateConfirmPassword(password, confirmPassword)) {
         if (!confirmPassword.trim()) {
-            return "Enter Conform Password";
+            return "Enter Confirm Password";
         }
-        return "Conform password does not match password";
+        return "Confirm password does not match password";
     }
 
     return true;

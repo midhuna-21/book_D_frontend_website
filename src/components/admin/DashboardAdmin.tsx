@@ -136,7 +136,7 @@ const CenterAdmin: React.FC = () => {
     return (
         <div className="bg-stone-800 shadow-md rounded p-4 h-full">
             <div className="container mx-auto">
-                <h2 className="text-2xl font-bold mb-4 text-white">
+                <h2 className="text-2xl font-serif mb-4 text-white">
                     Admin Dashboard
                 </h2>
 

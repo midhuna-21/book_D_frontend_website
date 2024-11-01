@@ -3,21 +3,21 @@ export const validatePassword = (password: string): boolean => {
     return strongPasswordRegex.test(password);
 };
 
-export const validateConformPassword = (
+export const validateConfirmPassword = (
     password: string,
-    conformPassword: string
+    confirmPassword: string
 ): boolean => {
-    return password === conformPassword;
+    return password === confirmPassword;
 };
 
 export const isValidatePasswords = (
     password: string,
-    conformPassword: string
+    confirmPassword: string
 ) => {
     if (!validatePassword(password)) {
         return "Please enter strong password.";
     }
-    if (!validateConformPassword(password, conformPassword)) {
+    if (!validateConfirmPassword(password, confirmPassword)) {
         return "Confirm password does not match password";
     }
     return true;

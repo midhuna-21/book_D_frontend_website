@@ -87,12 +87,12 @@ const OrderDetail = () => {
             : " ";
 
     return (
-        <div className="container mx-auto">
-            <h1 className="text-xl font-bold mb-6 text-center text-white">
+        <div className="bg-white shadow-md rounded p-4 h-full">
+            <h1 className="text-xl font-serif mb-6 text-center text-black mt-12">
                 Order Details
-            </h1>
+            </h1>   
 
-            <div className="bg-white shadow-lg rounded-lg p-8 max-w-5xl mx-auto">
+            <div className="bg-white  rounded-lg p-8 max-w-5xl mx-auto">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     <div>
                         <div className="flex items-center mb-6">

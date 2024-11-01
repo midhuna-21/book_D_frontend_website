@@ -159,27 +159,14 @@ const MyBooks: React.FC = () => {
                                               )}...`
                                             : book.description}
                                     </p>
-
-                                    <div className="flex items-center justify-center mb-2">
-                                        <FaStar className="text-yellow-400" />
-                                        <FaStar className="text-yellow-400" />
-                                        <FaStar className="text-yellow-400" />
-                                        <FaStar className="text-yellow-400" />
-                                        <FaStar className="text-gray-300" />
-                                    </div>
-
-                                    <p className="text-sm text-gray-600 mb-4">
-                                        4.0 (120 reviews)
-                                    </p>
+                                   
                                     <button
                                         className="bg-stone-700 hover:bg-stone-400 hover:text-black text-white px-4 py-2 rounded-md transition-colors duration-300"
                                         style={{
                                             width: "100px",
                                             height: "40px",
                                         }}
-                                        onClick={() =>
-                                            console.log(`Chose ${book.name}`)
-                                        }>
+                                        >
                                         Choose
                                     </button>
                                 </div>

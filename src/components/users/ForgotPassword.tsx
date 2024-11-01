@@ -27,12 +27,9 @@ const ForgotPassword: React.FC = () => {
             })
             .then(function (response) {
                 toast.success("Email sent successfully.Check your email.");
-                localStorage.setItem("originPage", "forgot-password");
-                localStorage.setItem("emailEntered", "true");
                 navigate("/otp-verification", {
                     state: {
                         response: response.data.isValidEmail,
-                        origin: "forgot password",
                     },
                     replace: true,
                 });
@@ -48,28 +45,17 @@ const ForgotPassword: React.FC = () => {
     };
 
     useEffect(() => {
-        if (localStorage.getItem("otpSubmitted")) {
-            localStorage.removeItem("otpSubmitted");
-        }
-    }, []);
-
-    useEffect(() => {
         const params = new URLSearchParams(location.search);
-        if (params.get("access") === "true") {
-            console.log("true");
-        } else {
+        if (params.get("access") !== "true") {
             navigate("/login", { replace: true });
-        }
+        } 
     }, [location, navigate]);
     return (
-        <div className="forgot h-[100vh] flex items-center justify-center">
+    <div className="forgot flex items-center justify-center min-h-screen px-4 sm:px-6">
+        <div className="border-2 border-gray-300 rounded-lg relative flex items-center justify-center max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl w-full">
             <div
-                style={{ height: "500px", width: "600px" }}
-                className="border-2 border-gray-500 rounded-lg relative flex items-center justify-center">
-                {/* <div className='absolute inset-0 bg-white opacity-50'></div> */}
-                <div
-                    style={{ height: "500px", width: "600px" }}
-                    className=" p-6 absolute bg-white bg-opacity-40 border border-gray-300 rounded">
+                style={{ height: "500px", width: "100%" }}
+                className="p-6 sm:p-8 md:p-10 lg:p-12 bg-white bg-opacity-40 border border-gray-300 rounded w-full">
                     <div className="flex items-center mb-5 ">
                         <img
                             src={sitelogo}

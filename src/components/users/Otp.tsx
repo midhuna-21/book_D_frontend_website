@@ -14,7 +14,6 @@ const Otp: React.FC = () => {
         location.state?.response?.user || location.state?.response || "";
     const origin = location.state?.origin;
     const email = response.email;
-
     const [isSendOtp, setIsSendOtp] = useState(false);
     const [isOtpOnce, setIsOtpOnce] = useState(false);
     const [timer, setTimer] = useState(60);
@@ -101,9 +100,9 @@ const Otp: React.FC = () => {
             });
     };
 
-    useEffect(() => {
-        window.history.replaceState(null, "");
-    }, []);
+        useEffect(() => {
+            window.history.replaceState(null, "");
+        }, []);
 
     const handleResentOtp = (
         e: React.MouseEvent<HTMLButtonElement, MouseEvent>
@@ -113,21 +112,7 @@ const Otp: React.FC = () => {
         if (isSendOtp) {
             return;
         }
-        axiosUser
-            .post("/otp-generate", { email })
-            .then(() => {
-                toast.success("OTP sent successfully");
-                setIsSendOtp(true);
-                setIsOtpOnce(true);
-                startTimer();
-            })
-            .catch((error) => {
-                if (error.response && error.response.status === 400) {
-                    toast.error(error.response.data.message);
-                } else {
-                    toast.error("An error occurred, try again later");
-                }
-            });
+        generateOtp()
     };
 
     const startTimer = () => {
@@ -174,56 +159,19 @@ const Otp: React.FC = () => {
     };
 
     useEffect(() => {
-        const emailEntered = localStorage.getItem("emailEntered");
-
-        if (!emailEntered) {
-            navigate("/forgot-password");
-        } else {
-            const handleBeforeUnload = () => {
-                localStorage.setItem("otpPageReloaded", "true");
-            };
-
-            const handlePopState = () => {
-                localStorage.removeItem("emailEntered");
-                navigate("/forgot-password");
-            };
-
-            window.addEventListener("beforeunload", handleBeforeUnload);
-            window.addEventListener("popstate", handlePopState);
-
-            return () => {
-                window.removeEventListener("beforeunload", handleBeforeUnload);
-                window.removeEventListener("popstate", handlePopState);
-            };
-        }
-    }, [navigate]);
-
-    // useEffect(() => {
-    //     const otpPageReloaded = localStorage.getItem("otpPageReloaded");
-
-    //     if (otpPageReloaded) {
-    //         localStorage.removeItem("otpPageReloaded");
-    //         navigate("/forgot-password");
-    //     } else {
-    //         if (!response || !email) {
-    //             navigate("/forgot-password");
-    //         } else if (!otpGenerated.current) {
-    //             generateOtp();
-    //             otpGenerated.current = true;
-    //         }
-    //     }
-
-    //     return () => {
-    //         if (intervalId.current) {
-    //             clearInterval(intervalId.current);
-    //         }
-    //     };
-    // }, [response, email, navigate]);
+            if (!response || !email) {
+                navigate("/login");
+            } else {
+                setIsSendOtp(true);
+                setIsOtpOnce(true);
+                startTimer();
+            }
+      
+    }, [ navigate]);
 
     return (
-        <div className="min-h-screen flex items-center justify-center">
-            <div className="flex border-gray-300 border-solid border-2 rounded-xl min-h-96 overflow-hidden">
-                <div className="flex-1 flex flex-col gap-5 p-12">
+        <div className="forgot flex items-center justify-center min-h-screen px-4 sm:px-6">
+        <div className="border-2 border-gray-300 rounded-lg relative flex items-center justify-center max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl w-full">    <div className="flex-1 flex flex-col gap-5 p-12">
                     <img
                         src={emailImage}
                         alt="Email Notification"

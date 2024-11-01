@@ -93,9 +93,7 @@ const Books: React.FC = () => {
                                 <button
                                     className="bg-stone-700 hover:bg-stone-400 hover:text-black text-white px-4 py-2 rounded-md transition-colors duration-300"
                                     style={{ width: "100px", height: "40px" }}
-                                    onClick={() =>
-                                        console.log(`Chose ${book.name}`)
-                                    }>
+                                   >
                                     Choose
                                 </button>
                                 </Link>

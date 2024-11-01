@@ -35,12 +35,12 @@ const BookWallet: React.FC = () => {
         const fetchWalletData = async () => {
             try {
                 const response = await adminAxiosInstance.get("/bookd-wallet");
-                console.log(response?.data,'resoins')
+              
                 if (Array.isArray(response?.data) && response.data.length > 0) {
                     const walletData = response.data[0]; 
                     setBalance(walletData.balance); 
                     setWallet(walletData); 
-                    console.log(walletData.balance);
+                   
                 } else {
                     console.error("Wallet data not found in the response");
                 }
@@ -66,28 +66,12 @@ const BookWallet: React.FC = () => {
         indexOfFirstTransaction,
         indexOfLastTransaction
     );
-    console.log(transactions,'currentTransactions')
 
-    const prevPage = () => {
-        if (currentPage > 1) setCurrentPage(currentPage - 1);
-    };
-
-    const nextPage = () => {
-        if (currentPage < totalPages) setCurrentPage(currentPage + 1);
-    };
-
-    const goToPage = (page: number) => {
-        setCurrentPage(page);
-    };
-
-    //  if (!wallet || !wallet.transactions) {
-    //      return <div>Loading wallet transactions...</div>;
-    //  }
 
     return (
-        <div className="flex flex-col items-center py-4 bg-stone-800 min-h-screen rounded-xl ">
-            <div className="mb-6 flex items-center justify-center flex-col">
-                <h1 className="text-2xl font-bold text-white">Wallet</h1>
+        <div className="flex flex-col items-center py-4 bg-white min-h-screen rounded">
+            <div className=" flex items-center justify-center flex-col">
+                <h1 className="text-2xl font-serif text-black mt-12">Wallet</h1>
                 <p className="text-sm text-gray-600 mt-2">
                     {currentTransactions.length === 0 && balance === 0 ? (
                         <span>
@@ -103,75 +87,64 @@ const BookWallet: React.FC = () => {
             </div>
 
             {wallet && (
-                <div className="w-3/4 p-3 ">
-                    <div className="w-full overflow-x-auto">
-                        <span className="text-lg font-semibold text-white">
-                            Balance: {wallet.balance}₹
-                        </span>
-                        {currentTransactions.filter(
-                            (transaction) => transaction.total_amount > 0
-                        ).length > 0 ? (
-                            <table className="min-w-full bg-stone-800">
-                                <thead className="sticky top-0 bg-gray-200 shadow">
-                                    <tr>
-                                        <th className="text-left py-2 px-4 border-b text-gray-500 uppercase tracking-wider">
-                                            Amount
-                                        </th>
-                                        <th className="text-left py-2 px-4 border-b text-gray-500 uppercase tracking-wider">
-                                            Source
-                                        </th>
-                                        <th className="text-left py-2 px-4 border-b text-gray-500 uppercase tracking-wider">
-                                            Type
-                                        </th>
-                                        <th className="text-left py-2 px-4 border-b text-gray-500 uppercase tracking-wider">
-                                            Date
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {currentTransactions
-                                        .filter(
-                                            (transaction) =>
-                                                transaction.total_amount > 0
-                                        )
-                                        .map((transaction) => (
-                                            <tr
-                                                key={transaction._id}
-                                                className="odd:bg-white even:bg-gray-50 border-b">
-                                                <td className="font-medium text-gray-700 text-sm text-left py-3">
-                                                    ₹
-                                                    {transaction.total_amount.toFixed(
-                                                        2
-                                                    )}
-                                                </td>
-                                                <td className="font-medium text-gray-700 text-sm text-left">
-                                                    {transaction.source ===
-                                                    "payment_to_lender"
-                                                        ? "Payment"
-                                                        : "Refund"}
-                                                </td>
-                                                <td className="font-medium text-gray-700 text-sm text-left">
-                                                    {transaction.type ===
-                                                    "credit"
-                                                        ? "Credit"
-                                                        : "Debit"}
-                                                </td>
-                                                <td className="font-medium text-gray-700 text-sm text-left">
-                                                    {new Date(
-                                                        transaction.createdAt
-                                                    ).toLocaleDateString()}
-                                                </td>
-                                            </tr>
-                                        ))}
-                                </tbody>
-                            </table>
-                        ) : (
-                            <div className="text-center text-gray-500">
-                                Wallet is empty
-                            </div>
-                        )}
-                    </div>
-                </div>
+               <div className="w-full max-w-[1300px] p-3 mx-auto">
+               <div className="w-full overflow-x-auto">
+                   <span className="text-lg font-semibold text-white block mb-3">
+                       Balance: {wallet.balance}₹
+                   </span>
+                   {currentTransactions.filter(transaction => transaction.total_amount > 0).length > 0 ? (
+                       <table className="min-w-full border-separate border-spacing-y-1">
+                           <thead className="sticky top-0 bg-gray-200 shadow">
+                               <tr>
+                                   <th className="text-left py-2 px-4 border-b text-gray-500 uppercase tracking-wider">
+                                       Amount
+                                   </th>
+                                   <th className="text-left py-2 px-4 border-b text-gray-500 uppercase tracking-wider">
+                                       Source
+                                   </th>
+                                   <th className="text-left py-2 px-4 border-b text-gray-500 uppercase tracking-wider">
+                                       Type
+                                   </th>
+                                   <th className="text-left py-2 px-4 border-b text-gray-500 uppercase tracking-wider">
+                                       Date
+                                   </th>
+                               </tr>
+                           </thead>
+                           <tbody>
+                               {currentTransactions
+                                   .filter(transaction => transaction.total_amount > 0)
+                                   .map(transaction => (
+                                       <tr
+                                           key={transaction._id}
+                                           className="odd:bg-white even:bg-gray-50 border-b">
+                                           <td className="font-medium text-gray-700 text-sm text-left py-3 px-4 whitespace-nowrap">
+                                               ₹{transaction.total_amount.toFixed(2)}
+                                           </td>
+                                           <td className="font-medium text-gray-700 text-sm text-left px-4 whitespace-nowrap">
+                                               {transaction.source === "payment_to_lender"
+                                                   ? "Payment"
+                                                   : "Refund"}
+                                           </td>
+                                           <td className="font-medium text-gray-700 text-sm text-left px-4 whitespace-nowrap">
+                                               {transaction.type === "credit"
+                                                   ? "Credit"
+                                                   : "Debit"}
+                                           </td>
+                                           <td className="font-medium text-gray-700 text-sm text-left px-4 whitespace-nowrap">
+                                               {new Date(transaction.createdAt).toLocaleDateString()}
+                                           </td>
+                                       </tr>
+                                   ))}
+                           </tbody>
+                       </table>
+                   ) : (
+                       <div className="text-center text-gray-500 mt-4">
+                           Wallet is empty
+                       </div>
+                   )}
+               </div>
+           </div>
+           
             )}
         </div>
     );

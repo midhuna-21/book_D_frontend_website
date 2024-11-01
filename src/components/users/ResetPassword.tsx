@@ -13,7 +13,7 @@ import { isValidatePasswords } from "../../utils/validations/new-password";
 
 const ResetPassword: React.FC = () => {
     const [password, setPassword] = useState("");
-    const [conformPassword, setConformPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const user = useSelector((state: RootState) => state?.user?.userInfo?.user);
 
@@ -38,7 +38,7 @@ const ResetPassword: React.FC = () => {
             toast.error("Please enter password");
             return;
         }
-        const validationResult = isValidatePasswords(password, conformPassword);
+        const validationResult = isValidatePasswords(password, confirmPassword);
         if (validationResult !== true) {
             toast.error(validationResult);
             return;
@@ -163,15 +163,15 @@ const ResetPassword: React.FC = () => {
                             </div>
                         </label>
                         <label className="block mb-2 font-mono">
-                            Conform Password
+                            Confirm Password
                             <input
                                 type="password"
                                 className="mt-1 p-2 border border-gray-400 rounded w-full"
                                 style={{ marginBottom: "5px" }}
                                 autoComplete="new-password"
-                                value={conformPassword}
+                                value={confirmPassword}
                                 onChange={(e) =>
-                                    setConformPassword(e.target.value)
+                                    setConfirmPassword(e.target.value)
                                 }
                             />
                         </label>

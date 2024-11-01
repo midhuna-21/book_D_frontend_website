@@ -10,7 +10,9 @@ const userSlice = createSlice({
         isAuthenticated: !!userInfo,
         resetToken: null,
         isBlocked: false,
+        onlineUsers: new Set<string>(),
     },
+
     reducers: {
         addUser: (state, action) => {
             state.userInfo = action.payload;
@@ -28,11 +30,20 @@ const userSlice = createSlice({
         clearResetToken: (state) => {
             state.resetToken = null;
         },
-        
+        setOnlineUsers: (state, action) => {
+            state.onlineUsers = new Set(action.payload); 
+        },
+        updateOnlineUserStatus: (state, action) => {
+            const { userId, isOnline } = action.payload;
+            if (isOnline) {
+                state.onlineUsers.add(userId);
+            } else {
+                state.onlineUsers.delete(userId);
+            }
+        },
     },
 });
 
-export const { addUser, clearUser, setResetToken, clearResetToken } =
-    userSlice.actions;
+export const { addUser, clearUser, setResetToken, clearResetToken, setOnlineUsers, updateOnlineUserStatus  } = userSlice.actions;
 export const userName = userSlice.name;
 export default userSlice.reducer;

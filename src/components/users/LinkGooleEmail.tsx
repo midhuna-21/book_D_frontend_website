@@ -78,8 +78,8 @@ const LinkGoogleEmail: React.FC = () => {
                         </h2>
                     </div>
                     <p className="mb-4 font-sans">
-                        Your email is not linked with your Book.D account. If
-                        you want to link it with your account, please enter your
+                        Your Gmail is not linked with your Book.D account. If
+                        you want to link it with your Gmail account, please enter your
                         password.
                     </p>
 

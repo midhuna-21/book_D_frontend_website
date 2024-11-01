@@ -90,16 +90,16 @@ const EditGenre: React.FC = () => {
     };
 
     return (
-        <div className="flex items-start h-screen bg-stone-900 p-8 rounded-2xl">
-            <div className="p-8 rounded shadow-md w-1/2 mr-4">
-                <h2 className="text-2xl font-custom mb-6 text-zinc-300">
+        <div className="flex items-start h-screen bg-white p-8 rounded-2xl">
+            <div className="p-8 shadow-md w-1/2 mr-4">
+                <h2 className="text-2xl font-custom mb-6">
                     Edit Genre
                 </h2>
                 <form onSubmit={handleUpdate}>
                     <div className="mb-4">
                         <label
                             htmlFor="genreName"
-                            className="block text-zinc-300 mb-2 font-custom">
+                            className="block text-blue-400 mb-2 font-custom">
                             Genre Name
                         </label>
                         <input
@@ -115,7 +115,7 @@ const EditGenre: React.FC = () => {
                     <div className="mb-4">
                         <label
                             htmlFor="image"
-                            className="block text-zinc-300 mb-2 font-custom">
+                            className="block text-blue-400 mb-2 font-custom">
                             Upload Image
                         </label>
                         <div className="flex items-center">
@@ -146,12 +146,12 @@ const EditGenre: React.FC = () => {
                     <div className="flex justify-end space-x-4">
                         <button
                             type="submit"
-                            className="bg-green-950 hover:bg-green-800 text-zinc-300 font-bold py-2 px-4 rounded flex items-center justify-center space-x-2">
-                            <span>Update</span> <FaPlus />
+                            className="bg-green-950 hover:bg-green-800 text-white font-bold py-2 px-4 rounded flex items-center justify-center space-x-2">
+                            <span>Update</span>
                         </button>
                         <button
                             type="button"
-                            className="bg-gray-500 hover:bg-gray-600 text-zinc-300 font-bold py-2 px-4 rounded">
+                            className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
                             Cancel
                         </button>
                     </div>

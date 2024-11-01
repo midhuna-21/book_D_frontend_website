@@ -112,6 +112,9 @@ const RentalOrdersList: React.FC = () => {
                         .includes(searchKey.toLowerCase()) ||
                     order?.lenderId?.name
                         .toLowerCase()
+                        .includes(searchKey.toLowerCase()) ||
+                        order?.userId?.name
+                        .toLowerCase()
                         .includes(searchKey.toLowerCase())
             );
         }
@@ -127,8 +130,8 @@ const RentalOrdersList: React.FC = () => {
         return <div className="text-gray-500 text-center">Loading...</div>;
     }
     return (
-        <div className="bg-stone-800 shadow-md rounded p-4 h-full">
-            <h2 className="text-xl font-bold mb-4 text-zinc-300">
+        <div className="bg-white shadow-md rounded p-4 h-full">
+            <h2 className="text-xl font-serif mb-4 text-black">
                 Rental Orders List
             </h2>
             <div className="mb-4 flex justify-between">
@@ -173,14 +176,14 @@ const RentalOrdersList: React.FC = () => {
                 <div className="flex space-x-2">
                     <input
                         type="text"
-                        placeholder="Search by book title or renter name"
+                        placeholder="Search..."
                         value={searchKey}
                         onChange={handleSearchChange}
                         className="px-4 py-2 border rounded"
                     />
                 </div>
             </div>
-            <div className="h-96 overflow-y-auto">
+            <div className="h-[540px] overflow-y-auto mt-6">
                 {filteredOrders().length === 0 ? (
                     <div className="text-gray-500 mb-4 flex items-center justify-center h-full">
                         {viewMode === "completed" && "No orders"}
@@ -188,10 +191,10 @@ const RentalOrdersList: React.FC = () => {
                     </div>
                 ) : (
                     <div className="table-container">
-                        <table className="min-w-full bg-stone-800">
-                            <thead className="sticky top-0 bg-gray-200 shadow ">
+                        <table className="min-w-full bg-stone-300">
+                            <thead className="sticky top-0 bg-gray-300 shadow ">
                                 <tr>
-                                    <th className="py-2 px-4 border-b text-center">
+                                    <th className="py-2 px-4 border-b text-center ">
                                         Book Title
                                     </th>
                                     <th className="py-2 px-4 border-b text-center">
@@ -220,14 +223,14 @@ const RentalOrdersList: React.FC = () => {
                             <tbody>
                                 {filteredOrders().map((order) => (
                                     <tr key={order._id}>
-                                        <td className="py-2 px-4 border-b text-slate-300 text-center truncate max-w-[150px]">
+                                        <td className="py-2 px-4 border-b text-black text-center truncate max-w-[150px]">
                                             {order?.bookId?.bookTitle}
                                         </td>
-                                        <td className="py-2 px-4 border-b text-slate-300 text-center truncate max-w-[150px]">
+                                        <td className="py-2 px-4 border-b text-black text-center truncate max-w-[150px]">
                                             {order?.userId?.name}
                                         </td>
                                         <td
-                                            className={`py-2 px-4 border-b text-slate-300 text-center truncate max-w-[150px] ${
+                                            className={`py-2 px-4 border-b text-black text-center truncate max-w-[150px] ${
                                                 order.bookStatusFromRenter ===
                                                 "completed"
                                                     ? "bg-green-600"
@@ -247,11 +250,11 @@ const RentalOrdersList: React.FC = () => {
                                             {" "}
                                             {order.bookStatusFromRenter}
                                         </td>
-                                        <td className="py-2 px-4 border-b text-slate-300 text-center truncate max-w-[150px]">
+                                        <td className="py-2 px-4 border-b text-black text-center truncate max-w-[150px]">
                                             {order?.lenderId?.name}
                                         </td>
                                       
-                                        <td className={`py-2 px-4 border-b text-slate-300 text-center truncate max-w-[150px] ${
+                                        <td className={`py-2 px-4 border-b text-black text-center truncate max-w-[150px] ${
                                                 order.bookStatusFromLender ===
                                                 "completed"
                                                     ? "bg-green-600"
@@ -270,14 +273,14 @@ const RentalOrdersList: React.FC = () => {
                                             }`}>
                                             {order.bookStatusFromLender}
                                         </td>
-                                        <td className="py-2 px-4 border-b text-slate-300 text-center truncate max-w-[150px]">
+                                        <td className="py-2 px-4 border-b text-black text-center truncate max-w-[150px]">
                                             {order.statusUpdateRenterDate
                                                 ? new Date(
                                                       order.statusUpdateRenterDate
                                                   ).toLocaleDateString()
                                                 : " "}
                                         </td>
-                                        <td className="py-2 px-4 border-b text-slate-300 text-center truncate max-w-[150px]">
+                                        <td className="py-2 px-4 border-b text-black text-center truncate max-w-[150px]">
                                             {order.statusUpdateRenterDate &&
                                             order?.cartId?.totalDays
                                                 ? new Date(
@@ -294,7 +297,7 @@ const RentalOrdersList: React.FC = () => {
                                                 : " "}
                                         </td>
 
-                                        <td className="py-2 px-4 border-b text-slate-300 text-center">
+                                        <td className="py-2 px-4 border-b text-black text-center">
                                             <button
                                                 className="bg-green-700 text-white py-1 px-3 rounded hover:bg-green-600"
                                                 onClick={() =>

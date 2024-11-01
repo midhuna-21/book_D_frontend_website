@@ -26,7 +26,6 @@ const Register: React.FC = () => {
         e: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
         e.preventDefault();
-
         const validationResult = validate(
             name,
             email,
@@ -38,7 +37,6 @@ const Register: React.FC = () => {
             toast.error(validationResult);
             return;
         }
-
         axiosUser
             .post(
                 "/sign-up",
@@ -51,12 +49,11 @@ const Register: React.FC = () => {
                 { withCredentials: true }
             )
             .then(function (response) {
-                console.log(response,'response')
                 if (response.status === 200) {
                     navigate("/otp-verification", {
-                        state: { response: response.data },
+                        state: { response: response.data, origin: "sign-up" },
                     });
-                    // localStorage.setItem("originPage", "sign-up");
+
                 }
             })
             .catch(function (error) {

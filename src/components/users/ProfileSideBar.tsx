@@ -24,10 +24,7 @@ const ProfileSideBar: React.FC = () => {
                         Books
                     </button>
                 </Link>
-                {/* <button className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 w-full text-left rounded-md ml-2">
-                    <i className="fas fa-shield-alt mr-2"></i>
-                    Security
-                </button> */}
+            
                 <Link to="/home/wallet">
                 <button 
                      onClick={toggleDropdown}
@@ -38,7 +35,7 @@ const ProfileSideBar: React.FC = () => {
                 </Link>
                 <button
                     onClick={toggleDropdown}
-                    className="flex items-center justify-between px-5 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 w-full text-left rounded-md">
+                    className="flex px-5 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 w-full text-left rounded-md">
                     <FaShoppingCart className="mr-2 text-xl" />
                     <span>Order</span>
                     <i
@@ -63,10 +60,7 @@ const ProfileSideBar: React.FC = () => {
                     </div>
                 )}
 
-                {/* <button className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 w-full text-left rounded-md ml-2">
-                    <i className="fas fa-star mr-2"></i>
-                    Reviews
-                </button> */}
+               
             </div>
         </div>
     );

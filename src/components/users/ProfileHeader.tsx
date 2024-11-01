@@ -121,16 +121,14 @@ const ProfileHeader: React.FC = () => {
                     </button>
                 </div>
             </div>
-            <div className="bg-gray-200 h-20 flex flex-col md:flex-row items-center p-4 md:pl-20 w-full">
+            <div className="bg-gray-200 h-30 md:h-20 flex flex-col md:flex-row items-center p-4 md:pl-20 w-full">
                 <div className="flex flex-row items-center w-full md:w-auto">
                     <div className="w-32 md:w-52 h-32 md:h-52"></div>
                     <div>
-                        <h1 className="name font-serif text-2xl md:text-3xl">
+                        <h1 className="name font-serif text-2xl md:text-3xl ">
                             {user?.name}
                         </h1>
-                        {/* <p className="email text-sm font-normal">
-                            {user?.email}
-                        </p> */}
+                      
                     </div>
                 </div>
             </div>

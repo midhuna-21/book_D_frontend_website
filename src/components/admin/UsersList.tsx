@@ -72,7 +72,7 @@ const UsersList: React.FC = () => {
         }
 
         return filtered;
-    };
+    };  
 
     const handleBlock = (userId: string) => {
         

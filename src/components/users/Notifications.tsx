@@ -5,7 +5,7 @@ import { userAxiosInstance } from "../../utils/api/userAxiosInstance";
 import Swal from "sweetalert2";
 import { useSocket } from "../../utils/context/SocketProvider";
 import ConfirmationRequest from "./ConfirmationRequest";
-import userLogo from "../../assets/userLogo.png";
+import photo from "../../assets/th.jpeg";
 
 interface User {
     _id: string;
@@ -35,7 +35,7 @@ interface Notification {
 const Notifications: React.FC = () => {
     const [notifications, setNotifications] = useState<any[]>([]);
     const [status, setStatus] = useState(false);
-    const picture = userLogo;
+    const picture = photo;
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModalOpenPayment, setIsModalOpenPayment] = useState(false);
     const [selectedNotification, setSelectedNotification] =
@@ -301,7 +301,7 @@ const Notifications: React.FC = () => {
     }
     return (
         <>
-            <div className="mt-12 px-4 sm:px-6 lg:px-8">
+            <div className="mt-12 px-4 sm:px-6 lg:px-8 ">
                 <h2 className="text-center text-lg font-bold text-gray-600">
                     Here is your request and accept message
                 </h2>
@@ -319,7 +319,7 @@ const Notifications: React.FC = () => {
                         );
 
                         return categoryNotifications.length > 0 ? (
-                            <div key={category} className="w-full max-w-4xl">
+                            <div key={category} className="w-full max-w-4xl ">
                                 <p className="text-xl font-bold text-zinc-800">
                                     Notifications
                                 </p>

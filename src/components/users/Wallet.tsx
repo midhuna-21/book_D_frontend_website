@@ -107,7 +107,7 @@ const WalletTransactions: React.FC = () => {
 
             {wallet && (
                 <>
-                    <div className="w-3/4 p-3">
+                   <div className="w-full md:w-3/4 p-3">
                         {currentTransactions.filter(
                             (transaction) => transaction.total_amount > 0
                         ).length > 0 ? (

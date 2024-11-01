@@ -65,7 +65,7 @@ const ExploreBooks: React.FC = () => {
                 <h1 className="text-2xl font-bold text-gray-700">
                     Hello, {name}!
                 </h1>
-                <p className="text-sm text-gray-600 mt-2">
+                <p className="text-sm text-gray-600 mt-2 ">
                     {books.length === 0 ? (
                         <span>
                             <span>
@@ -105,8 +105,8 @@ const ExploreBooks: React.FC = () => {
                 </div>
             ) : (
                 <>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-5">
-                        {currentBooks.map((book) => (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-5 gap-5 justify-items-center">
+                  {currentBooks.map((book) => (
                             <Link
                                 to={`/home/book/${book._id}`}
                                 key={book._id}
@@ -155,17 +155,6 @@ const ExploreBooks: React.FC = () => {
                                                 : book.description}
                                         </p>
 
-                                        {/* <div className="flex items-center justify-center mb-2">
-                                            <FaStar className="text-yellow-400" />
-                                            <FaStar className="text-yellow-400" />
-                                            <FaStar className="text-yellow-400" />
-                                            <FaStar className="text-yellow-400" />
-                                            <FaStar className="text-gray-300" />
-                                        </div>
-
-                                        <p className="text-sm text-gray-600 mb-4">
-                                            4.0 (120 reviews)
-                                        </p> */}
                                           <Link
                                 to={`/home/book/${book._id}`}>
                                         <button
@@ -174,11 +163,7 @@ const ExploreBooks: React.FC = () => {
                                                 width: "100px",
                                                 height: "40px",
                                             }}
-                                            onClick={() =>
-                                                console.log(
-                                                    `Chose ${book.name}`
-                                                )
-                                            }>
+                                           >
                                             Choose
                                         </button>
                                         </Link>

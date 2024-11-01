@@ -32,7 +32,7 @@ const GenresList: React.FC = () => {
             setLoading(true);
             try {
                 const response = await adminAxiosInstance.get("/genres");
-                console.log(response,'resposen')
+       
                 setGenres(response.data);
                 setHasMore(response.data.length > 0);
             } catch (error) {
@@ -93,43 +93,44 @@ const GenresList: React.FC = () => {
     }
 
     return (
-        <Box className="w-full bg-stone-900 rounded-lg">
-            <Text className="text-2xl font-custom text-zinc-300 mb-4">
-                List of Genres
-            </Text>
-            <Box   ref={genresContainerRef}
-                className="max-h-80 overflow-y-auto" 
+        <Box className="rounded-lg ">
+           
+            <Box  ref={genresContainerRef}
+                className="max-h-[550px] overflow-y-auto" 
             >
                 {genres.map((genre) => (
-                    <Box
-                        key={genre._id}
-                        className="flex items-center justify-between p-4 border-b border-zinc-700">
-                        <Box className="flex items-center">
-                            <Image
-                                src={genre.image}
-                                alt={genre.genreName}
-                                boxSize="50px"
-                                objectFit="cover"
-                                className="rounded-full mr-4"
-                            />
-                            <Text className="text-lg font-semibold text-zinc-300">
-                                {genre.genreName}
-                            </Text>
+                   <Box
+                   key={genre._id}
+                   className="flex items-center justify-between p-4 border-b border-zinc-700">
+                   <Box className="flex items-center">
+                       <Image
+                           src={genre.image}
+                           alt={genre.genreName}
+                           boxSize="50px"
+                           objectFit="cover"
+                           className="rounded-full mr-4"
+                       />
+                               <Text 
+            className="text-lg font-semibold text-black overflow-hidden whitespace-nowrap text-ellipsis max-w-[150px]"
+            title={genre.genreName} 
+        >
+            {genre.genreName}
+        </Text>
                         </Box>
                         <Box className="flex items-center space-x-8">
                             <IconButton
                                 aria-label="Edit Genre"
                                 icon={<FaEdit />}
-                                colorScheme="white"
-                                color="white"
+                                colorScheme="black"
+                                color="black"
                                 onClick={() => handleEditGenre(genre._id)}
                                 size="sm"
                             />
                             <IconButton
                                 aria-label="delete Genre"
                                 icon={<FaTrashAlt />}
-                                colorScheme="white"
-                                color="white"
+                                colorScheme="black"
+                                color="black"
                                 onClick={() => handleDeleteGenre(genre._id)}
                                 size="sm"
                             />

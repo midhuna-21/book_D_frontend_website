@@ -80,7 +80,7 @@ const Users: React.FC = () => {
 
     const [currentPage, setCurrentPage] = useState(1);
     const [visiblePageStart, setVisiblePageStart] = useState(1);
-    const usersPerPage = 7;
+    const usersPerPage = 8;
     const maxVisiblePages = 5;
 
     const indexOfLastUser = currentPage * usersPerPage;
@@ -216,7 +216,8 @@ const Users: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {currentUsers.map((user) => (
+            {currentUsers.length > 0 ? (
+                currentUsers.map((user) => (
                     <div
                         key={user._id}
                         className="bg-gray-100 hover:shadow-lg hover:rounded-lg hover:bg-white p-4 rounded flex items-start cursor-pointer min-h-[120px]">
@@ -239,40 +240,68 @@ const Users: React.FC = () => {
                                     }`}>
                                     {user.isBlocked ? "Blocked" : "Active"}
                                 </p>
+                                <button
+                                                    onClick={() =>
+                                                        user.isBlocked
+                                                            ? handleUnblock(
+                                                                  user._id
+                                                              )
+                                                            : handleBlock(
+                                                                  user._id
+                                                              )
+                                                    }
+                                                    className={`px-2 py-1 w-20 h-8 ml-4  rounded ${
+                                                        user.isBlocked
+                                                            ? "bg-red-500"
+                                                            : "bg-teal-800"
+                                                    } text-white`}>
+                                                    {user.isBlocked
+                                                        ? "Unblock"
+                                                        : "Block"}
+                                                </button>
                             </div>
+                            
                         </div>
                     </div>
-                ))}
+                ))
+            ) : (
+                <div className="col-span-full flex justify-center items-center h-48">
+                    <p className="text-gray-500 text-lg">Empty</p>
+                </div>
+            )}
             </div>
-            <div
-                className="px-12 flex  items-center  justify-center"
-                style={{ height: "200px" }}>
-                <button
-                    onClick={prevPage}
-                    disabled={currentPage === 1}
-                    className="px-3 py-1 text-gray-700 rounded disabled:opacity-50">
-                    <FaLessThan />
-                </button>
-
-                {pageNumbers.map((page) => (
-                    <button
-                        key={page}
-                        onClick={() => goToPage(page)}
-                        className={`px-3 py-1 mx-1 rounded ${
-                            currentPage === page
-                                ? "bg-cyan-800 text-white"
-                                : "bg-gray-200 text-gray-700"
-                        }`}>
-                        {page}
-                    </button>
-                ))}
-                <button
-                    onClick={nextPage}
-                    disabled={currentPage === totalPages}
-                    className="px-3 py-1 text-gray-700 rounded disabled:opacity-50">
-                    <FaGreaterThan />
-                </button>
-            </div>
+            {currentUsers.length && (
+                     <div
+                     className="px-12 flex  items-center  justify-center"
+                     style={{ height: "200px" }}>
+                     <button
+                         onClick={prevPage}
+                         disabled={currentPage === 1}
+                         className="px-3 py-1 text-gray-700 rounded disabled:opacity-50">
+                         <FaLessThan />
+                     </button>
+     
+                     {pageNumbers.map((page) => (
+                         <button
+                             key={page}
+                             onClick={() => goToPage(page)}
+                             className={`px-3 py-1 mx-1 rounded ${
+                                 currentPage === page
+                                     ? "bg-cyan-800 text-white"
+                                     : "bg-gray-200 text-gray-700"
+                             }`}>
+                             {page}
+                         </button>
+                     ))}
+                     <button
+                         onClick={nextPage}
+                         disabled={currentPage === totalPages}
+                         className="px-3 py-1 text-gray-700 rounded disabled:opacity-50">
+                         <FaGreaterThan />
+                     </button>
+                 </div>
+            )}
+       
         </div>
     );
 };

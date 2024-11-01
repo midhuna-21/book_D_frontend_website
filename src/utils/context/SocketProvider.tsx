@@ -22,23 +22,22 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     useEffect(() => {
         const newSocket = io(config.API_BACKEND);
-        
+
         if (userId) {
             newSocket.emit('register', userId);
-            
-            newSocket.on('user-status', (data: { userId: string; isOnline: boolean }) => {
-                setOnlineUsers((prevOnlineUsers) => {
-                    const updatedOnlineUsers = new Set(prevOnlineUsers);
-                    if (data.isOnline) {
-                        updatedOnlineUsers.add(data.userId);
-                    } else {
-                        updatedOnlineUsers.delete(data.userId);
-                    }
-                    return updatedOnlineUsers;
-                });
-            });
-            
         }
+
+        newSocket.on('user-status', (data: { userId: string; status: 'online' | 'offline' }) => {
+            setOnlineUsers((prev) => {
+                const updatedUsers = new Set(prev);
+                if (data.status === 'online') {
+                    updatedUsers.add(data.userId);
+                } else {
+                    updatedUsers.delete(data.userId);
+                }
+                return updatedUsers;
+            });
+        });
 
         setSocket(newSocket);
 

@@ -36,7 +36,7 @@ const AdminSideBar: React.FC = () => {
                 isCollapsed ? "w-15" : "w-50"
             } transition-all duration-300`}>
             <div className="h-screen bg-stone-900 text-white flex flex-col">
-                <div className="flex items-center justify-between h-19 bg-stone-800 py-3">
+                <div className="flex items-center justify-between h-19 bg-stone- py-3">
                     <div
                         className={`flex ${
                             isCollapsed
@@ -49,8 +49,8 @@ const AdminSideBar: React.FC = () => {
                         )}
                         <button
                             onClick={toggleSidebar}
-                            className="text-white focus:outline-none ml-2">
-                            <FaBars className="h-5 w-9 " />
+                            className="text-white focus:outline-none ml-2 hidden sm:block">
+                            <FaBars className="h-5 w-9" />
                         </button>
                     </div>
                 </div>

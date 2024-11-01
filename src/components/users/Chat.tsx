@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../utils/ReduxStore/store/store";
 import { userAxiosInstance } from "../../utils/api/userAxiosInstance";
 import { useSocket } from "../../utils/context/SocketProvider";
+import InputEmoji from "react-input-emoji";
 
 interface Receivers {
     chatRoomId: string;
@@ -28,7 +29,7 @@ const Chat: React.FC = () => {
 
     const [messageText, setMessageText] = useState("");
     const [currentChatRoomId, setCurrentChatRoomId] = useState<string>("");
-
+    const [typingUsers, setTypingUsers] = useState(new Set());
     const [selectedUserDetails, setSelectedUserDetails] = useState<{
         userId: string;
         userName: string;
@@ -36,13 +37,16 @@ const Chat: React.FC = () => {
     } | null>(null);
 
     const { socket } = useSocket();
+    const [onlineUsers, setOnlineUsers] = useState(new Set());
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (messagesEndRef.current) {
-            messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+            messagesEndRef.current.scrollTop =
+                messagesEndRef.current.scrollHeight;
         }
     }, [messages]);
+ 
 
     const fetchReceivers = async () => {
         try {
@@ -93,13 +97,12 @@ const Chat: React.FC = () => {
         }
     };
     useEffect(() => {
-      
+        
         fetchReceivers();
     }, [userId]);
 
     const handleUserClick = async (chatRoomId: string) => {
         try {
-         
             const response = await userAxiosInstance.get(
                 `/chat-room/${chatRoomId}`
             );
@@ -107,12 +110,7 @@ const Chat: React.FC = () => {
             const res = response?.data?.chat[0];
 
             if (res) {
-                const { messages, senderId, 
-                    receiverId
-                 } = res;
-
-                console.log(senderId,'senderId')
-                console.log(receiverId,'receiverId')
+                const { senderId, receiverId } = res;
 
                 const isSender = senderId._id === userId;
 
@@ -124,9 +122,6 @@ const Chat: React.FC = () => {
                     userImage: userDetails.image || photo,
                 });
                 setCurrentChatRoomId(chatRoomId);
-
-                console.log("Selected User Details:", userDetails);
-            console.log("Current Chat Room ID:", chatRoomId);
                 fetchMessages(chatRoomId);
 
                 await userAxiosInstance.post(`/chatRoom-update/${chatRoomId}`);
@@ -137,43 +132,82 @@ const Chat: React.FC = () => {
             console.error("Error fetching chat room:", error);
         }
     };
+ 
     useEffect(() => {
         if (socket) {
-
             socket.on("receive-message", (message) => {
-                setMessages((prevMessages) => [...prevMessages, message]);
-            });
-
-            socket.on("user-status", ({ userId, isOnline }) => {
                 setChatRooms((prevChatRooms) => {
-                    const updatedChatRooms = prevChatRooms.map((chatRoom) => {
-                        if (chatRoom.userId === userId) {
-                            return { ...chatRoom, isOnline };
+                    return prevChatRooms.map((chatRoom) => {
+                        if (
+                            chatRoom.chatRoomId === message.chatRoomId ||
+                            chatRoom.userId === message.receiverId ||
+                            chatRoom.userId === message.senderId
+                        ) {
+                            return {
+                                ...chatRoom,
+                                lastMessage: message.content,
+                                lastMessageTime: message.timestamp,
+                                isRead:
+                                    currentChatRoomId === chatRoom.chatRoomId,
+                            };
                         }
                         return chatRoom;
                     });
+                });
+                if (message.chatRoomId === currentChatRoomId) {
+                    setMessages((prevMessages) => [...prevMessages, message]);
+                }
+            });
 
-                    return updatedChatRooms;
+            socket.on("typing", ({ userId, chatId }) => {
+                const matchingRoom = chatRooms.find(
+                    (chatRoom) => chatRoom.chatRoomId === chatId
+                );
+                if (matchingRoom?.chatRoomId === chatId) {
+                    setTypingUsers(
+                        (prevTypingUsers) =>
+                            new Set([...prevTypingUsers, userId])
+                    );
+                }
+            });
+
+            socket.on("stop-typing", ({ userId, chatId }) => {
+                const matchingRoom = chatRooms.find(
+                    (chatRoom) => chatRoom.chatRoomId === chatId
+                );
+                if (matchingRoom?.chatRoomId === chatId) {
+                    setTypingUsers((prevTypingUsers) => {
+                        const updatedTypingUsers = new Set(prevTypingUsers);
+                        updatedTypingUsers.delete(userId);
+                        return updatedTypingUsers;
+                    });
+                }
+            });
+
+            socket.on("userOnline", (userId) => {
+                setOnlineUsers((prev) => new Set(prev).add(userId));
+            });
+    
+            socket.on("userOffline", (userId) => {
+                setOnlineUsers((prev) => {
+                    const updatedUsers = new Set(prev);
+                    updatedUsers.delete(userId);
+                    return updatedUsers;
                 });
             });
 
-            socket.on("user-offline", (userId: string) => {
-                setChatRooms((prevChatRooms) =>
-                    prevChatRooms.map((chatRoom) =>
-                        chatRoom.userId === userId
-                            ? { ...chatRoom, isOnline: false }
-                            : chatRoom
-                    )
-                );
-            });
-
+            if (userId) {
+                socket.emit("userConnected", userId);
+            }
             return () => {
+                socket.off("userOnline");
+                socket.off("userOffline");
+                socket.off("typing");
+                socket.off("stop-typing");
                 socket.off("receive-message");
-                socket.off("user-online");
-                socket.off("user-offline");
             };
         }
-    }, [socket]);
+    }, [socket, currentChatRoomId,chatRooms,userId]);
 
     const handleSendMessage = async (
         messageText: string,
@@ -207,7 +241,6 @@ const Chat: React.FC = () => {
                 }
 
                 setMessageText("");
-               
             } else {
                 console.error("Failed to send message");
             }
@@ -253,6 +286,29 @@ const Chat: React.FC = () => {
             return `${month}/${day}/${year}`;
         }
     };
+    const handleOnEnter = (text: string) => {
+        handleSendMessage(text, currentChatRoomId);
+        setMessageText("");
+    };
+
+    const handleTyping = (chat_id: string, user_id: string) => {
+        if (socket) {
+            if (chat_id) {
+                socket.emit("typing", { chatId: chat_id, userId: user_id });
+            }
+        }
+    };
+
+    const handleStopTyping = (chat_id: string, user_id: string) => {
+        if (socket) {
+            if (chat_id) {
+                socket.emit("stop-typing", {
+                    chatId: chat_id,
+                    userId: user_id,
+                });
+            }
+        }
+    };
 
     return (
         <div className="mt-12 mx-auto w-full max-w-6xl flex flex-col md:flex-col space-y-8 md:space-y-0 md:space-x-8 mb-20">
@@ -266,38 +322,44 @@ const Chat: React.FC = () => {
                 </p>
             </div>
             <div className="flex flex-col md:flex-row gap-6">
-
-            <div className="w-full md:w-1/2 h-[500px] mt-4 md:mt-0 flex flex-col">
-
+                <div className="w-full md:w-1/2 h-[500px] mt-4 md:mt-0 flex flex-col">
                     <p className="px-2 text-lg font-bold text-zinc-800">
                         Messages
                     </p>
-                    <div className="mt- border border-gray-200 rounded-lg shadow-md p-4 h-full">
-                        <div className="flex flex-col space-y-4 h-full overflow-y-auto">
+                    <div className="border border-gray-200 rounded-lg shadow-md p-4 h-full">
+                        <div className="flex flex-col space-y-3 h-full overflow-y-scroll scrollbar-hide">
                             {chatRooms.length > 0 ? (
                                 chatRooms.map((chatRoom) => (
                                     <div
                                         key={chatRoom.userId}
-                                        className="flex items-center shadow-md px-4 py-2 mb-4 p-2 hover:bg-gray-100 rounded-lg cursor-pointer"
+                                        className="flex items-center shadow-md border p-2 hover:bg-gray-100 rounded-md cursor-pointer"
                                         onClick={() =>
                                             handleUserClick(chatRoom.chatRoomId)
                                         }>
                                         <div className="w-16 h-16 rounded-full overflow-hidden mr-4 relative">
                                             <img
-                                                src={chatRoom.userImage}
+                                                src={
+                                                    chatRoom.userImage || photo
+                                                }
                                                 alt={chatRoom.userName}
                                                 className="w-full h-full object-cover"
                                             />
-                                            {chatRoom.isOnline && (
+                                            {/* {chatRoom.isOnline && (
+                                                <div className="absolute bottom-1 right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
+                                            )} */}
+                                            {onlineUsers.has(
+                                                chatRoom.userId
+                                            ) && (
                                                 <div className="absolute bottom-1 right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
                                             )}
                                         </div>
+
                                         <div className="ml-2 flex-1 ">
                                             <div className="font-medium text-gray-900">
                                                 {chatRoom.userName}
                                             </div>
                                             <div
-                                                className={`p-2 ${
+                                                className={`${
                                                     chatRoom.isRead
                                                         ? "font-bold"
                                                         : "font-normal"
@@ -308,15 +370,25 @@ const Chat: React.FC = () => {
                                                     overflow: "hidden",
                                                     textOverflow: "ellipsis",
                                                 }}>
-                                                {chatRoom.lastMessage}
+                                                {typingUsers.has(
+                                                    chatRoom.userId
+                                                ) ? (
+                                                    <div className="text-xs text-green-500">
+                                                        typing...
+                                                    </div>
+                                                ) : (
+                                                    <div>
+                                                        {chatRoom.lastMessage}
+                                                    </div>
+                                                )}
                                             </div>
+
                                             {chatRoom.isOnline && (
                                                 <div className="text-xs text-green-500 flex justify-end ">
                                                     Online
                                                 </div>
                                             )}
                                         </div>
-                                      
                                     </div>
                                 ))
                             ) : (
@@ -328,29 +400,35 @@ const Chat: React.FC = () => {
                     </div>
                 </div>
                 <div className="w-full md:w-1/2 h-[500px] mt-4 md:mt-0">
-                    {/* <h2 className="text-center text-lg md:py-0 py-12 font-bold text-gray-600">
-                    You can chat and enquire about your books
-                </h2> */}
                     <div className="md:mt-6 border border-gray-200 rounded-lg shadow-md p-4 h-full flex flex-col">
                         {selectedUserDetails ? (
                             <div className="flex flex-col h-full">
-                                <div className="flex items-center mb-4 p-2">
+                                <div className="flex items-center mb-4 p-2 border rounded-md border-violet-200">
                                     <div className="w-16 h-16 rounded-full overflow-hidden mr-4">
                                         <img
-                                            src={selectedUserDetails.userImage}
+                                            src={
+                                                selectedUserDetails.userImage ||
+                                                photo
+                                            }
                                             alt={selectedUserDetails.userName}
                                             className="w-full h-full object-cover"
                                         />
                                     </div>
                                     <div>
-                                        <p className="text-xl font-bold">
-                                            {selectedUserDetails.userName}
-                                        </p>
-                                    </div>
+            <p className="text-xl font-bold">{selectedUserDetails.userName}</p>
+
+            {typingUsers.has(selectedUserDetails.userId) ? (
+                <p className="text-xs text-green-500">Typing...</p>
+            ) : onlineUsers.has(selectedUserDetails.userId) ? (
+                <p className="text-xs text-green-500">Online</p>
+            ) : null}
+        </div>
+                                    
                                 </div>
+                               
 
                                 <div
-                                    className="flex flex-col space-y-4 overflow-y-auto flex-grow"
+                                    className="flex flex-col space-y-4  overflow-y-scroll flex-grow scrollbar-hide"
                                     ref={messagesEndRef}>
                                     {messages && messages.length > 0 ? (
                                         messages.map((msg, msgIndex) => (
@@ -386,7 +464,6 @@ const Chat: React.FC = () => {
                                                         {msg.content}
                                                     </p>
                                                 </div>
-                                                <div ref={messagesEndRef} />
                                             </div>
                                         ))
                                     ) : (
@@ -396,22 +473,25 @@ const Chat: React.FC = () => {
                                     )}
                                 </div>
                                 <div className="pt-4 flex items-center space-x-4 border-t border-gray-200 w-full">
-                                    <input
-                                        type="text"
-                                        className="flex-grow p-2 border border-gray-300 rounded-lg"
-                                        placeholder="Type a message..."
+                                    <InputEmoji
                                         value={messageText}
-                                        onChange={(e) =>
-                                            setMessageText(e.target.value)
+                                        onChange={() =>
+                                            handleTyping(
+                                                currentChatRoomId,
+                                                userId
+                                            )
                                         }
-                                        onKeyDown={(e) => {
-                                            if (e.key === "Enter") {
-                                                handleSendMessage(
-                                                    messageText,
-                                                    currentChatRoomId
-                                                );
-                                            }
-                                        }}
+                                        onEnter={handleOnEnter}
+                                        placeholder="Type a message..."
+                                        onBlur={() =>
+                                            handleStopTyping(
+                                                currentChatRoomId,
+                                                userId
+                                            )
+                                        }
+                                        cleanOnEnter
+                                        shouldReturn
+                                        shouldConvertEmojiToImage={false}
                                     />
                                     <button
                                         className="text-black rounded-lg"

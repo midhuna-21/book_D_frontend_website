@@ -1,6 +1,5 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
-import AdminHeader from "../../components/admin/AdminHeader";
 import AdminSideBar from "../../components/admin/SideBarAdmin";
 import AdminDashboard from "../../components/admin/DashboardAdmin";
 import AddGenre from "../../components/admin/AddGenres";
@@ -19,8 +18,7 @@ const AdminHome: React.FC = () => {
 
             <AdminSideBar />
             <div className="flex flex-col flex-1">
-                <AdminHeader />
-                <div className="flex-1 p-4">
+                <div className="flex-1">
                     <Routes>
                         <Route
                             path="dashboard"

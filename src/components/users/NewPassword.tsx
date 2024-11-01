@@ -10,7 +10,7 @@ import { isValidatePasswords } from "../../utils/validations/new-password";
 
 const NewPassword: React.FC = () => {
     const [password, setPassword] = useState("");
-    const [conformPassword, setConformPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
@@ -28,7 +28,7 @@ const NewPassword: React.FC = () => {
             toast.error("Please enter password");
             return;
         }
-        const validationResult = isValidatePasswords(password, conformPassword);
+        const validationResult = isValidatePasswords(password, confirmPassword);
         if (validationResult !== true) {
             toast.error(validationResult);
             return;
@@ -53,35 +53,24 @@ const NewPassword: React.FC = () => {
                 }
             });
     };
-
+    
     useEffect(() => {
-        const otpSubmitted = localStorage.getItem("otpSubmitted");
-
-        if (!otpSubmitted) {
+        window.history.replaceState(null, "");
+    }, []);
+    
+    useEffect(() => {
+        if (!email) {
             navigate("/forgot-password");
-        } else {
-            const handleBeforeUnload = () => {
-                localStorage.removeItem("otpSubmitted");
-            };
-
-            window.addEventListener("beforeunload", handleBeforeUnload);
-
-            return () => {
-                window.removeEventListener("beforeunload", handleBeforeUnload);
-            };
         }
     }, [navigate]);
 
     return (
-        <div className="forgot h-[100vh] flex items-center justify-center">
-            <div
-                style={{ height: "500px", width: "600px" }}
-                className="border-2 border-gray-500 rounded-lg relative flex items-center justify-center">
-                {/* <div className='absolute inset-0 bg-white opacity-50'></div> */}
-                <div
-                    style={{ height: "500px", width: "600px" }}
-                    className=" p-6 absolute bg-white bg-opacity-40 border border-gray-300 rounded">
-                    <div className="flex items-center mb-5 ">
+        <div className="forgot flex items-center justify-center min-h-screen px-4 sm:px-6">
+        <div className="border-2 border-gray-300 rounded-lg relative flex items-center justify-center max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl w-full">
+        <div
+                style={{ height: "500px", width: "100%" }}
+                className="p-6 sm:p-8 md:p-10 lg:p-12 bg-white bg-opacity-40 border border-gray-300 rounded w-full">
+                  <div className="flex items-center mb-5 ">
                         <img
                             src={sitelogo}
                             alt="Icon"
@@ -132,15 +121,15 @@ const NewPassword: React.FC = () => {
                             </div>
                         </label>
                         <label className="block mb-2 font-mono">
-                            Conform Password
+                            Confirm Password
                             <input
                                 type="password"
                                 className="mt-1 p-2 border border-gray-400 rounded w-full"
                                 style={{ marginBottom: "5px" }}
                                 autoComplete="new-password"
-                                value={conformPassword}
+                                value={confirmPassword}
                                 onChange={(e) =>
-                                    setConformPassword(e.target.value)
+                                    setConfirmPassword(e.target.value)
                                 }
                             />
                         </label>

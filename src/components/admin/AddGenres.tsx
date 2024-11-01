@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import { toast } from "sonner";
 import { adminAxiosInstance } from "../../utils/api/adminAxiosInstance";
 import { FaPlus } from "react-icons/fa";
-import AddGenre from './Genn'
+import AddGenre from "./Genn";
 import GenresList from "../../components/admin/GenresList";
 
 const AddGenresWithList: React.FC = () => {
@@ -30,7 +30,7 @@ const AddGenresWithList: React.FC = () => {
     const handleAddGenre = (e: React.FormEvent) => {
         e.preventDefault();
 
-        if(!genreName.trim()){
+        if (!genreName.trim()) {
             toast.error("Please enter genre name.");
             return;
         }
@@ -73,15 +73,20 @@ const AddGenresWithList: React.FC = () => {
     };
 
     return (
-        <div className="flex md:flex-row flex-col items-start min-h-screen bg-stone-900 p-8 rounded-2xl ">
-             <div className="p-8 rounded shadow-md w-full sm:w-1/2">
+        <div className="flex md:flex-row flex-col items-start min-h-screen bg-white p- rounded">
+        <div className="w-full md:w-1/2 p-8 ">
+            <h1 className="font-serif text-2xl mb-4">Genres</h1>
+            <div className="mt-4">
                 <GenresList />
             </div>
-         <div className="p-8 rounded shadow-md w-full sm:w-1/2 ">
-             <AddGenre />
-            </div>
-           
         </div>
+    
+        <div className="p-8 w-full sm:w-1/2 h-auto">
+        <h1 className="font-serif text-2xl mb-4">Add Genre</h1>
+            <AddGenre />
+        </div>
+    </div>
+    
     );
 };
 
