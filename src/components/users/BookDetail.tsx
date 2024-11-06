@@ -91,7 +91,7 @@ const BookDetailPage: React.FC = () => {
                 `/books/details/${id}`
             );
             const bookData = response.data?.book;
-            if (bookData && Object.keys(bookData).length > 0) { 
+            if (bookData && Object.keys(bookData).length > 0) {
                 setBook(bookData);
                 setTotalDays(bookData.minDays);
                 setLender(response.data.lender);
@@ -100,11 +100,13 @@ const BookDetailPage: React.FC = () => {
                 console.log("Book data is empty or unavailable.");
                 toast.error("Book details are unavailable.");
             }
-        } catch (error:any) {
+        } catch (error: any) {
             if (error.response && error.response.status === 403) {
                 toast.error(error.response.data.message);
             } else {
-                toast.error("An error occurred while getching book details, please try again later");
+                toast.error(
+                    "An error occurred while getching book details, please try again later"
+                );
             }
         }
     };
@@ -139,7 +141,7 @@ const BookDetailPage: React.FC = () => {
         // };
         // fetchRequest();
         fetchBook();
-    }, [id, userId,bookId]);
+    }, [id, userId, bookId]);
 
     const currentUserGetLocation = () => {
         return new Promise<{ latitude: number; longitude: number }>(
@@ -256,8 +258,6 @@ const BookDetailPage: React.FC = () => {
                                 text: "Your request has been sent to the lender. Please wait for acceptance.",
                                 confirmButtonText: "OK",
                             });
-
-                       
                         } else {
                             console.error(
                                 "Failed to send notification:",
@@ -277,7 +277,7 @@ const BookDetailPage: React.FC = () => {
                     distanceResponse.statusText
                 );
             }
-        } catch (error:any) {
+        } catch (error: any) {
             if (error.response && error.response.status === 403) {
                 toast.error(error.response.data.message);
             } else {
@@ -286,11 +286,54 @@ const BookDetailPage: React.FC = () => {
         }
     };
 
+    const handleArchive = async (bookId: string) => {
+        try {
+            console.log(bookId, "book");
+            // const response = await userAxiosInstance.post("/books/archive", {
+            //      bookId,
+            // });
+            // console.log(response,'response')
+            // const book = response.data;
+            // setBooks((prevBooks) =>
+            //     prevBooks.map((book) =>
+            //         book._id === bookId ? { ...book, isArchived: true } : book
+            //     )
+            // );
+        } catch (error: any) {
+            if (error.response && error.response.status === 400) {
+                toast.error(error.response.data.message);
+            } else {
+                toast.error("An error occurred, try again later");
+            }
+        }
+    };
+
+    const handleUnArchive = async (bookId: string) => {
+        try {
+            // const response = await userAxiosInstance.post("/books/unarchive", {
+            //     bookId,
+            // });
+            // console.log(response,'reposnse')
+            // const book = response.data;
+            // setBooks((prevBooks) =>
+            //     prevBooks.map((book) =>
+            //         book._id === bookId ? { ...book, isArchived: false } : book
+            //     )
+            // );
+        } catch (error: any) {
+            if (error.response && error.response.status === 400) {
+                toast.error(error.response.data.message);
+            } else {
+                toast.error("An error occurred, try again later");
+            }
+        }
+    };
+
     const navigate = useNavigate();
     const handleEditClick = async (bookId: string) => {
         navigate(`/books/update/${bookId}`);
     };
-  
+
     if (!book) return <div>Loading...</div>;
 
     return (
@@ -340,36 +383,54 @@ const BookDetailPage: React.FC = () => {
                             ))}
                         </Carousel>
                         {myBook ? (
-                            <button
-                                onClick={() => handleEditClick(book._id)}
-                                className="bg-gray-400 mt-8 bg-gradient-to-r from-teal-900 via-zinc-700 to-gray-600 font-mono text-white px-6 py-3 rounded-lg shadow-md transition duration-300">
-                                Edit
-                            </button>
+                            <div className="flex flex-row gap-4 items-center mt-8">
+                                <button
+                                    onClick={() => handleEditClick(book._id)}
+                                    className="bg-gradient-to-r from-teal-900 via-zinc-700 to-gray-600 text-white font-mono px-6 py-3 rounded-lg shadow-lg transition duration-300 hover:from-teal-800 hover:via-zinc-600 hover:to-gray-500 focus:ring-2 focus:ring-teal-700 focus:outline-none">
+                                    Edit
+                                </button>
+
+                                {/* <button
+                                    className={`${
+                                        book.isArchived
+                                            ? "bg-green-600 hover:bg-green-500 focus:ring-2 focus:ring-green-400"
+                                            : "bg-gray-600 hover:bg-gray-500 focus:ring-2 focus:ring-gray-400"
+                                    } text-white px-6 py-3 rounded-lg shadow-lg transition duration-300 focus:outline-none`}
+                                    style={{
+                                        width: "100px",
+                                    }}
+                                    onClick={() =>
+                                        book.isArchived
+                                            ? handleUnArchive(book._id)
+                                            : handleArchive(book._id)
+                                    }>
+                                    {book.isArchived ? "Unarchive" : "Archive"}
+                                </button> */}
+                            </div>
                         ) : (
-                            <div className="items-center justify-center flex flex-col"> 
-                            <button
-                                onClick={handleRequest}
-                                className={`mt-8 w-2/3 md:w-full  ${
-                                    book.quantity===0 ||  requested
-                                        ? "bg-gray-400 cursor-not-allowed"
-                                        : "bg-gradient-to-r from-teal-900 via-zinc-700 to-gray-600"
-                                } font-mono text-white px-6 py-3 rounded-lg shadow-md transition duration-300 ${
-                                    book.quantity===0 || requested
-                                        ? ""
-                                        : "hover:from-teal-900 hover:via-zinc-500 hover:to-gray-300"
-                                }`}
-                                disabled={book.quantity === 0 || requested}>
-                                {requested ? "Requested" : "Request"}
-                            </button>
-                            {book.quantity===0 && (
-                    <p className="mt-2 text-red-500 text-sm">
-                        The book is not available now.
-                    </p>
-                )}
+                            <div className="items-center justify-center flex flex-col">
+                                <button
+                                    onClick={handleRequest}
+                                    className={`mt-8 w-2/3 md:w-full  ${
+                                        book.quantity === 0 || requested
+                                            ? "bg-gray-400 cursor-not-allowed"
+                                            : "bg-gradient-to-r from-teal-900 via-zinc-700 to-gray-600"
+                                    } font-mono text-white px-6 py-3 rounded-lg shadow-md transition duration-300 ${
+                                        book.quantity === 0 || requested
+                                            ? ""
+                                            : "hover:from-teal-900 hover:via-zinc-500 hover:to-gray-300"
+                                    }`}
+                                    disabled={book.quantity === 0 || requested}>
+                                    {requested ? "Requested" : "Request"}
+                                </button>
+                                {book.quantity === 0 && (
+                                    <p className="mt-2 text-red-500 text-sm">
+                                        The book is not available now.
+                                    </p>
+                                )}
                             </div>
                         )}
                     </div>
-                    
                 </div>
                 <div className="w-full md:w-2/3 max-w-md mx-auto p-6 bg-white rounded-lg">
                     <h1 className="text-2xl md:text-3xl font-serif text-gray-800 mb-4">
@@ -491,11 +552,14 @@ const BookDetailPage: React.FC = () => {
                                     <button
                                         onClick={decrementTotalDays}
                                         className={`px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:bg-gray-100 ${
-                                            requested || quantity==0 ? "cursor-not-allowed" : ""
+                                            requested || quantity == 0
+                                                ? "cursor-not-allowed"
+                                                : ""
                                         }`}
                                         disabled={
                                             requested ||
-                                            totalDays <= (book?.minDays || 1) || quantity==0
+                                            totalDays <= (book?.minDays || 1) ||
+                                            quantity == 0
                                         }>
                                         -
                                     </button>
@@ -505,11 +569,14 @@ const BookDetailPage: React.FC = () => {
                                     <button
                                         onClick={incrementTotalDays}
                                         className={`px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:bg-gray-100 ${
-                                            requested || quantity === 0 ? "cursor-not-allowed" : ""
+                                            requested || quantity === 0
+                                                ? "cursor-not-allowed"
+                                                : ""
                                         }`}
-                                          disabled={
+                                        disabled={
                                             requested ||
-                                            totalDays >= (book?.maxDays || 1) || quantity==0
+                                            totalDays >= (book?.maxDays || 1) ||
+                                            quantity == 0
                                         }>
                                         +
                                     </button>
@@ -529,9 +596,11 @@ const BookDetailPage: React.FC = () => {
                                 <button
                                     onClick={decrementQuantity}
                                     className={`px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:bg-gray-100 ${
-                                        requested || quantity === 0 ? "cursor-not-allowed" : ""
+                                        requested || quantity === 0
+                                            ? "cursor-not-allowed"
+                                            : ""
                                     }`}
-                                     disabled={requested || quantity==0}>
+                                    disabled={requested || quantity == 0}>
                                     -
                                 </button>
                                 <span className="border border-gray-300 rounded px-3 py-1 bg-white text-center">
@@ -540,9 +609,11 @@ const BookDetailPage: React.FC = () => {
                                 <button
                                     onClick={incrementQuantity}
                                     className={`px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:bg-gray-100 ${
-                                        requested || quantity === 0 ? "cursor-not-allowed" : ""
+                                        requested || quantity === 0
+                                            ? "cursor-not-allowed"
+                                            : ""
                                     }`}
-                                     disabled={requested || quantity==0}>
+                                    disabled={requested || quantity == 0}>
                                     +
                                 </button>
                             </div>

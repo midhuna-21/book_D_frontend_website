@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { userAxiosInstance } from "../../utils/api/userAxiosInstance";
 import { useNavigate } from "react-router-dom";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
+import { toast } from "sonner";
 import {
     FaGreaterThan,
     FaLessThan,
@@ -47,6 +48,7 @@ const UserLendBooks: React.FC = () => {
         navigate(`/book/${bookId}`, { state: { from: mybooks } });
     };
     const showShimmer = loading || books.length === 0;
+
 
     return (
         <div className="container mx-auto p-12">
@@ -150,14 +152,17 @@ const UserLendBooks: React.FC = () => {
                                             : book.description}
                                     </p>
 
-                                    <button
-                                        className="bg-stone-700 hover:bg-stone-400 hover:text-black text-white px-4 py-2 rounded-md transition-colors duration-300"
-                                        style={{
-                                            width: "100px",
-                                            height: "40px",
-                                        }}>
-                                        Choose
-                                    </button>
+                                    <div className="flex flex-row gap-2">
+                                        <button
+                                            className="bg-stone-700 hover:bg-stone-400 hover:text-black text-white px-4 py-2 rounded-md transition-colors duration-300"
+                                            style={{
+                                                width: "100px",
+                                                height: "40px",
+                                            }}>
+                                            Choose
+                                        </button>
+                                        
+                                    </div>
                                 </div>
                             </div>
                         ))}

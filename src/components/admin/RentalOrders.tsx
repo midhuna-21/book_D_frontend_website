@@ -126,6 +126,7 @@ const RentalOrdersList: React.FC = () => {
         navigate(`/admin/order-detail/${orderId}`);
     };
 
+    console.log(orders,'orders')
     if (orders.length === 0) {
         return <div className="text-gray-500 text-center">Loading...</div>;
     }

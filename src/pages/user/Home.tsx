@@ -108,18 +108,18 @@ const NestedRoutes: React.FC = () => {
                     }
                 />
                 <Route
-                    path="/books/lend"
+                    path="/:username/books/lend"
                     element={
                         <PrivateRoute>
-                            <LendedBooks />
+                              <ProfileProtectRoute children={LendedBooks}/>
                         </PrivateRoute>
                     }
                 />
                 <Route
-                    path="/books/rent"
+                    path=":username/books/rent"
                     element={
                         <PrivateRoute>
-                            <RentedBooks />
+                              <ProfileProtectRoute children={RentedBooks} />
                         </PrivateRoute>
                     }
                 />
