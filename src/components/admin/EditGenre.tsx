@@ -58,7 +58,7 @@ const EditGenre: React.FC = () => {
                 formData.append("exisitingImage", selectedImage);
             }
 
-            const response = await adminAxiosInstance.post(
+            const response = await adminAxiosInstance.put(
                 `/genres/update/${genreId}`,
                 formData,
                 {
