@@ -32,7 +32,7 @@ const SignInButton: React.FC = () => {
                         image: response.data.picture,
                     })
                     .then(function (response) {
-                        if (response.status === 200) {
+                        if (response.data) {
                             dispatch(addUser(response.data));
 
                             localStorage.setItem(
