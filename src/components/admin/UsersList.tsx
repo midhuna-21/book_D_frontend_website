@@ -21,8 +21,8 @@ const UsersList: React.FC = () => {
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const response = await adminAxiosInstance.get("/get-users");
-             
+                const response = await adminAxiosInstance.get("/users");
+
                 setUsers(response.data);
             } catch (err: any) {
                 console.log(err.message);
@@ -72,13 +72,13 @@ const UsersList: React.FC = () => {
         }
 
         return filtered;
-    };  
+    };
 
-    const handleBlock = (userId: string) => {
-        
-        adminAxiosInstance
+    const handleBlock = async(userId: string) => {
+        try{
+            const response = await adminAxiosInstance
             .post("/block-user", { _id: userId })
-            .then(() => {
+           
                 setUsers((prevUsers) => {
                     const newUsers = prevUsers.map((user) =>
                         user._id === userId
@@ -87,20 +87,20 @@ const UsersList: React.FC = () => {
                     );
                     return newUsers;
                 });
-            })
-            .catch((error) => {
+            }catch(error:any)  {
                 if (error.response && error.response.status === 400) {
                     toast.error(error.response.data.message);
                 } else {
                     toast.error("An error occurred, try again later");
                 }
-            });
+            }
     };
 
-    const handleUnblock = (userId: string) => {
-        adminAxiosInstance
+    const handleUnblock = async(userId: string) => {
+        try{
+            const response = await adminAxiosInstance
             .post("/unblock-user", { _id: userId })
-            .then((response) => {
+           
                 const updatedUser = response.data;
                 setUsers((prevUsers) =>
                     prevUsers.map((user) =>
@@ -109,14 +109,13 @@ const UsersList: React.FC = () => {
                             : user
                     )
                 );
-            })
-            .catch((error: any) => {
+            }catch(error: any) {
                 if (error.response && error.response.status === 400) {
                     toast.error(error.response.data.message);
                 } else {
                     toast.error("An error occurred, try again later");
                 }
-            });
+            }
     };
 
     if (users.length === 0) {
@@ -124,11 +123,9 @@ const UsersList: React.FC = () => {
     }
     return (
         <div className="bg-stone-800 shadow-md rounded p-4 h-full w-4xl max-w-full mx-auto">
-
             <h2 className="text-xl font-bold mb-4 text-zinc-300">Users List</h2>
             <div className="mb-4 flex justify-between">
-            <div className="flex flex-col sm:flex-row mb-4 space-y-2 sm:space-y-0 sm:space-x-2">
-
+                <div className="flex flex-col sm:flex-row mb-4 space-y-2 sm:space-y-0 sm:space-x-2">
                     <button
                         onClick={() => handleViewModeChange("all")}
                         className={`px-4 py-2 rounded ${
@@ -177,7 +174,7 @@ const UsersList: React.FC = () => {
                         </div>
                     ) : (
                         <div className="overflow-x-auto">
-    <table className="min-w-full bg-stone-800">
+                            <table className="min-w-full bg-stone-800">
                                 <thead className="sticky top-0 bg-gray-200 shadow">
                                     <tr>
                                         {/* <th className="py-2 px-4 border-b text-center">

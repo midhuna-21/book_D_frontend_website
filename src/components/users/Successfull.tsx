@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { AiOutlineCheckCircle } from "react-icons/ai";
 import { userAxiosInstance } from "../../utils/api/userAxiosInstance";
+import {toast} from 'sonner';
 
 interface OrderData {
     userId: {
@@ -20,7 +21,6 @@ const PaymentSuccess = () => {
     const userId = searchParams.get("user_id");
     const cartId = searchParams.get("cart_id");
     const [orderData, setOrderData] = useState<OrderData | null>(null);
-    const [isOrderCreated, setIsOrderCreated] = useState(false);
     const navigate = useNavigate();
     const hasFetchedData = useRef(false);
 
@@ -35,9 +35,10 @@ const PaymentSuccess = () => {
                     !hasFetchedData.current
                 ) {
                     const response = await userAxiosInstance.post(
-                        "/create-order",
+                        "/books/rent/create-order",
                         { bookId, userId, cartId, sessionId }
                     );
+                    console.log(response,'respnse')
                     if (response.status == 200) {
                         setOrderData(response.data.order);
                         hasFetchedData.current = true;
@@ -45,8 +46,14 @@ const PaymentSuccess = () => {
                         console.error("Failed to retrieve session data");
                     }
                 }
-            } catch (error) {
-                console.error("Error fetching session data:", error);
+            } catch (error:any) {
+                console.log(error.response,'resonse')
+                if (error.response && error.response.status === 403 || error.response.status === 404 || error.response.status === 400) {
+                    toast.error(error.response.data.message);
+                } else {
+                    toast.error("An error occurred, please try again later");
+                    console.error("Error fetching session data:", error);
+                }
             }
         };
         if (!hasFetchedData.current) {
@@ -56,7 +63,7 @@ const PaymentSuccess = () => {
     }, [hasFetchedData]);
 
     const handleOkClick = () => {
-        navigate("/home/rent-list");
+        navigate("/books/rent");
     };
 
     if (!orderData) {

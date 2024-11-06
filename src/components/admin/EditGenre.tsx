@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import { adminAxiosInstance } from "../../utils/api/adminAxiosInstance";
-import { FaPlus } from "react-icons/fa";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -16,7 +15,7 @@ const EditGenre: React.FC = () => {
         const fetchGenre = async () => {
             try {
                 const response = await adminAxiosInstance.get(
-                    `/genre/${genreId}`
+                    `/genres/${genreId}`
                 );
                 const fetchedGenre = response?.data;
 
@@ -60,7 +59,7 @@ const EditGenre: React.FC = () => {
             }
 
             const response = await adminAxiosInstance.post(
-                `/genre-update/${genreId}`,
+                `/genres/update/${genreId}`,
                 formData,
                 {
                     withCredentials: true,
@@ -92,9 +91,7 @@ const EditGenre: React.FC = () => {
     return (
         <div className="flex items-start h-screen bg-white p-8 rounded-2xl">
             <div className="p-8 shadow-md w-1/2 mr-4">
-                <h2 className="text-2xl font-custom mb-6">
-                    Edit Genre
-                </h2>
+                <h2 className="text-2xl font-custom mb-6">Edit Genre</h2>
                 <form onSubmit={handleUpdate}>
                     <div className="mb-4">
                         <label

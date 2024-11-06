@@ -14,7 +14,7 @@ const AdminLogin: React.FC = () => {
     const [password, setPassword] = useState("");
     const dispatch = useDispatch();
 
-    const handleLogin = (
+    const handleLogin = async(
         e: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
         e.preventDefault();
@@ -24,17 +24,16 @@ const AdminLogin: React.FC = () => {
             toast.error(validationResult);
             return;
         }
-
-        axiosAdmin
+try{
+        const response = await axiosAdmin
             .post(
-                "/admin-login",
+                "/login",
                 {
                     email: email,
                     password: password,
                 },
                 { withCredentials: true }
             )
-            .then(function (response) {
                 if (response.status === 200) {
                     dispatch(addAdmin(response.data));
                     localStorage.setItem(
@@ -47,8 +46,7 @@ const AdminLogin: React.FC = () => {
                     );
                     navigate("/admin/dashboard");
                 }
-            })
-            .catch(function (error) {
+            }catch(error:any) {
                 if (
                     (error.response && error.response.status === 400) ||
                     error.response.status === 401
@@ -57,7 +55,7 @@ const AdminLogin: React.FC = () => {
                 } else {
                     toast.error("An error occured try again later");
                 }
-            });
+            }
     };
 
     return (

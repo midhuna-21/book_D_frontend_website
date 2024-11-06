@@ -7,7 +7,7 @@ import { clearUser } from "../../utils/ReduxStore/slice/userSlice";
 import { HiEye, HiEyeOff } from "react-icons/hi";
 import security from "../../assets/security-lock-icon-29.jpg";
 import { useState } from "react";
-import { axiosUser } from "../../utils/api/baseUrl";
+import { userAxiosInstance } from "../../utils/api/userAxiosInstance";
 import { toast } from "sonner";
 import { isValidatePasswords } from "../../utils/validations/new-password";
 
@@ -29,7 +29,7 @@ const ResetPassword: React.FC = () => {
     const togglePasswordVisibility = () => {
         setIsPasswordVisible(!isPasswordVisible);
     };
-    const handleSubmit = (
+    const handleSubmit = async(
         e: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
         e.preventDefault();
@@ -43,30 +43,28 @@ const ResetPassword: React.FC = () => {
             toast.error(validationResult);
             return;
         }
-
-        axiosUser
+        try{
+         await userAxiosInstance
             .post("/update-password", {
                 resetToken,
                 resetTokenExpiration,
                 email: email,
                 password: password,
             })
-            .then(function () {
+           
                 localStorage.removeItem("useraccessToken");
                 localStorage.removeItem("userrefreshToken");
                 dispatch(clearUser());
-                //    dispatch(addUser(response.data))
                 toast.success("successfully unlinked your email account.");
                 navigate("/login", { replace: true });
                 localStorage.removeItem("otpSubmitted");
-            })
-            .catch(function (error) {
+            }catch(error:any) {
                 if (error.response && error.response.status === 401) {
                     toast.error(error.response.data.message);
                 } else {
                     toast.error("An error occured try again later");
-                }
-            });
+                }   
+            }
     };
 
     useEffect(() => {

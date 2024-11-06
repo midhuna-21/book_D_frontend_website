@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, Link, useLocation } from "react-router-dom";
-import config from "../../config/config";
 import { useSocket } from "../../utils/context/SocketProvider";
 import {
     FaHome,
@@ -20,6 +19,7 @@ import logo from "../../assets/logo.png";
 import userLogo from "../../assets/userLogo.png";
 import { RootState } from "../../utils/ReduxStore/store/store";
 import { userAxiosInstance } from "../../utils/api/userAxiosInstance";
+import {toast} from 'sonner';
 
 const Header: React.FC = () => {
     const userInfo = useSelector(
@@ -32,12 +32,12 @@ const Header: React.FC = () => {
     const [prevScrollPos, setPrevScrollPos] = useState(0);
     const [visible, setVisible] = useState(true);
     const [isSearchVisible, setIsSearchVisible] = useState(false);
-    const [searchQuery, setSearchQuery] = useState("");
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [messageCount, setMessageCount] = useState<number>(0);
     const [notificationCount, setNotificationCount] = useState(0);
     const location = useLocation();
     const { socket } = useSocket();
+    const [searchQuery, setSearchQuery] = useState("");
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -81,7 +81,7 @@ const Header: React.FC = () => {
     ) => {
         if (event.key === "Enter") {
             try {
-                navigate("/home/explore", { state: { searchQuery } });
+                navigate("/explore-books", { state: { searchQuery } });
             } catch (error) {
                 console.error("Error fetching search results:", error);
             }
@@ -90,43 +90,49 @@ const Header: React.FC = () => {
 
     useEffect(() => {
         if (userId) {
+            const fetchNotificationCount = async () => {
+                try {
+                    const response = await userAxiosInstance.get(
+                        `/notifications/unread/${userId}`
+                    );
+                    setNotificationCount(response?.data?.count);
+                } catch (error:any) {
+                    if (error.response && error.response.status === 403) {
+                        toast.error(error.response.data.message);
+                    } else {
+                        toast.error("An error occurred, please try again later");
+                        console.error("Failed to fetch notifications count", error);
+                    }
+                }
+            };
+            fetchNotificationCount();
+
             const fetchMessageCount = async () => {
                 try {
                     const response = await userAxiosInstance.get(
-                        `/unread-messages/${userId}`
+                        `/messages/unread/${userId}`
                     );
                     setMessageCount(response?.data?.count);
-                } catch (error) {
-                    console.error("Failed to fetch message count", error);
+                } catch (error:any) {
+                    if (error.response && error.response.status === 403) {
+                        toast.error(error.response.data.message);
+                    } else {
+                        toast.error("An error occurred while fetching messages, please try again later");
+                        console.error("Failed to fetch message count", error);
+                    }
                 }
             };
             fetchMessageCount();
         }
-    });
-
-    useEffect(() => {
-        if (userId) {
-            const fetchNotificationCount = async () => {
-                try {
-                    const response = await userAxiosInstance.get(
-                        `/unread-notifications/${userId}`
-                    );
-                    setNotificationCount(response?.data?.count);
-                } catch (error) {
-                    console.error("Failed to fetch message count", error);
-                }
-            };
-            fetchNotificationCount();
-        }
-    });
+    },[]);
 
     useEffect(() => {
         if (socket) {
-            socket.on("notification", (newNotification) => {
+            socket.on("notification", () => {
                 setNotificationCount((prevCount) => prevCount + 1);
             });
 
-            socket.on("receive-message", (newMessage) => {
+            socket.on("receive-message", () => {
                 setMessageCount((prevCount) => prevCount + 1);
             });
         }
@@ -207,7 +213,7 @@ const Header: React.FC = () => {
                             </div>
                         </div>
                     </Link>
-                    <Link to="/home/explore">
+                    <Link to="/explore-books">
                         <div className="relative flex flex-col items-center cursor-pointer group">
                             <div className="flex items-center justify-center">
                                 <FaCompass className="text-gray-800 text-xl" />
@@ -217,7 +223,7 @@ const Header: React.FC = () => {
                             </div>
                         </div>
                     </Link>
-                    <Link to="/home/add-book">
+                    <Link to="/lend-book">
                         <div className="relative flex flex-col items-center cursor-pointer group">
                             <div className="flex items-center justify-center">
                                 <FaBook className="text-gray-800 text-xl" />
@@ -227,7 +233,7 @@ const Header: React.FC = () => {
                             </div>
                         </div>
                     </Link>
-                    <Link to="/home/chat">
+                    <Link to="/chat">
                         <div className="relative flex flex-col items-center cursor-pointer group">
                             <div className="flex items-center justify-center">
                                 <FaEnvelope className="text-gray-800 text-xl" />
@@ -243,7 +249,7 @@ const Header: React.FC = () => {
                         </div>
                     </Link>
 
-                    <Link to="/home/notifications">
+                    <Link to="/notifications">
                         <div className="relative flex flex-col items-center cursor-pointer group">
                             <div className="flex items-center justify-center">
                                 <FaBell className="text-gray-800 text-xl" />
@@ -275,7 +281,7 @@ const Header: React.FC = () => {
                                     onMouseEnter={() => setIsHovered(true)}
                                     onMouseLeave={() => setIsHovered(false)}>
                                     <ul className="py-1">
-                                        <Link to="/home/profile">
+                                        <Link to={`/${name}`}>
                                             <li className="hover:bg-gray-100 px-4 py-2 cursor-pointer transition duration-200 ease-in-out transform hover:translate-x-1 flex items-center space-x-2">
                                                 <FaUser className="text-gray-500" />
                                                 <span className="text-gray-800">
@@ -320,7 +326,7 @@ const Header: React.FC = () => {
                         </span>
                     </Link>
                     <Link
-                        to="/home/explore"
+                        to="/explore-books"
                         className="py-2"
                         onClick={() => setIsMenuOpen(false)}>
                         <span className="text-gray-800 font-semibold">
@@ -328,7 +334,7 @@ const Header: React.FC = () => {
                         </span>
                     </Link>
                     <Link
-                        to="/home/add-book"
+                        to="/lend-book"
                         className="py-2"
                         onClick={() => setIsMenuOpen(false)}>
                         <span className="text-gray-800 font-semibold">
@@ -336,7 +342,7 @@ const Header: React.FC = () => {
                         </span>
                     </Link>
                     <Link
-                        to="/home/chat"
+                        to="/chat"
                         className="py-2"
                         onClick={() => setIsMenuOpen(false)}>
                         <span className="text-gray-800 font-semibold">
@@ -344,7 +350,7 @@ const Header: React.FC = () => {
                         </span>
                     </Link>
                     <Link
-                        to="/home/notifications"
+                        to="/notifications"
                         className="py-2"
                         onClick={() => setIsMenuOpen(false)}>
                         <span className="text-gray-800 font-semibold">
@@ -354,7 +360,7 @@ const Header: React.FC = () => {
                     {name ? (
                         <>
                             <Link
-                                to="/home/profile"
+                                to="/profile"
                                 className="py-2"
                                 onClick={() => setIsMenuOpen(false)}>
                                 <span className="text-gray-800 font-semibold">

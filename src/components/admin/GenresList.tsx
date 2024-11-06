@@ -1,12 +1,5 @@
-import React, { useEffect, useState,useRef } from "react";
-import {
-    Box,
-    Image,
-    Text,
-    Button,
-    Spinner,
-    IconButton,
-} from "@chakra-ui/react";
+import React, { useEffect, useState, useRef } from "react";
+import { Box, Image, Text, Spinner, IconButton } from "@chakra-ui/react";
 import { adminAxiosInstance } from "../../utils/api/adminAxiosInstance";
 import { FaTrashAlt, FaEdit } from "react-icons/fa";
 import { toast } from "sonner";
@@ -32,7 +25,7 @@ const GenresList: React.FC = () => {
             setLoading(true);
             try {
                 const response = await adminAxiosInstance.get("/genres");
-       
+
                 setGenres(response.data);
                 setHasMore(response.data.length > 0);
             } catch (error) {
@@ -51,9 +44,11 @@ const GenresList: React.FC = () => {
         if (container) {
             if (
                 container.scrollTop + container.clientHeight >=
-                container.scrollHeight - 5 && !loading && hasMore
+                    container.scrollHeight - 5 &&
+                !loading &&
+                hasMore
             ) {
-                setOffset((prev) => prev + 10); 
+                setOffset((prev) => prev + 10);
             }
         }
     };
@@ -68,22 +63,23 @@ const GenresList: React.FC = () => {
         }
     }, [loading, hasMore]);
 
-    const handleEditGenre    = (genreId: string) => {
+    const handleEditGenre = (genreId: string) => {
         navigate(`/admin/edit-genre/${genreId}`);
     };
 
-
     const handleDeleteGenre = async (genreId: string) => {
         try {
-            await adminAxiosInstance.post('/delete-genre', { genreId });
-            setGenres((prevGenres) => prevGenres.filter((genre) => genre._id !== genreId));
+            await adminAxiosInstance.post("/genres/remove", { genreId });
+            setGenres((prevGenres) =>
+                prevGenres.filter((genre) => genre._id !== genreId)
+            );
             toast.success("Genre deleted successfully");
         } catch (error) {
-            console.error('Error deleting genre:', error);
+            console.error("Error deleting genre:", error);
             toast.error("Failed to delete genre");
         }
     };
-    
+
     if (loading) {
         return (
             <Box className="flex justify-center items-center h-full">
@@ -94,28 +90,26 @@ const GenresList: React.FC = () => {
 
     return (
         <Box className="rounded-lg ">
-           
-            <Box  ref={genresContainerRef}
-                className="max-h-[550px] overflow-y-auto" 
-            >
+            <Box
+                ref={genresContainerRef}
+                className="max-h-[550px] overflow-y-auto">
                 {genres.map((genre) => (
-                   <Box
-                   key={genre._id}
-                   className="flex items-center justify-between p-4 border-b border-zinc-700">
-                   <Box className="flex items-center">
-                       <Image
-                           src={genre.image}
-                           alt={genre.genreName}
-                           boxSize="50px"
-                           objectFit="cover"
-                           className="rounded-full mr-4"
-                       />
-                               <Text 
-            className="text-lg font-semibold text-black overflow-hidden whitespace-nowrap text-ellipsis max-w-[150px]"
-            title={genre.genreName} 
-        >
-            {genre.genreName}
-        </Text>
+                    <Box
+                        key={genre._id}
+                        className="flex items-center justify-between p-4 border-b border-zinc-700">
+                        <Box className="flex items-center">
+                            <Image
+                                src={genre.image}
+                                alt={genre.genreName}
+                                boxSize="50px"
+                                objectFit="cover"
+                                className="rounded-full mr-4"
+                            />
+                            <Text
+                                className="text-lg font-semibold text-black overflow-hidden whitespace-nowrap text-ellipsis max-w-[150px]"
+                                title={genre.genreName}>
+                                {genre.genreName}
+                            </Text>
                         </Box>
                         <Box className="flex items-center space-x-8">
                             <IconButton
@@ -135,7 +129,6 @@ const GenresList: React.FC = () => {
                                 size="sm"
                             />
                         </Box>
-                     
                     </Box>
                 ))}
             </Box>

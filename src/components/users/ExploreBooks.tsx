@@ -3,15 +3,11 @@ import { userAxiosInstance } from "../../utils/api/userAxiosInstance";
 import { Link, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../../utils/ReduxStore/store/store";
-import {
-    FaGreaterThan,
-    FaBookReader,
-    FaStar,
-    FaLessThan,
-} from "react-icons/fa";
-import { Box,Flex, Icon } from "@chakra-ui/react";
+import { FaGreaterThan, FaBookReader, FaLessThan } from "react-icons/fa";
+import { Box, Flex, Icon } from "@chakra-ui/react";
+import {toast} from 'sonner';
 
-const ExploreBooks: React.FC = () => {
+const ExploreRentalBooks: React.FC = () => {
     const [books, setBooks] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
@@ -21,19 +17,20 @@ const ExploreBooks: React.FC = () => {
     const location = useLocation();
     const searchQuery = location.state?.searchQuery || "";
     const genreName = location.state?.genreName || "";
+    const [searchTerm, setSearchTerm] = useState("");
 
     useEffect(() => {
         const fetchBooks = async () => {
             setLoading(true);
             try {
-                let endpoint = "/books";
+                let endpoint = "/books/available-for-rent";
                 if (searchQuery) {
-                    endpoint = `/search/${searchQuery}`;
+                    endpoint = `/books/search/${searchQuery}`;
                 }
                 if (genreName) {
-                    endpoint = `/genre-books/${genreName}`;
+                    endpoint = `/genres/books/${genreName}`;
                 }
-          
+
                 const response = await userAxiosInstance.get(endpoint);
 
                 if (Array.isArray(response.data)) {
@@ -42,8 +39,12 @@ const ExploreBooks: React.FC = () => {
                     console.warn("Expected an array but got:", response.data);
                     setBooks([]);
                 }
-            } catch (error) {
-                console.error("Error fetching books", error);
+            } catch (error:any) {
+                if (error.response && error.response.status === 403) {
+                    toast.error(error.response.data.message);
+                } else {
+                    toast.error("An error occurred, please try again later");
+                }
                 setBooks([]);
             } finally {
                 setLoading(false);
@@ -105,68 +106,64 @@ const ExploreBooks: React.FC = () => {
                 </div>
             ) : (
                 <>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-5 gap-5 justify-items-center">
-                  {currentBooks.map((book) => (
-                     
-                                <div
-                                    key={book._id}
-                                    className="bg-white p-4 border border-gray-200 shadow-md mt-5"
-                                    style={{ width: "250px", height: "450px" }}>
-                                    <img
-                                        src={book.images[0]}
-                                        alt={book.name}
-                                        className="mb-4 w-full h-48 object-cover"
-                                    />
-                                    <div className="flex flex-col items-center text-center h-full">
-                                        <h3
-                                            className="text-lg font-bold mb-1 overflow-hidden"
-                                            style={{
-                                                height: "40px",
-                                                lineHeight: "1.2em",
-                                                display: "-webkit-box",
-                                                WebkitLineClamp: 2,
-                                                WebkitBoxOrient: "vertical",
-                                            }}>
-                                            {book.bookTitle.length > 40
-                                                ? `${book.bookTitle.substring(
-                                                      0,
-                                                      40
-                                                  )}...`
-                                                : book.bookTitle}
-                                        </h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-5 gap-5 justify-items-center">
+                        {currentBooks.map((book) => (
+                            <div
+                                key={book._id}
+                                className="bg-white p-4 border border-gray-200 shadow-md mt-5"
+                                style={{ width: "250px", height: "450px" }}>
+                                <img
+                                    src={book.images[0]}
+                                    alt={book.name}
+                                    className="mb-4 w-full h-48 object-cover"
+                                />
+                                <div className="flex flex-col items-center text-center h-full">
+                                    <h3
+                                        className="text-lg font-bold mb-1 overflow-hidden"
+                                        style={{
+                                            height: "40px",
+                                            lineHeight: "1.2em",
+                                            display: "-webkit-box",
+                                            WebkitLineClamp: 2,
+                                            WebkitBoxOrient: "vertical",
+                                        }}>
+                                        {book.bookTitle.length > 40
+                                            ? `${book.bookTitle.substring(
+                                                  0,
+                                                  40
+                                              )}...`
+                                            : book.bookTitle}
+                                    </h3>
 
-                                        <p
-                                            className="text-sm text-gray-600 mb-2 overflow-hidden"
-                                            style={{
-                                                height: "60px",
-                                                lineHeight: "1.5em",
-                                                display: "-webkit-box",
-                                                WebkitLineClamp: 3,
-                                                WebkitBoxOrient: "vertical",
-                                            }}>
-                                            {book.description.length > 100
-                                                ? `${book.description.substring(
-                                                      0,
-                                                      100
-                                                  )}...`
-                                                : book.description}
-                                        </p>
+                                    <p
+                                        className="text-sm text-gray-600 mb-2 overflow-hidden"
+                                        style={{
+                                            height: "60px",
+                                            lineHeight: "1.5em",
+                                            display: "-webkit-box",
+                                            WebkitLineClamp: 3,
+                                            WebkitBoxOrient: "vertical",
+                                        }}>
+                                        {book.description.length > 100
+                                            ? `${book.description.substring(
+                                                  0,
+                                                  100
+                                              )}...`
+                                            : book.description}
+                                    </p>
 
-                                          <Link
-                                to={`/home/book/${book._id}`}>
+                                    <Link to={`/book/${book._id}`}>
                                         <button
                                             className="bg-stone-700 hover:bg-stone-400 hover:text-black text-white px-4 py-2 rounded-md transition-colors duration-300"
                                             style={{
                                                 width: "100px",
                                                 height: "40px",
-                                            }}
-                                           >
+                                            }}>
                                             Choose
                                         </button>
-                                        </Link>
-                                    </div>
+                                    </Link>
                                 </div>
-                           
+                            </div>
                         ))}
                     </div>
                     {books.length > 8 && (
@@ -197,4 +194,4 @@ const ExploreBooks: React.FC = () => {
     );
 };
 
-export default ExploreBooks;
+export default ExploreRentalBooks;

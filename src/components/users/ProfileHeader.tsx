@@ -31,7 +31,7 @@ const ProfileHeader: React.FC = () => {
 
         try {
             const response = await userAxiosInstance.put(
-                "/update-profile-image",
+                "/profile/update-image",
                 formData,
                 {
                     withCredentials: true,
@@ -77,14 +77,14 @@ const ProfileHeader: React.FC = () => {
     const handleRemove = async (e: React.FormEvent) => {
         e.preventDefault();
         const imageToRemove = user?.image;
-        
+
         if (!imageToRemove) {
             toast.error("No image to remove.");
             return;
         }
         try {
             const response = await userAxiosInstance.delete(
-                "/delete-profile-image",
+                "/profile/remove-image",
                 {
                     data: { imageToRemove },
                     withCredentials: true,
@@ -128,7 +128,6 @@ const ProfileHeader: React.FC = () => {
                         <h1 className="name font-serif text-2xl md:text-3xl ">
                             {user?.name}
                         </h1>
-                      
                     </div>
                 </div>
             </div>

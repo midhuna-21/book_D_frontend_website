@@ -1,7 +1,7 @@
 import backGroundImage from "../../assets/bookf1.webp";
 import React from "react";
 import Genre from "../../components/users/Genre";
-import HowItWorks from "../../components/users/HowItWorks";
+import AboutRentLend from "./AboutRentLend";
 import Books from "../../components/users/Books";
 
 const CenterOfHome: React.FC = () => {
@@ -29,7 +29,7 @@ const CenterOfHome: React.FC = () => {
             <div className="w-full">
                 <Genre />
                 <Books />
-                <HowItWorks />
+                <AboutRentLend />
             </div>
         </div>
     );

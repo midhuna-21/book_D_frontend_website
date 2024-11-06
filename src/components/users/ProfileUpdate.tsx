@@ -24,10 +24,11 @@ interface User {
     address?: Address;
 }
 
-const Profile: React.FC = () => {
+const ProfileUpdate: React.FC = () => {
     const user = useSelector(
         (state: RootState) => state?.user?.userInfo?.user
     ) as User;
+    const username = user?.name
     const initialFormData: User = {
         name: user?.name || "",
         email: user?.email || "",
@@ -166,7 +167,7 @@ const Profile: React.FC = () => {
                 };
 
                 const response = await userAxiosInstance.put(
-                    "/update-profile",
+                    "/profile/update",
                     { formData: filteredFormData },
                     { withCredentials: true }
                 );
@@ -175,12 +176,12 @@ const Profile: React.FC = () => {
                     setIsFormChanged(false);
                     dispatch(addUser(response.data));
 
-                    navigate("/home/profile");
+                    navigate(`/${username}`);
                     setFormData(filteredFormData);
                     toast.success("Profile updated successfully");
                 }
             } catch (error: any) {
-                if (error.response && error.response.status === 404) {
+                if (error.response && error.response.status === 404 || error.response.status === 403) {
                     toast.error(error.response.data.message);
                 } else {
                     toast.error("An error occurred, please try again later");
@@ -366,4 +367,4 @@ const Profile: React.FC = () => {
     );
 };
 
-export default Profile;
+export default ProfileUpdate;

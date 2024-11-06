@@ -7,6 +7,8 @@ import images from "../../assets/images.png";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import axios from "axios";
+import {useSelector} from 'react-redux';
+import {RootState} from '../../utils/ReduxStore/store/store'
 
 interface Genre {
     genreName: string;
@@ -40,6 +42,7 @@ type FormData = {
 };
 
 const EditBookForm: React.FC = () => {
+    
     const initialFormData: FormData = {
         bookTitle: "",
         description: "",
@@ -66,12 +69,14 @@ const EditBookForm: React.FC = () => {
         longitude: 0,
     };
 
+    
+    const username = useSelector((state:RootState)=>state?.user?.userInfo?.user?.name)
+
     const [formData, setFormData] = useState<FormData>(initialFormData);
     const { bookId } = useParams();
     const [genres, setGenres] = useState<Genre[]>([]);
     const [book, setBook] = useState<FormData>();
 
-    const [activeOption, setActiveOption] = useState("addBooks");
     const navigate = useNavigate();
 
     const handleRemoveImage = (index: number) => {
@@ -88,13 +93,17 @@ const EditBookForm: React.FC = () => {
     useEffect(() => {
         const fetchBook = async () => {
             try {
-                const response = await userAxiosInstance.get(`/book/${bookId}`);
+                const response = await userAxiosInstance.get(`/books/details/${bookId}`);
                 const fetchedBook = response?.data?.book;
                 if (fetchedBook) {
                     setBook(fetchedBook);
                 }
-            } catch (error) {
-                console.error("Error fetching book details", error);
+            } catch (error:any) {
+                if (error.response && error.response.status === 403) {
+                    toast.error(error.response.data.message);
+                } else {
+                    toast.error("An error occurred while fetching book details, please try again later");
+                }
             }
         };
         fetchBook();
@@ -228,13 +237,17 @@ const EditBookForm: React.FC = () => {
             try {
                 const response = await userAxiosInstance.get("/genres");
                 setGenres(response.data);
-            } catch (error) {
-                console.error("Error fetching book details", error);
+            } catch (error:any) {
+                if (error.response && error.response.status === 403) {
+                    toast.error(error.response.data.message);
+                } else {
+                    toast.error("An error occurred while fetching genres, please try again later");
+                }
             }
         };
 
         fetchGenre();
-    });
+    },[]);
 
     const handleGetLocation = () => {
         if (navigator.geolocation) {
@@ -338,8 +351,8 @@ const EditBookForm: React.FC = () => {
             }));
         }
 
-        const errors = validateFormData(formData);
-        if (errors.length === 0) {
+        // const errors = validateFormData(formData);
+        // if (errors.length === 0) {
             const formDataWithImages = new FormData();
             formDataWithImages.append("bookTitle", formData.bookTitle);
             if (formData.images) {
@@ -400,7 +413,7 @@ const EditBookForm: React.FC = () => {
 
             try {
                 const response = await userAxiosInstance.put(
-                    `/rent-book-update/${bookId}`,
+                    `/books/lent/update/${bookId}`,
                     formDataWithImages,
                     {
                         withCredentials: true,
@@ -411,7 +424,8 @@ const EditBookForm: React.FC = () => {
                 );
 
                 if (response.status === 200) {
-                    navigate("/home/my-books");
+                    console.log(username,'usernam')
+                    navigate(`/${username}/lend-books`);``
                 }
             } catch (error: any) {
                 if (error.response && error.response.status === 404) {
@@ -420,10 +434,10 @@ const EditBookForm: React.FC = () => {
                     toast.error("An error occurred, please try again later");
                 }
             }
-        } else {
-            console.error("Form validation errors:", errors);
-            toast.error(errors);
-        }
+        // } else {
+        //     console.error("Form validation errors:", errors);
+        //     toast.error(errors);
+        // }
     };
     return (
         <div className="flex min-h-screen bg-cover flex-col py-12">

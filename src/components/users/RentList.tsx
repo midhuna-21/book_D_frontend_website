@@ -46,7 +46,7 @@ interface Order {
     statusUpdateRenterDate: Date;
 }
 
-const RentList: React.FC = () => {
+const RentedBooks: React.FC = () => {
     const [selectedOption, setSelectedOption] = useState("all");
     const options = [
         "all",
@@ -183,12 +183,17 @@ const RentList: React.FC = () => {
     const fetchOrders = async () => {
         try {
             const response = await userAxiosInstance.get(
-                `/rent-list/${userId}`
+                `/books/rental-orders/${userId}`
             );
             setOrders(response.data.orders);
             setLoading(false);
-        } catch (error) {
-            console.error("Error fetching orders:", error);
+        } catch (error:any) {
+            if (error.response && error.response.status === 403) {
+                toast.error(error.response.data.message);
+            } else {
+                toast.error("An error occurred, please try again later");
+                console.error("Error fetching orders:", error);
+            }
             setLoading(false);
         }
     };
@@ -247,7 +252,6 @@ const RentList: React.FC = () => {
                     toast.info("you already updated");
                     return;
                 } else {
-                   
                     setSelectedOrderId(orderId);
                     setCurrentOrderStatus(bookStatusFromRenter);
                     setShowModal(true);
@@ -263,8 +267,8 @@ const RentList: React.FC = () => {
     const confirmStatusUpdate = async () => {
         if (selectedOrderId === null || isBookHandover === null) return;
         try {
-             await userAxiosInstance.post(
-                `/update-order-status/${selectedOrderId}`,
+            await userAxiosInstance.post(
+                `/books/rental-orders/status/update/${selectedOrderId}`,
                 {
                     isBookHandover: isBookHandover,
                 }
@@ -419,8 +423,9 @@ const RentList: React.FC = () => {
                                                 </a>
                                             </td>
                                             <td className="px-6 py-4 text-gray-600 text-sm max-w-[150px] truncate text-center">
-                                             
-                                                {new Date(order.createdAt).toLocaleDateString()}
+                                                {new Date(
+                                                    order.createdAt
+                                                ).toLocaleDateString()}
                                             </td>
                                             <td className="px-6 py-4 max-w-[150px] truncate text-center">
                                                 {order.bookStatusFromLender ===
@@ -620,4 +625,4 @@ const RentList: React.FC = () => {
     );
 };
 
-export default RentList;
+export default RentedBooks;

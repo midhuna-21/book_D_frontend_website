@@ -58,7 +58,7 @@ const SideBar: React.FC = () => {
                                 )}
                             </li>
                         </Link>
-                        <Link to="/home/profile">
+                        <Link to="/profile">
                             <li className="px-4 py-2 hover:bg-gray-700 flex items-center">
                                 <FaUser />
                                 {!isCollapsed && (
@@ -84,7 +84,7 @@ const SideBar: React.FC = () => {
                                 <span className="ml-3">Notifications</span>
                             )}
                         </li>
-                        <Link to="/home/add-book">
+                        <Link to="/lend-book">
                             <li className="px-4 py-2 hover:bg-gray-700 flex items-center">
                                 <FaBook />
                                 {!isCollapsed && (

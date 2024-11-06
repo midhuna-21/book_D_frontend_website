@@ -8,14 +8,13 @@ import Users from "../../components/admin/Users";
 import { AdminPrivateRoute } from "../../routes/AdminPrivateRoute";
 import RentalOrdersList from "../../components/admin/RentalOrders";
 import OrderDetail from "../../components/admin/OrderDetail";
-import BookWallet from '../../components/admin/BookWallet';
+import BookWallet from "../../components/admin/BookWallet";
 import EditGenre from "../../components/admin/EditGenre";
 import GenresList from "../../components/admin/GenresList";
 
 const AdminHome: React.FC = () => {
     return (
         <div className="flex flex-row min-h-screen bg-stone-950">
-
             <AdminSideBar />
             <div className="flex flex-col flex-1">
                 <div className="flex-1">
@@ -36,7 +35,7 @@ const AdminHome: React.FC = () => {
                                 </AdminPrivateRoute>
                             }
                         />
-                         <Route
+                        <Route
                             path="users"
                             element={
                                 <AdminPrivateRoute>
@@ -93,7 +92,6 @@ const AdminHome: React.FC = () => {
                             }
                         />
                     </Routes>
-                    
                 </div>
             </div>
         </div>

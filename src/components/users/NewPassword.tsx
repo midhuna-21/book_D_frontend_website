@@ -19,7 +19,7 @@ const NewPassword: React.FC = () => {
     const togglePasswordVisibility = () => {
         setIsPasswordVisible(!isPasswordVisible);
     };
-    const handleSubmit = (
+    const handleSubmit = async (
         e: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
         e.preventDefault();
@@ -33,31 +33,29 @@ const NewPassword: React.FC = () => {
             toast.error(validationResult);
             return;
         }
-
-        axiosUser
-            .post("/update-password", {
+        try {
+            const response = await axiosUser.post("/update-password", {
                 email: email,
                 password: password,
-            })
-            .then(function (response) {
-                if (response.status == 200) {
-                    navigate("/login");
-                    localStorage.removeItem("otpSubmitted");
-                }
-            })
-            .catch(function (error) {
-                if (error.response && error.response.status === 401) {
-                    toast.error(error.response.data.message);
-                } else {
-                    toast.error("An error occured try again later");
-                }
             });
+
+            if (response.status == 200) {
+                navigate("/login");
+                localStorage.removeItem("otpSubmitted");
+            }
+        } catch (error: any) {
+            if (error.response && error.response.status === 401) {
+                toast.error(error.response.data.message);
+            } else {
+                toast.error("An error occured try again later");
+            }
+        }
     };
-    
+
     useEffect(() => {
         window.history.replaceState(null, "");
     }, []);
-    
+
     useEffect(() => {
         if (!email) {
             navigate("/forgot-password");
@@ -66,11 +64,11 @@ const NewPassword: React.FC = () => {
 
     return (
         <div className="forgot flex items-center justify-center min-h-screen px-4 sm:px-6">
-        <div className="border-2 border-gray-300 rounded-lg relative flex items-center justify-center max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl w-full">
-        <div
-                style={{ height: "500px", width: "100%" }}
-                className="p-6 sm:p-8 md:p-10 lg:p-12 bg-white bg-opacity-40 border border-gray-300 rounded w-full">
-                  <div className="flex items-center mb-5 ">
+            <div className="border-2 border-gray-300 rounded-lg relative flex items-center justify-center max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl w-full">
+                <div
+                    style={{ height: "500px", width: "100%" }}
+                    className="p-6 sm:p-8 md:p-10 lg:p-12 bg-white bg-opacity-40 border border-gray-300 rounded w-full">
+                    <div className="flex items-center mb-5 ">
                         <img
                             src={sitelogo}
                             alt="Icon"

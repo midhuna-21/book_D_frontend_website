@@ -19,7 +19,6 @@ const Otp: React.FC = () => {
     const [timer, setTimer] = useState(60);
     const [otp, setOtp] = useState(["", "", "", ""]);
 
-    const otpGenerated = useRef(false);
     const intervalId = useRef<NodeJS.Timeout | null>(null);
 
     const inputRefs = [
@@ -62,49 +61,51 @@ const Otp: React.FC = () => {
         }
     };
 
-    const handleVerify = (
+    const handleVerify = async (
         e: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
         e.preventDefault();
         const otpValue = otp.join("");
-
-        axiosUser
-            .post("/verify-otp", { response, otp: otpValue, origin })
-            .then((response) => {
-                const { user } = response.data;
-                if (origin === "sign-up") {
-                    dispatch(addUser(response.data));
+        try {
+            const responses = await axiosUser.post("/verify-otp", {
+                response,
+                otp: otpValue,
+                origin,
+            });
+            if (responses.status == 200) {
+                const { user } = responses.data;
+                if (responses.data?.origin === "sign-up") {
+                    console.log(responses.data);
+                    dispatch(addUser(responses.data));
                     localStorage.setItem(
                         "useraccessToken",
-                        response.data.accessToken
+                        responses.data.accessToken
                     );
                     localStorage.setItem(
                         "userrefreshToken",
-                        response.data.refreshToken
+                        responses.data.refreshToken
                     );
-
                     navigate("/home");
                     localStorage.removeItem("otpPageVisited");
                 } else {
-                 
-                    navigate("/new-password", { state: { response: user } });
+                    navigate("/password/update", { state: { response: user } });
                     localStorage.setItem("otpSubmitted", "true");
                 }
-            })
-            .catch((error) => {
-                if (error.response && error.response.status === 400) {
-                    toast.error(error.response.data.message);
-                } else {
-                    toast.error("An error occurred, try again later");
-                }
-            });
+            }
+        } catch (error: any) {
+            if (error.response && error.response.status === 400) {
+                toast.error(error.response.data.message);
+            } else {
+                toast.error("An error occurred, try again later");
+            }
+        }
     };
 
-        useEffect(() => {
-            window.history.replaceState(null, "");
-        }, []);
+    useEffect(() => {
+        window.history.replaceState(null, "");
+    }, []);
 
-    const handleResentOtp = (
+    const handleResentOtp = async (
         e: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
         e.preventDefault();
@@ -112,7 +113,7 @@ const Otp: React.FC = () => {
         if (isSendOtp) {
             return;
         }
-        generateOtp()
+        generateOtp();
     };
 
     const startTimer = () => {
@@ -135,43 +136,38 @@ const Otp: React.FC = () => {
     };
 
     const generateOtp = async () => {
+        if (!email) {
+            return toast.error("An error occurred, please try again later");
+        }
         try {
-            if (!email) {
-                return toast.error("An error occurred, please try again later");
-            }
-            axiosUser
-                .post("/otp-generate", { email })
-                .then(() => {
-                    setIsSendOtp(true);
-                    setIsOtpOnce(true);
-                    startTimer();
-                })
-                .catch((error) => {
-                    if (error.response && error.response.status === 400) {
-                        toast.error(error.response.data.message);
-                    } else {
-                        toast.error("An error occurred, try again later");
-                    }
-                });
+            const response = await axiosUser.post("/otp/resend", { email });
+            setIsSendOtp(true);
+            setIsOtpOnce(true);
+            startTimer();
         } catch (error: any) {
-            console.log("Error generating OTP", error);
+            if (error.response && error.response.status === 400) {
+                toast.error(error.response.data.message);
+            } else {
+                toast.error("An error occurred, try again later");
+            }
         }
     };
 
     useEffect(() => {
-            if (!response || !email) {
-                navigate("/login");
-            } else {
-                setIsSendOtp(true);
-                setIsOtpOnce(true);
-                startTimer();
-            }
-      
-    }, [ navigate]);
+        if (!response || !email) {
+            navigate("/login");
+        } else {
+            setIsSendOtp(true);
+            setIsOtpOnce(true);
+            startTimer();
+        }
+    }, [navigate]);
 
     return (
         <div className="forgot flex items-center justify-center min-h-screen px-4 sm:px-6">
-        <div className="border-2 border-gray-300 rounded-lg relative flex items-center justify-center max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl w-full">    <div className="flex-1 flex flex-col gap-5 p-12">
+            <div className="border-2 border-gray-300 rounded-lg relative flex items-center justify-center max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl w-full">
+                {" "}
+                <div className="flex-1 flex flex-col gap-5 p-12">
                     <img
                         src={emailImage}
                         alt="Email Notification"

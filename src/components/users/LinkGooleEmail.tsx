@@ -29,21 +29,28 @@ const LinkGoogleEmail: React.FC = () => {
         }
 
         try {
-         
-            const response = await axiosUser.post("/link-google-account", {
+            const response = await axiosUser.post("/link-google", {
                 email,
                 password,
             });
-
+            console.log(response.status==200,'response.status==200')
             if (response.status === 200) {
-                toast.success("Your account has been successfully linked!");
+
+                toast.success("Your account has been successfully linked");
                 dispatch(addUser(response.data));
 
+                localStorage.setItem(
+                    "useraccessToken",
+                    response.data.accessToken
+                );
+                localStorage.setItem(
+                    "userrefreshToken",
+                    response.data.refreshToken
+                );
                 navigate("/home");
             }
         } catch (error: any) {
             if (error.response && error.response.status === 400) {
-               
                 toast.error("Incorrect password. Please try again.");
             } else {
                 toast.error("An error occurred, please try again later.");
@@ -79,8 +86,8 @@ const LinkGoogleEmail: React.FC = () => {
                     </div>
                     <p className="mb-4 font-sans">
                         Your Gmail is not linked with your Book.D account. If
-                        you want to link it with your Gmail account, please enter your
-                        password.
+                        you want to link it with your Gmail account, please
+                        enter your password.
                     </p>
 
                     <form onSubmit={handleSubmit}>

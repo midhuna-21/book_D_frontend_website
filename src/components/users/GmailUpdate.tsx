@@ -28,9 +28,10 @@ const GmailUpdate: React.FC = () => {
         openModal();
     };
     const handleUnlinkConfirm = async () => {
-        await userAxiosInstance
-            .post("/send-email", { withCredentials: true })
-            .then((response) => {
+        try{
+       const response = await userAxiosInstance
+            .post("/email/unlink", { withCredentials: true })
+            
                 if (response.status == 200) {
                     dispatch(addUser(response.data));
                     setMessage(
@@ -39,12 +40,11 @@ const GmailUpdate: React.FC = () => {
                     setMessageType("success");
                     closeModal();
                 }
-            })
-            .catch(() => {
+            }catch(error:any){
                 console.log("Error");
                 setMessage("An error occurred. Please try again.");
                 setMessageType("info");
-            });
+            }
     };
 
     return (

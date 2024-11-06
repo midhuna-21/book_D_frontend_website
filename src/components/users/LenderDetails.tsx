@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { FaHome,FaWallet, FaCreditCard } from "react-icons/fa";
+import { FaHome, FaWallet, FaCreditCard } from "react-icons/fa";
 import { userAxiosInstance } from "../../utils/api/userAxiosInstance";
 import { useSelector } from "react-redux";
 import { RootState } from "../../utils/ReduxStore/store/store";
 import { loadStripe, Stripe } from "@stripe/stripe-js";
-import {toast} from 'sonner'
+import { toast } from "sonner";
 
-const LenderDetails = () => {
+const RentalPaymentDetails = () => {
     const { cartId } = useParams();
     const [bookDetails, setBookDetails] = useState<any>(null);
     const userInfo = useSelector(
@@ -15,17 +15,24 @@ const LenderDetails = () => {
     );
     const userId = userInfo?._id;
     const [isAgreed, setIsAgreed] = useState(false);
- const [paymentMethod, setPaymentMethod] = useState<"wallet" | "stripe">("stripe");
+    const [paymentMethod, setPaymentMethod] = useState<"wallet" | "stripe">(
+        "stripe"
+    );
 
     useEffect(() => {
         const fetchDetails = async () => {
             try {
                 const response = await userAxiosInstance.get(
-                    `/lending-details/${cartId}`
+                    `/payments/rental-details/${cartId}`
                 );
                 setBookDetails(response?.data?.details);
-            } catch (error) {
-                console.error("Error fetching book details", error);
+            } catch (error:any) {
+                if (error.response && error.response.status === 403) {
+                    toast.error(error.response.data.message);
+                } else {
+                    toast.error("An error occurred, please try again later");
+                    console.error("Error fetching book details", error);
+                }
             }
         };
 
@@ -41,7 +48,6 @@ const LenderDetails = () => {
     }
 
     // payment integration
-
     const makePayment = async () => {
         const stripePromise: Stripe | null = await loadStripe(
             "pk_test_51PsQIxJLTsyLCzN2DBw1f6Od4OEh0vdO34mKYQmfUgomCnP0D7IegGNMvKaZdF8zYjrIb8r6pYOppVveK24egrWn00CdaN0RvG"
@@ -65,9 +71,8 @@ const LenderDetails = () => {
 
         try {
             if (paymentMethod === "stripe" && stripePromise) {
-           
                 const response = await userAxiosInstance.post(
-                    "/create-checkout",
+                    "/payments/checkout",
                     body,
                     { headers }
                 );
@@ -83,25 +88,25 @@ const LenderDetails = () => {
                     );
                     return;
                 }
-            }else if(paymentMethod === "wallet") {
+            } else if (paymentMethod === "wallet") {
+                const checkWallet = await userAxiosInstance.post(
+                    "/wallet/check"
+                );
 
-                const checkWallet = await userAxiosInstance.post('/check-wallet')
-
-                const balanceAmount = checkWallet?.data?.isWalletExist?.balance
-                if(balanceAmount>totalPrice){
-
-                    const response = await userAxiosInstance.post('/payment-wallet')
-                }else{
-                    toast.warning("Insufficient balance in your wallet. Please choose another payment method.");
+                const balanceAmount = checkWallet?.data?.isWalletExist?.balance;
+                if (balanceAmount > totalPrice) {
+                    await userAxiosInstance.post("/wallet/payment");
+                } else {
+                    toast.warning(
+                        "Insufficient balance in your wallet. Please choose another payment method."
+                    );
                 }
-               
             } else {
                 console.error("Stripe initialization failed");
             }
-            
-        } catch (error:any) {
+        } catch (error: any) {
             console.error("Error creating checkout session:", error);
-            if (error.response || error.response.status === 400) {
+            if (error.response || error.response.status === 400 || error.response.status===403) {
                 toast.error(error.response.data.message);
             } else {
                 toast.error("An error occured try again later");
@@ -217,32 +222,32 @@ const LenderDetails = () => {
                     </div>
 
                     <div>
-                 
-                    <h2 className="text-lg font-bold text-gray-800 mb-6 mt-4">
-                        Choose Payment Method
-                    </h2>
-                    <div className="flex gap-6 mb-6">
-                        <div
-                            onClick={() => setPaymentMethod("wallet")}
-                            className={`cursor-pointer flex items-center border rounded-lg p-4 transition ${
-                                paymentMethod === "wallet" ? "border-blue-500 bg-blue-100" : "border-gray-300"
-                            }`}
-                        >
-                            <FaWallet className="text-2xl text-gray-700 mr-2" />
-                            <span className="text-gray-700">Wallet</span>
-                        </div>
-                        <div
-                            onClick={() => setPaymentMethod("stripe")}
-                            className={`cursor-pointer flex items-center border rounded-lg p-4 transition ${
-                                paymentMethod === "stripe" ? "border-blue-500 bg-blue-100" : "border-gray-300"
-                            }`}
-                        >
-                            <FaCreditCard className="text-2xl text-gray-700 mr-2" />
-                            <span className="text-gray-700">Stripe</span>
+                        <h2 className="text-lg font-bold text-gray-800 mb-6 mt-4">
+                            Choose Payment Method
+                        </h2>
+                        <div className="flex gap-6 mb-6">
+                            <div
+                                onClick={() => setPaymentMethod("wallet")}
+                                className={`cursor-pointer flex items-center border rounded-lg p-4 transition ${
+                                    paymentMethod === "wallet"
+                                        ? "border-blue-500 bg-blue-100"
+                                        : "border-gray-300"
+                                }`}>
+                                <FaWallet className="text-2xl text-gray-700 mr-2" />
+                                <span className="text-gray-700">Wallet</span>
+                            </div>
+                            <div
+                                onClick={() => setPaymentMethod("stripe")}
+                                className={`cursor-pointer flex items-center border rounded-lg p-4 transition ${
+                                    paymentMethod === "stripe"
+                                        ? "border-blue-500 bg-blue-100"
+                                        : "border-gray-300"
+                                }`}>
+                                <FaCreditCard className="text-2xl text-gray-700 mr-2" />
+                                <span className="text-gray-700">Stripe</span>
+                            </div>
                         </div>
                     </div>
-
-            </div>
                     <button
                         onClick={makePayment}
                         disabled={!isAgreed}
@@ -253,10 +258,10 @@ const LenderDetails = () => {
                         } text-white font-semibold rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50`}>
                         Proceed to Pay
                     </button>
-                </div>    
                 </div>
+            </div>
         </div>
     );
 };
 
-export default LenderDetails;
+export default RentalPaymentDetails;

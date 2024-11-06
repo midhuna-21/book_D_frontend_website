@@ -11,25 +11,20 @@ import {
 import { Box, Flex, Icon } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 
-const MyBooks: React.FC = () => {
-    const [view, setView] = useState<"rentedBooks" | "soldBooks">(
-        "rentedBooks"
-    );
+const UserLendBooks: React.FC = () => {
     const [books, setBooks] = useState<any[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
-   
+
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchBooks = async () => {
             setLoading(true);
-            setError(null);
             try {
-                const endpoint =
-                    view === "rentedBooks" ? "/rented-books" : "/sold-books";
-                const response = await userAxiosInstance.get(endpoint);
+                const response = await userAxiosInstance.get(
+                    "/books/lent-books"
+                );
                 setBooks(response.data);
             } catch (error) {
                 console.error("Error fetching books:", error);
@@ -39,7 +34,7 @@ const MyBooks: React.FC = () => {
         };
 
         fetchBooks();
-    }, [view]);
+    }, []);
 
     const booksPerPage = 10;
 
@@ -49,7 +44,7 @@ const MyBooks: React.FC = () => {
 
     const showBookDetails = (bookId: string) => {
         let mybooks = true;
-        navigate(`/home/book/${bookId}`, { state: { from: mybooks } });
+        navigate(`/book/${bookId}`, { state: { from: mybooks } });
     };
     const showShimmer = loading || books.length === 0;
 
@@ -75,7 +70,7 @@ const MyBooks: React.FC = () => {
                     )}
                 </p>
                 {books.length === 0 && (
-                    <Link to="/home/add-book">
+                    <Link to="/lend-book">
                         <button className="mt-4 text-gray-400 text-lg flex items-center flex-col">
                             <FaPlusCircle className="text-3xl mr-2" />
                             Add Books
@@ -154,14 +149,13 @@ const MyBooks: React.FC = () => {
                                               )}...`
                                             : book.description}
                                     </p>
-                                   
+
                                     <button
                                         className="bg-stone-700 hover:bg-stone-400 hover:text-black text-white px-4 py-2 rounded-md transition-colors duration-300"
                                         style={{
                                             width: "100px",
                                             height: "40px",
-                                        }}
-                                        >
+                                        }}>
                                         Choose
                                     </button>
                                 </div>
@@ -196,4 +190,4 @@ const MyBooks: React.FC = () => {
     );
 };
 
-export default MyBooks;
+export default UserLendBooks;

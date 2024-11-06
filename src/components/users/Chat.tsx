@@ -6,6 +6,7 @@ import { RootState } from "../../utils/ReduxStore/store/store";
 import { userAxiosInstance } from "../../utils/api/userAxiosInstance";
 import { useSocket } from "../../utils/context/SocketProvider";
 import InputEmoji from "react-input-emoji";
+import {toast} from 'sonner'
 
 interface Receivers {
     chatRoomId: string;
@@ -18,7 +19,7 @@ interface Receivers {
     isRead: boolean;
 }
 
-const Chat: React.FC = () => {
+const UserChat: React.FC = () => {
     const userInfo = useSelector(
         (state: RootState) => state?.user?.userInfo?.user
     );
@@ -46,16 +47,11 @@ const Chat: React.FC = () => {
                 messagesEndRef.current.scrollHeight;
         }
     }, [messages]);
- 
 
     const fetchReceivers = async () => {
         try {
-            const response = await userAxiosInstance.get(
-                `/users-messages-list/${userId}`
-            );
-
+            const response = await userAxiosInstance.get(`/chats/${userId}`);
             const conversations = response.data.conversations;
-
             if (Array.isArray(conversations)) {
                 const chatRooms = conversations.map((chatRoom: any) => {
                     const isSender = chatRoom.senderId._id === userId;
@@ -92,12 +88,15 @@ const Chat: React.FC = () => {
                     typeof conversations
                 );
             }
-        } catch (error) {
-            console.error("Error fetching conversations", error);
+        } catch (error:any) {
+            if (error.response && error.response.status === 403) {
+                toast.error(error.response.data.message);
+            } else {
+                toast.error("An error occurred while fetching messages, try again later");
+            }
         }
     };
     useEffect(() => {
-        
         fetchReceivers();
     }, [userId]);
 
@@ -106,7 +105,6 @@ const Chat: React.FC = () => {
             const response = await userAxiosInstance.get(
                 `/chat-room/${chatRoomId}`
             );
-
             const res = response?.data?.chat[0];
 
             if (res) {
@@ -124,15 +122,21 @@ const Chat: React.FC = () => {
                 setCurrentChatRoomId(chatRoomId);
                 fetchMessages(chatRoomId);
 
-                await userAxiosInstance.post(`/chatRoom-update/${chatRoomId}`);
+                await userAxiosInstance.put(
+                    `/chatrooms/read-status/${chatRoomId}`
+                );
             } else {
                 console.error("Chat data is not available");
             }
-        } catch (error) {
-            console.error("Error fetching chat room:", error);
+        } catch (error:any) {
+            if (error.response && error.response.status === 403) {
+                toast.error(error.response.data.message);
+            } else {
+                toast.error("An error occurred while fetching chatroom, try again later");
+            }
         }
     };
- 
+
     useEffect(() => {
         if (socket) {
             socket.on("receive-message", (message) => {
@@ -187,7 +191,7 @@ const Chat: React.FC = () => {
             socket.on("userOnline", (userId) => {
                 setOnlineUsers((prev) => new Set(prev).add(userId));
             });
-    
+
             socket.on("userOffline", (userId) => {
                 setOnlineUsers((prev) => {
                     const updatedUsers = new Set(prev);
@@ -207,7 +211,7 @@ const Chat: React.FC = () => {
                 socket.off("receive-message");
             };
         }
-    }, [socket, currentChatRoomId,chatRooms,userId]);
+    }, [socket, currentChatRoomId, chatRooms, userId]);
 
     const handleSendMessage = async (
         messageText: string,
@@ -224,7 +228,7 @@ const Chat: React.FC = () => {
             };
 
             const response = await userAxiosInstance.post(
-                "/send-message",
+                "/messages/send-message",
                 data
             );
             fetchReceivers();
@@ -244,8 +248,12 @@ const Chat: React.FC = () => {
             } else {
                 console.error("Failed to send message");
             }
-        } catch (error) {
-            console.error("Error sending message:", error);
+        } catch (error:any) {
+            if (error.response && error.response.status === 403) {
+                toast.error(error.response.data.message);
+            } else {
+                toast.error("An error occurred while sending message, try again later");
+            }
         }
     };
 
@@ -258,7 +266,11 @@ const Chat: React.FC = () => {
 
             setMessages(fetchedMessages);
         } catch (error: any) {
-            console.log("Error fetching messages:", error);
+            if (error.response && error.response.status === 403) {
+                toast.error(error.response.data.message);
+            } else {
+                toast.error("An error occurred while fetching messages, try again later");
+            }
         }
     };
     useEffect(() => {
@@ -344,9 +356,7 @@ const Chat: React.FC = () => {
                                                 alt={chatRoom.userName}
                                                 className="w-full h-full object-cover"
                                             />
-                                            {/* {chatRoom.isOnline && (
-                                                <div className="absolute bottom-1 right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
-                                            )} */}
+                                   
                                             {onlineUsers.has(
                                                 chatRoom.userId
                                             ) && (
@@ -415,17 +425,25 @@ const Chat: React.FC = () => {
                                         />
                                     </div>
                                     <div>
-            <p className="text-xl font-bold">{selectedUserDetails.userName}</p>
+                                        <p className="text-xl font-bold">
+                                            {selectedUserDetails.userName}
+                                        </p>
 
-            {typingUsers.has(selectedUserDetails.userId) ? (
-                <p className="text-xs text-green-500">Typing...</p>
-            ) : onlineUsers.has(selectedUserDetails.userId) ? (
-                <p className="text-xs text-green-500">Online</p>
-            ) : null}
-        </div>
-                                    
+                                        {typingUsers.has(
+                                            selectedUserDetails.userId
+                                        ) ? (
+                                            <p className="text-xs text-green-500">
+                                                Typing...
+                                            </p>
+                                        ) : onlineUsers.has(
+                                              selectedUserDetails.userId
+                                          ) ? (
+                                            <p className="text-xs text-green-500">
+                                                Online
+                                            </p>
+                                        ) : null}
+                                    </div>
                                 </div>
-                               
 
                                 <div
                                     className="flex flex-col space-y-4  overflow-y-scroll flex-grow scrollbar-hide"
@@ -518,4 +536,4 @@ const Chat: React.FC = () => {
     );
 };
 
-export default Chat;
+export default UserChat;

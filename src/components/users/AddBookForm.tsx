@@ -6,7 +6,9 @@ import images from "../../assets/images.png";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import axios from "axios";
-import {useNavigate} from 'react-router-dom'
+import { useNavigate } from "react-router-dom";
+import {useSelector} from 'react-redux';
+import {RootState} from '../../utils/ReduxStore/store/store'
 
 interface Genre {
     genreName: string;
@@ -39,7 +41,7 @@ type FormData = {
     longitude: number;
 };
 
-const RentBookForm: React.FC = () => {
+const LendBookForm: React.FC = () => {
     const initialFormData: FormData = {
         bookTitle: "",
         description: "",
@@ -66,6 +68,7 @@ const RentBookForm: React.FC = () => {
         longitude: 0,
     };
 
+    const username = useSelector((state:RootState)=>state?.user?.userInfo?.user?.name)
     const [formData, setFormData] = useState<FormData>(initialFormData);
 
     const [genres, setGenres] = useState<Genre[]>([]);
@@ -75,7 +78,6 @@ const RentBookForm: React.FC = () => {
     const clearInput = () => {
         setFormData(initialFormData);
     };
-    // const [activeOption, setActiveOption] = useState("addBooks");
 
     const handleRemoveImage = (index: number) => {
         if (formData.images && formData.images.length > 0) {
@@ -173,13 +175,17 @@ const RentBookForm: React.FC = () => {
             try {
                 const response = await userAxiosInstance.get("/genres");
                 setGenres(response.data);
-            } catch (error) {
-                console.error("Error fetching book details", error);
+            } catch (error:any) {
+                if (error.response && error.response.status === 403) {
+                    toast.error(error.response.data.message);
+                } else {
+                    toast.error("An error occurred while fetching genres, try again later");
+                }
             }
         };
 
         fetchBook();
-    });
+    },[]);
 
     const handleGetLocation = () => {
         if (navigator.geolocation) {
@@ -235,7 +241,7 @@ const RentBookForm: React.FC = () => {
                     district = "",
                     state = "",
                     pincode = "";
-              
+
                 addressComponents.forEach((component: any) => {
                     if (component.types.includes("sublocality_level_2")) {
                         street = component.long_name;
@@ -283,8 +289,8 @@ const RentBookForm: React.FC = () => {
             }));
         }
 
-        const errors = validateFormData(formData);
-        if (errors.length === 0) {
+        // const errors = validateFormData(formData);
+        // if (errors.length === 0) {
             const formDataWithImages = new FormData();
             formDataWithImages.append("bookTitle", formData.bookTitle);
             if (formData.images) {
@@ -345,7 +351,7 @@ const RentBookForm: React.FC = () => {
 
             try {
                 const response = await userAxiosInstance.post(
-                    "/rent-book",
+                    "/books/lend-book",
                     formDataWithImages,
                     {
                         withCredentials: true,
@@ -356,22 +362,22 @@ const RentBookForm: React.FC = () => {
                 );
 
                 if (response.status === 200) {
-                    navigate('/home/my-books')
+                    navigate(`/${username}/lend-books`);
                     clearInput();
                 }
             } catch (error: any) {
-                if (error.response && error.response.status === 404) {
+                if (error.response && error.response.status === 404 || error.response.status === 403) {
                     toast.error(error.response.data.message);
                 } else {
                     toast.error("An error occurred, please try again later");
                 }
             }
-        } else {
-            console.error("Form validation errors:", errors);
-            toast.error(errors);
-        }
+        // } else {
+        //     console.error("Form validation errors:", errors);
+        //     toast.error(errors);
+        // }
     };
- 
+
     return (
         <div className="flex flex-col items-center justify-center py-12">
             <div className="mb-12 text-center">
@@ -792,4 +798,4 @@ const RentBookForm: React.FC = () => {
     );
 };
 
-export default RentBookForm;
+export default LendBookForm;

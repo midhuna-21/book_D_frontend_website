@@ -9,7 +9,7 @@ import {
     FaMoneyBillWave,
 } from "react-icons/fa";
 
-const HowItWorks: React.FC = () => {
+const AboutRentLend: React.FC = () => {
     const [isRentModalOpen, setIsRentModalOpen] = useState(false);
     const [isLendModalOpen, setIsLendModalOpen] = useState(false);
     const openRentModal = () => setIsRentModalOpen(true);
@@ -217,4 +217,4 @@ const HowItWorks: React.FC = () => {
     );
 };
 
-export default HowItWorks;
+export default AboutRentLend;

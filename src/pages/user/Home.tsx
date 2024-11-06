@@ -1,23 +1,24 @@
 import React from "react";
-import { Route, Routes, Navigate } from "react-router-dom";
+import { Route, Routes, Navigate, useParams } from "react-router-dom";
 import Header from "../../components/users/Header";
 import CenterOfHome from "../../components/users/HomePage";
-import UserProfile from "./UserProfile";
+import UserAccountProfile from "./UserProfile";
 import PrivateRoute from "../../routes/PrivateRoute";
-import ExploreBooks from "../../components/users/ExploreBooks";
-import BookDetail from "../../components/users/BookDetail";
-import Notifications from "../../components/users/Notifications";
-import Chat from "../../components/users/Chat";
-import MyBooks from "../../components/users/MyBooks";
-import LenderDetails from "../../components/users/LenderDetails";
-import Successfull from "../../components/users/Successfull";
+import ExploreRentalBooks from "../../components/users/ExploreBooks";
+import BookDetailPage from "../../components/users/BookDetail";
+import UserNotifications from "../../components/users/Notifications";
+import UserChat from "../../components/users/Chat";
+import UserLendBooks from "../../components/users/MyBooks";
+import RentalPaymentDetails from "../../components/users/LenderDetails";
+import PaymentSuccess from "../../components/users/Successfull";
 import Orders from "../../components/users/Orders";
-import LendList from "../../components/users/LendList";
-import RentList from "../../components/users/RentList";
+import LendedBooks from "../../components/users/LendList";
+import RentedBooks from "../../components/users/RentList";
 import EditBookForm from "../../components/users/EditBookForm";
-import AddBookForm from "../../components/users/AddBookForm";
+import LendBookForm from "../../components/users/AddBookForm";
 import Footer from "../../components/users/Footer";
-import Wallet from '../../components/users/Wallet';
+import WalletTransactions from "../../components/users/Wallet";
+import { ProfileProtectRoute } from "../../routes/ProfilePrivateRoute";
 
 const Home: React.FC = () => {
     return (
@@ -26,7 +27,7 @@ const Home: React.FC = () => {
             <div className="flex-grow pt-16">
                 <div className="container mx-auto">
                     <Routes>
-                        <Route path="/" element={<CenterOfHome />} />
+                        <Route path="/home" element={<CenterOfHome />} />
                         <Route path="/*" element={<NestedRoutes />} />
                     </Routes>
                     <Footer />
@@ -40,20 +41,20 @@ const NestedRoutes: React.FC = () => {
     return (
         <>
             <Routes>
-                <Route path="/add-book" element={<AddBookForm />} />
                 <Route
-                    path="/explore"
+                    path="/lend-book"
                     element={
                         <PrivateRoute>
-                            <ExploreBooks />
+                            <LendBookForm />
                         </PrivateRoute>
                     }
                 />
+
                 <Route
-                    path="/profile/*"
+                    path="/explore-books"
                     element={
                         <PrivateRoute>
-                            <UserProfile />
+                            <ExploreRentalBooks />
                         </PrivateRoute>
                     }
                 />
@@ -61,7 +62,7 @@ const NestedRoutes: React.FC = () => {
                     path="/notifications"
                     element={
                         <PrivateRoute>
-                            <Notifications />
+                            <UserNotifications />
                         </PrivateRoute>
                     }
                 />
@@ -69,49 +70,32 @@ const NestedRoutes: React.FC = () => {
                     path="/chat"
                     element={
                         <PrivateRoute>
-                            <Chat />
+                            <UserChat />
                         </PrivateRoute>
                     }
                 />
-<Route
-                    path="/wallet"
-                    element={
-                        <PrivateRoute>
-                            <Wallet />
-                        </PrivateRoute>
-                    }
-                />
-                <Route
-                    path="/my-books"
-                    element={
-                        <PrivateRoute>
-                            <MyBooks />
-                        </PrivateRoute>
-                    }
-                />
-                 
 
                 <Route
                     path="/book/:id"
                     element={
                         <PrivateRoute>
-                            <BookDetail />
+                            <BookDetailPage />
                         </PrivateRoute>
                     }
                 />
                 <Route
-                    path="/payment-details/:cartId"
+                    path="/payment/rental-details/:cartId"
                     element={
                         <PrivateRoute>
-                            <LenderDetails />
+                            <RentalPaymentDetails />
                         </PrivateRoute>
                     }
                 />
                 <Route
-                    path="/payment-success"
+                    path="/payment/success"
                     element={
                         <PrivateRoute>
-                            <Successfull />
+                            <PaymentSuccess />
                         </PrivateRoute>
                     }
                 />
@@ -124,31 +108,58 @@ const NestedRoutes: React.FC = () => {
                     }
                 />
                 <Route
-                    path="/lend-list"
+                    path="/books/lend"
                     element={
                         <PrivateRoute>
-                            <LendList />
+                            <LendedBooks />
                         </PrivateRoute>
                     }
                 />
                 <Route
-                    path="/rent-list"
+                    path="/books/rent"
                     element={
                         <PrivateRoute>
-                            <RentList />
+                            <RentedBooks />
                         </PrivateRoute>
                     }
                 />
                 <Route
-                    path="/edit-book/:bookId"
+                    path="/books/update/:bookId"
                     element={
                         <PrivateRoute>
                             <EditBookForm />
                         </PrivateRoute>
                     }
                 />
-
-                <Route path="*" element={<Navigate to="/home" replace />} />
+                <Route
+                    path="/:username/*"
+                    element={
+                        <PrivateRoute>
+                            <ProfileProtectRoute
+                                children={UserAccountProfile}
+                            />
+                        </PrivateRoute>
+                    }
+                />
+                <Route
+                    path="/:username/wallet"
+                    element={
+                        <PrivateRoute>
+                            <ProfileProtectRoute
+                                children={WalletTransactions}
+                            />
+                        </PrivateRoute>
+                    }
+                />
+                <Route
+                    path="/:username/lend-books"
+                    element={
+                        <PrivateRoute>
+                            <ProfileProtectRoute children={UserLendBooks} />
+                        </PrivateRoute>
+                    }
+                />
+                <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
         </>
     );

@@ -64,8 +64,14 @@ export const validateState = (state: string) => {
 };
 
 export const validatePincode = (pincode: string) => {
-    if (pincode.length > 6) {
-        return "Pincode should not exceed more than 6 number.";
+    const pincodeRegex = /^[0-9]{6}$/;
+
+    if (!pincodeRegex.test(pincode)) {
+        return "Please enter valid pincode.";
+    }
+
+    if (pincode === "000000") {
+        return "Please enter valid pincode.";
     }
     return true;
 };

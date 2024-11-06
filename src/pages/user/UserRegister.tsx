@@ -22,7 +22,7 @@ const Register: React.FC = () => {
         setIsPasswordVisible(!isPasswordVisible);
     };
 
-    const handleRegister = (
+    const handleRegister = async (
         e: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
         e.preventDefault();
@@ -37,9 +37,9 @@ const Register: React.FC = () => {
             toast.error(validationResult);
             return;
         }
-        axiosUser
-            .post(
-                "/sign-up",
+        try {
+            const response = await axiosUser.post(
+                "/register",
                 {
                     name: name,
                     email: email,
@@ -47,22 +47,19 @@ const Register: React.FC = () => {
                     password: password,
                 },
                 { withCredentials: true }
-            )
-            .then(function (response) {
-                if (response.status === 200) {
-                    navigate("/otp-verification", {
-                        state: { response: response.data, origin: "sign-up" },
-                    });
-
-                }
-            })
-            .catch(function (error) {
-                if (error.response && error.response.status === 400) {
-                    toast.error(error.response.data.message);
-                } else {
-                    toast.error("An error occured try again later");
-                }
-            });
+            );
+            if (response.status === 200) {
+                navigate("/verify-otp", {
+                    state: { response: response.data, origin: "sign-up" },
+                });
+            }
+        } catch (error: any) {
+            if (error.response && error.response.status === 400) {
+                toast.error(error.response.data.message);
+            } else {
+                toast.error("An error occured try again later");
+            }
+        }
     };
 
     return (

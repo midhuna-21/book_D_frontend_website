@@ -21,7 +21,6 @@ const BookManage: React.FC = () => {
                     </div>
                 </div>
             </div>
-            {/* <AddBook /> */}
         </div>
     );
 };

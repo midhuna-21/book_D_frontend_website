@@ -11,6 +11,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import SignInButton from "../../utils/authentication/Googlebutton";
 import { isValidateLogin } from "../../utils/validations/loginValidation";
 import config from "../../config/config";
+import { HiEye, HiEyeOff } from "react-icons/hi";
 
 const UserLogin: React.FC = () => {
     const navigate = useNavigate();
@@ -18,7 +19,11 @@ const UserLogin: React.FC = () => {
     const [password, setPassword] = useState("");
     const dispatch = useDispatch();
 
-    const handleLogin = (
+    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+    const togglePasswordVisibility = () => {
+        setIsPasswordVisible(!isPasswordVisible);
+    };
+    const handleLogin = async (
         e: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
         e.preventDefault();
@@ -28,42 +33,40 @@ const UserLogin: React.FC = () => {
             toast.error(validationResult);
             return;
         }
-
-        axiosUser
-            .post(
+        try {
+            const response = await axiosUser.post(
                 "/login",
                 {
                     email: email,
                     password: password,
                 },
                 { withCredentials: true }
-            )
-            .then(function (response) {
-                if (response.status === 200) {
-                    dispatch(addUser(response.data));
+            );
 
-                    localStorage.setItem(
-                        "useraccessToken",
-                        response.data.accessToken
-                    );
-                    localStorage.setItem(
-                        "userrefreshToken",
-                        response.data.refreshToken
-                    );
-                    navigate("/home", { replace: true });
-                }
-                window.history.replaceState(null, "");
-            })
-            .catch(function (error) {
-                if (
-                    (error.response && error.response.status === 400) ||
-                    error.response.status === 401
-                ) {
-                    toast.error(error.response.data.message);
-                } else {
-                    toast.error("An error occured try again later");
-                }
-            });
+            if (response.status === 200) {
+                dispatch(addUser(response.data));
+
+                localStorage.setItem(
+                    "useraccessToken",
+                    response.data.accessToken
+                );
+                localStorage.setItem(
+                    "userrefreshToken",
+                    response.data.refreshToken
+                );
+                navigate("/home", { replace: true });
+            }
+            window.history.replaceState(null, "");
+        } catch (error: any) {
+            if (
+                (error.response && error.response.status === 400) ||
+                error.response.status === 401
+            ) {
+                toast.error(error.response.data.message);
+            } else {
+                toast.error("An error occured try again later");
+            }
+        }
     };
     useEffect(() => {
         window.history.replaceState(null, "");
@@ -108,15 +111,23 @@ const UserLogin: React.FC = () => {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                         />
-                        <input
-                            type="password"
-                            placeholder="Password"
-                            autoComplete="new-password"
-                            className="border-b border-gray-300 px-5 py-3"
-                            style={{ marginBottom: "5px" }}
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
+                        <div className="relative">
+                            <input
+                                type={isPasswordVisible ? "text" : "password"}
+                                placeholder="Password"
+                                autoComplete="new-password"
+                                className="border-b border-gray-300 px-5 py-3 w-full"
+                                style={{ marginBottom: "5px" }}
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                            />
+                            <button
+                                type="button"
+                                className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500"
+                                onClick={togglePasswordVisibility}>
+                                {isPasswordVisible ? <HiEyeOff /> : <HiEye />}
+                            </button>
+                        </div>
                         <Link to="/forgot-password?access=true">
                             <span className="text-xs text-blue-600">
                                 Forgot Password?

@@ -1,17 +1,18 @@
 import { Route, Routes } from "react-router-dom";
 import PublicRoute from "./PublicRoute";
 import PrivateRoute from "./PrivateRoute";
-import UserSignUp from "../pages/user/SignUp";
-import UserLogin from "../pages/user/Login";
+import UserSignUp from "../pages/user/UserRegister";
+import UserLogin from "../pages/user/UserLogin";
 import Home from "../pages/user/Home";
 import ForgotPassword from "../components/users/ForgotPassword";
 import NewPassword from "../components/users/NewPassword";
 import Otp from "../components/users/Otp";
 import ResetPassword from "../components/users/ResetPassword";
 import Error from "../components/users/Error";
-import LinkGoogleEmail from "../components/users/LinkGooleEmail";
+import LinkGoogleAccount from "../components/users/LinkGooleEmail";
 
 const UserRouter = () => {
+    
     return (
         <Routes>
             <Route
@@ -23,7 +24,7 @@ const UserRouter = () => {
                 }
             />
             <Route
-                path="/otp-verification"
+                path="/verify-otp"
                 element={
                     <PublicRoute>
                         <Otp />
@@ -47,7 +48,7 @@ const UserRouter = () => {
                 }
             />
             <Route
-                path="/new-password"
+                path="/password/update"
                 element={
                     <PublicRoute>
                         <NewPassword />
@@ -55,19 +56,20 @@ const UserRouter = () => {
                 }
             />
             <Route
-                path="/enter-password"
+                path="/google-link-password"
                 element={
                     <PublicRoute>
-                        <LinkGoogleEmail />
+                        <LinkGoogleAccount />
                     </PublicRoute>
                 }
             />
 
             <Route path="/reset-password" element={<ResetPassword />} />
+
             <Route path="/error" element={<Error />} />
 
             <Route
-                path="/home/*"
+                path="/*"
                 element={
                     <PrivateRoute>
                         <Home />

@@ -34,7 +34,7 @@ const SignInButton: React.FC = () => {
                     .then(function (response) {
                         if (response.status === 200) {
                             dispatch(addUser(response.data));
-                            
+
                             localStorage.setItem(
                                 "useraccessToken",
                                 response.data.accessToken
@@ -49,7 +49,7 @@ const SignInButton: React.FC = () => {
                     .catch(function (error) {
                         if (error.response && error.response.status === 400) {
                             toast.error(error.response.data.message);
-                            navigate("/enter-password", {
+                            navigate("/google-link-password", {
                                 state: { email: response.data.email },
                             });
                         }

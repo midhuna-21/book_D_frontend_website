@@ -9,15 +9,3 @@ export const validateEmail = (email: string) => {
     }
     return true;
 };
-
-// export const validatePhone = (phone: string) => {
-//    const regex = /^(?!.*(.)\1{2})\d{10}$/;
-//    return regex.test(phone);
-// };
-
-// export const validatePhoneNumber = (phone:string,) => {
-//    if (!validatePhone(phone)) {
-//        return 'Please enter a valid phone number.';
-//    }
-//    return true
-// }

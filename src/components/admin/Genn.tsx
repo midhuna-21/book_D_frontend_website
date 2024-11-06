@@ -24,7 +24,7 @@ const AddGenre: React.FC = () => {
         }
     };
 
-    const handleAddGenre = (e: React.FormEvent) => {
+    const handleAddGenre = async(e: React.FormEvent) => {
         e.preventDefault();
 
         if (!genreName.trim()) {
@@ -40,14 +40,15 @@ const AddGenre: React.FC = () => {
         formData.append("genreName", genreName);
         formData.append("file", file);
 
-        adminAxiosInstance
-            .post("/add-genre", formData, {
+        try{
+        const response = await adminAxiosInstance
+            .post("/genres/create", formData, {
                 withCredentials: true,
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },
             })
-            .then(function (response) {
+            
                 if (response.status === 200) {
                     toast.success("Successfully added");
 
@@ -58,15 +59,14 @@ const AddGenre: React.FC = () => {
                         fileInputRef.current.value = "";
                     }
                 }
-            })
-            .catch((error) => {
+            }catch(error:any){
                 console.log(error);
                 if (error.response && error.response.status === 400) {
                     toast.error(error.response.data.message);
                 } else {
                     toast.error("An error occurred, try again later");
                 }
-            });
+            }
     };
 
     return (

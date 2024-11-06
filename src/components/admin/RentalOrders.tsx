@@ -44,7 +44,7 @@ const RentalOrdersList: React.FC = () => {
         const fetchOrders = async () => {
             try {
                 const response = await adminAxiosInstance.get(
-                    "/get-rental-orders"
+                    "/books/rental-orders"
                 );
                 if (response.status == 200) {
                     setOrders(response?.data);
@@ -88,7 +88,7 @@ const RentalOrdersList: React.FC = () => {
             case "not_reached":
                 filtered = filtered.filter(
                     (order) =>
-                        order.bookStatusFromLender === "not_reached"||
+                        order.bookStatusFromLender === "not_reached" ||
                         order.bookStatusFromRenter === "not_reached"
                 );
                 break;
@@ -113,7 +113,7 @@ const RentalOrdersList: React.FC = () => {
                     order?.lenderId?.name
                         .toLowerCase()
                         .includes(searchKey.toLowerCase()) ||
-                        order?.userId?.name
+                    order?.userId?.name
                         .toLowerCase()
                         .includes(searchKey.toLowerCase())
             );
@@ -244,8 +244,9 @@ const RentalOrdersList: React.FC = () => {
                                                       "not_reached"
                                                     ? "bg-blue-600"
                                                     : order.bookStatusFromRenter ===
-                                                "cancelled"?"bg-red-900"
-                                                    :""
+                                                      "cancelled"
+                                                    ? "bg-red-900"
+                                                    : ""
                                             }`}>
                                             {" "}
                                             {order.bookStatusFromRenter}
@@ -253,8 +254,9 @@ const RentalOrdersList: React.FC = () => {
                                         <td className="py-2 px-4 border-b text-black text-center truncate max-w-[150px]">
                                             {order?.lenderId?.name}
                                         </td>
-                                      
-                                        <td className={`py-2 px-4 border-b text-black text-center truncate max-w-[150px] ${
+
+                                        <td
+                                            className={`py-2 px-4 border-b text-black text-center truncate max-w-[150px] ${
                                                 order.bookStatusFromLender ===
                                                 "completed"
                                                     ? "bg-green-600"
@@ -268,8 +270,9 @@ const RentalOrdersList: React.FC = () => {
                                                       "not_reached"
                                                     ? "bg-blue-600"
                                                     : order.bookStatusFromLender ===
-                                                "cancelled"?"bg-red-900"
-                                                    :""
+                                                      "cancelled"
+                                                    ? "bg-red-900"
+                                                    : ""
                                             }`}>
                                             {order.bookStatusFromLender}
                                         </td>

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { FaGreaterThan, FaLessThan } from "react-icons/fa";
 import { useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
 import { RootState } from "../../utils/ReduxStore/store/store";
 import { userAxiosInstance } from "../../utils/api/userAxiosInstance";
+import {toast} from 'sonner';
 
 interface ITransaction {
     type: "credit" | "debit";
@@ -32,7 +32,6 @@ const WalletTransactions: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [balance, setBalance] = useState(0);
     const [transactionsPerPage] = useState(5);
-    const navigate = useNavigate();
     const userInfo = useSelector(
         (state: RootState) => state.user.userInfo?.user
     );
@@ -41,23 +40,29 @@ const WalletTransactions: React.FC = () => {
     useEffect(() => {
         const fetchWalletData = async () => {
             try {
-                const response = await userAxiosInstance.get("/wallet");
-
+                const response = await userAxiosInstance.get(
+                    "/wallet/transactions"
+                );
                 if (response?.data?.wallet) {
                     setBalance(response?.data?.wallet?.balance);
                     setWallet(response.data.wallet);
                 } else {
                     console.error("Wallet data not found in the response");
                 }
-            } catch (error) {
-                console.error("Error fetching wallet data:", error);
+            } catch (error:any) {
+                if (error.response && error.response.status === 403) {
+                    toast.error(error.response.data.message);
+                } else {
+                    toast.error("An error occurred, please try again later");
+                    console.error("Error fetching wallet data:", error);
+                }
             }
         };
         fetchWalletData();
     }, [userId]);
 
     const transactions = wallet?.transactions ?? [];
-
+    
     const totalPages =
         transactions.length > 0
             ? Math.ceil(transactions.length / transactionsPerPage)
@@ -70,6 +75,7 @@ const WalletTransactions: React.FC = () => {
         indexOfFirstTransaction,
         indexOfLastTransaction
     );
+    console.log(currentTransactions,'currentTransactions')
 
     const prevPage = () => {
         if (currentPage > 1) setCurrentPage(currentPage - 1);
@@ -107,7 +113,7 @@ const WalletTransactions: React.FC = () => {
 
             {wallet && (
                 <>
-                   <div className="w-full md:w-3/4 p-3">
+                    <div className="w-full md:w-3/4 p-3">
                         {currentTransactions.filter(
                             (transaction) => transaction.total_amount > 0
                         ).length > 0 ? (
@@ -146,6 +152,7 @@ const WalletTransactions: React.FC = () => {
                                                     }
                                                     className="odd:bg-white even:bg-gray-50 border-b">
                                                     <td className="py-4 font-medium text-gray-700 text-sm text-left">
+                                                       
                                                         {
                                                             transaction.orderId
                                                                 ?.bookId
@@ -186,41 +193,40 @@ const WalletTransactions: React.FC = () => {
                             </div>
                         )}
                     </div>
-                 
-                            <div
-                                className="px-12 flex items-center justify-center"
-                                style={{ height: "200px" }}>
-                                <button
-                                    onClick={prevPage}
-                                    disabled={currentPage === 1}
-                                    className="px-3 py-1 text-gray-700 rounded disabled:opacity-50">
-                                    <FaLessThan />
-                                </button>
 
-                                {[...Array(totalPages)].map((_, index) => {
-                                    const page = index + 1;
-                                    return (
-                                        <button
-                                            key={page}
-                                            onClick={() => goToPage(page)}
-                                            className={`px-3 py-1 mx-1 rounded ${
-                                                currentPage === page
-                                                    ? "bg-cyan-800 text-white"
-                                                    : "bg-gray-200 text-gray-700"
-                                            }`}>
-                                            {page}
-                                        </button>
-                                    );
-                                })}
+                    <div
+                        className="px-12 flex items-center justify-center"
+                        style={{ height: "200px" }}>
+                        <button
+                            onClick={prevPage}
+                            disabled={currentPage === 1}
+                            className="px-3 py-1 text-gray-700 rounded disabled:opacity-50">
+                            <FaLessThan />
+                        </button>
 
+                        {[...Array(totalPages)].map((_, index) => {
+                            const page = index + 1;
+                            return (
                                 <button
-                                    onClick={nextPage}
-                                    disabled={currentPage === totalPages}
-                                    className="px-3 py-1 text-gray-700 rounded disabled:opacity-50">
-                                    <FaGreaterThan />
+                                    key={page}
+                                    onClick={() => goToPage(page)}
+                                    className={`px-3 py-1 mx-1 rounded ${
+                                        currentPage === page
+                                            ? "bg-cyan-800 text-white"
+                                            : "bg-gray-200 text-gray-700"
+                                    }`}>
+                                    {page}
                                 </button>
-                            </div>
-                        
+                            );
+                        })}
+
+                        <button
+                            onClick={nextPage}
+                            disabled={currentPage === totalPages}
+                            className="px-3 py-1 text-gray-700 rounded disabled:opacity-50">
+                            <FaGreaterThan />
+                        </button>
+                    </div>
                 </>
             )}
         </div>

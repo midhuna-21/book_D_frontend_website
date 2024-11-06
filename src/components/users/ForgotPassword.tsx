@@ -11,7 +11,7 @@ const ForgotPassword: React.FC = () => {
     const [email, setEmail] = useState("");
     const navigate = useNavigate();
 
-    const handleSubmitEmail = (
+    const handleSubmitEmail = async(
         e: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
         e.preventDefault();
@@ -21,41 +21,41 @@ const ForgotPassword: React.FC = () => {
             toast.error(validationResult);
             return;
         }
-        axiosUser
-            .post("/check-email", {
+        try{
+        const response = await axiosUser
+            .post("/send-otp/password-reset", {
                 email: email,
             })
-            .then(function (response) {
+          
                 toast.success("Email sent successfully.Check your email.");
-                navigate("/otp-verification", {
+                navigate("/verify-otp", {
                     state: {
                         response: response.data.isValidEmail,
                     },
                     replace: true,
                 });
                 window.history.replaceState(null, "");
-            })
-            .catch(function (error) {
+            }catch(error:any) {
                 if (error.response && error.response.status === 401) {
                     toast.error(error.response.data.message);
                 } else {
                     toast.error("An error occured try again later");
                 }
-            });
+            }
     };
 
     useEffect(() => {
         const params = new URLSearchParams(location.search);
         if (params.get("access") !== "true") {
             navigate("/login", { replace: true });
-        } 
+        }
     }, [location, navigate]);
     return (
-    <div className="forgot flex items-center justify-center min-h-screen px-4 sm:px-6">
-        <div className="border-2 border-gray-300 rounded-lg relative flex items-center justify-center max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl w-full">
-            <div
-                style={{ height: "500px", width: "100%" }}
-                className="p-6 sm:p-8 md:p-10 lg:p-12 bg-white bg-opacity-40 border border-gray-300 rounded w-full">
+        <div className="forgot flex items-center justify-center min-h-screen px-4 sm:px-6">
+            <div className="border-2 border-gray-300 rounded-lg relative flex items-center justify-center max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl w-full">
+                <div
+                    style={{ height: "500px", width: "100%" }}
+                    className="p-6 sm:p-8 md:p-10 lg:p-12 bg-white bg-opacity-40 border border-gray-300 rounded w-full">
                     <div className="flex items-center mb-5 ">
                         <img
                             src={sitelogo}

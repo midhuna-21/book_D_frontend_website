@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../utils/ReduxStore/store/store";
 import { userAxiosInstance } from "../../utils/api/userAxiosInstance";
 import { useSocket } from "../../utils/context/SocketProvider";
+import {toast} from 'sonner';
 
 interface Receiver {
     chatRoomId: string;
@@ -33,7 +34,6 @@ const Message: React.FC<MessageProps> = ({ selectedUser }) => {
 
     useEffect(() => {
         if (socket) {
-        
             socket.on("receive-message", (message) => {
                 setMessages((prevMessages) => [...prevMessages, message]);
             });
@@ -67,14 +67,19 @@ const Message: React.FC<MessageProps> = ({ selectedUser }) => {
             );
 
             if (response.status === 200) {
-                socket?.emit("send-message", data); 
-                setMessages((prevMessages) => [...prevMessages, data]); 
+                socket?.emit("send-message", data);
+                setMessages((prevMessages) => [...prevMessages, data]);
                 setMessageText("");
             } else {
                 console.error("Failed to send message");
             }
-        } catch (error) {
-            console.error("Error sending message:", error);
+        } catch (error:any) {
+            if (error.response && error.response.status === 403) {
+                toast.error(error.response.data.message);
+            } else {
+                toast.error("An error occurred while sending messages, please try again later");
+                console.error("Error sending message:", error);
+            }
         }
     };
 
@@ -84,8 +89,13 @@ const Message: React.FC<MessageProps> = ({ selectedUser }) => {
                 `/messages/${chatRoomId}`
             );
             setMessages(response.data.messages || []);
-        } catch (error) {
-            console.log("Error fetching messages:", error);
+        } catch (error:any) {
+            if (error.response && error.response.status === 403) {
+                toast.error(error.response.data.message);
+            } else {
+                toast.error("An error occurred while fetching messages, please try again later");
+                console.log("Error fetching messages:", error);
+            }
         }
     };
 

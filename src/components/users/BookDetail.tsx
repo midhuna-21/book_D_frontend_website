@@ -4,6 +4,7 @@ import { userAxiosInstance } from "../../utils/api/userAxiosInstance";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Swal from "sweetalert2";
 import { toast } from "sonner";
 import { FaBookOpen } from "react-icons/fa";
 import {
@@ -16,7 +17,7 @@ import { io, Socket } from "socket.io-client";
 import config from "../../config/config";
 import { useLocation, useNavigate } from "react-router-dom";
 
-const BookDetail: React.FC = () => {
+const BookDetailPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const userInfo = useSelector((state: any) => state.user.userInfo?.user);
     const userId = userInfo?._id || "";
@@ -28,7 +29,7 @@ const BookDetail: React.FC = () => {
     const [lender, setLender] = useState<any>(null);
     const [requested, setRequested] = useState(false);
     const [socket, setSocket] = useState<Socket | null>(null);
-    const [quantity, setQuantity] = useState<number>(1);
+    const [quantity, setQuantity] = useState<number>(0);
     const location = useLocation();
     const myBook = location?.state?.from;
     const [isExpanded, setIsExpanded] = useState(false);
@@ -84,48 +85,61 @@ const BookDetail: React.FC = () => {
         }
     };
 
-    useEffect(() => {
-        const fetchBook = async () => {
-            try {
-                const response = await userAxiosInstance.get(`/book/${id}`);
-
-                setBook(response.data.book);
-                setTotalDays(response.data.book.minDays);
+    const fetchBook = async () => {
+        try {
+            const response = await userAxiosInstance.get(
+                `/books/details/${id}`
+            );
+            const bookData = response.data?.book;
+            if (bookData && Object.keys(bookData).length > 0) { 
+                setBook(bookData);
+                setTotalDays(bookData.minDays);
                 setLender(response.data.lender);
-            } catch (error) {
-                console.error("Error fetching book details", error);
+                setQuantity(bookData.quantity);
+            } else {
+                console.log("Book data is empty or unavailable.");
+                toast.error("Book details are unavailable.");
             }
-        };
-
-        fetchBook();
-    }, [id, userId]);
-
+        } catch (error:any) {
+            if (error.response && error.response.status === 403) {
+                toast.error(error.response.data.message);
+            } else {
+                toast.error("An error occurred while getching book details, please try again later");
+            }
+        }
+    };
     useEffect(() => {
-        const fetchRequest = async () => {
-            try {
-                await userAxiosInstance
-                    .get(`/check-request/${userId}/${bookId}`)
-                    .then((response) => {
-                        if (response.status == 200) {
-                            const isRequested = response?.data?.isRequested;
+        // const fetchRequest = async () => {
+        //     try {
+        //         await userAxiosInstance
+        //             .get(`/books/rent-requests/acceptance/${userId}/${bookId}`)
+        //             .then((response) => {
+        //                 if (response.status == 200) {
+        //                     console.log(response.data,'response')
+        //                     const isAccepted = response?.data?.isAccepted;
 
-                            if (isRequested.types == "requested") {
-                                setRequested(true);
-                            }
-                        }
-                    })
-                    .catch((error: any) => {
-                        console.log(
-                            "Error fetching notification details",
-                            error
-                        );
-                    });
-            } catch (error) {
-                console.log("Error fetching notification details", error);
-            }
-        };
-        fetchRequest();
-    }, [bookId, userId]);
+        //                     if (isAccepted.types == "requested") {
+        //                         setRequested(true);
+        //                     }
+        //                 }
+        //             })
+        //             .catch((error: any) => {
+        //                 console.log(
+        //                     "Error fetching notification details",
+        //                     error
+        //                 );
+        //             });
+        //     } catch (error:any) {
+        //         if (error.response && error.response.status === 403) {
+        //             toast.error(error.response.data.message);
+        //         } else {
+        //             toast.error("An error occurred, please try again later");
+        //         }
+        //     }
+        // };
+        // fetchRequest();
+        fetchBook();
+    }, [id, userId,bookId]);
 
     const currentUserGetLocation = () => {
         return new Promise<{ latitude: number; longitude: number }>(
@@ -180,7 +194,7 @@ const BookDetail: React.FC = () => {
             };
 
             const distanceResponse = await userAxiosInstance.get(
-                "/google-distance",
+                "/google/locations/distance",
                 {
                     params: calculateDistance,
                     withCredentials: true,
@@ -209,7 +223,7 @@ const BookDetail: React.FC = () => {
                         types: "requested",
                     };
                     const cartCreateResponse = await userAxiosInstance.post(
-                        "/create-cart-item",
+                        "/cart/add",
                         cartData
                     );
 
@@ -224,11 +238,10 @@ const BookDetail: React.FC = () => {
                         };
                         const notificationResponse =
                             await userAxiosInstance.post(
-                                "/notification",
+                                "/notifications/send-notification",
                                 notificationData
                             );
                         if (notificationResponse.status === 200) {
-                            setRequested(true);
                             if (socket) {
                                 socket.emit("send-notification", {
                                     receiverId: lender._id,
@@ -237,6 +250,14 @@ const BookDetail: React.FC = () => {
                                             ?.notification,
                                 });
                             }
+                            Swal.fire({
+                                icon: "success",
+                                title: "Request Sent",
+                                text: "Your request has been sent to the lender. Please wait for acceptance.",
+                                confirmButtonText: "OK",
+                            });
+
+                       
                         } else {
                             console.error(
                                 "Failed to send notification:",
@@ -256,15 +277,20 @@ const BookDetail: React.FC = () => {
                     distanceResponse.statusText
                 );
             }
-        } catch (error) {
-            console.error("Error at Internal server:", error);
+        } catch (error:any) {
+            if (error.response && error.response.status === 403) {
+                toast.error(error.response.data.message);
+            } else {
+                toast.error("An error occurred, please try again later");
+            }
         }
     };
 
     const navigate = useNavigate();
     const handleEditClick = async (bookId: string) => {
-        navigate(`/home/edit-book/${bookId}`);
+        navigate(`/books/update/${bookId}`);
     };
+  
     if (!book) return <div>Loading...</div>;
 
     return (
@@ -320,22 +346,30 @@ const BookDetail: React.FC = () => {
                                 Edit
                             </button>
                         ) : (
+                            <div className="items-center justify-center flex flex-col"> 
                             <button
                                 onClick={handleRequest}
-                                className={`mt-8 w-2/3 md:w-2/3 items-center ${
-                                    requested
+                                className={`mt-8 w-2/3 md:w-full  ${
+                                    book.quantity===0 ||  requested
                                         ? "bg-gray-400 cursor-not-allowed"
                                         : "bg-gradient-to-r from-teal-900 via-zinc-700 to-gray-600"
                                 } font-mono text-white px-6 py-3 rounded-lg shadow-md transition duration-300 ${
-                                    requested
+                                    book.quantity===0 || requested
                                         ? ""
                                         : "hover:from-teal-900 hover:via-zinc-500 hover:to-gray-300"
                                 }`}
-                                disabled={requested}>
+                                disabled={book.quantity === 0 || requested}>
                                 {requested ? "Requested" : "Request"}
                             </button>
+                            {book.quantity===0 && (
+                    <p className="mt-2 text-red-500 text-sm">
+                        The book is not available now.
+                    </p>
+                )}
+                            </div>
                         )}
                     </div>
+                    
                 </div>
                 <div className="w-full md:w-2/3 max-w-md mx-auto p-6 bg-white rounded-lg">
                     <h1 className="text-2xl md:text-3xl font-serif text-gray-800 mb-4">
@@ -456,10 +490,12 @@ const BookDetail: React.FC = () => {
                                 <div className="flex items-center space-x-2">
                                     <button
                                         onClick={decrementTotalDays}
-                                        className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:bg-gray-100"
+                                        className={`px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:bg-gray-100 ${
+                                            requested || quantity==0 ? "cursor-not-allowed" : ""
+                                        }`}
                                         disabled={
                                             requested ||
-                                            totalDays <= (book?.minDays || 1)
+                                            totalDays <= (book?.minDays || 1) || quantity==0
                                         }>
                                         -
                                     </button>
@@ -468,10 +504,12 @@ const BookDetail: React.FC = () => {
                                     </span>
                                     <button
                                         onClick={incrementTotalDays}
-                                        className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:bg-gray-100"
-                                        disabled={
+                                        className={`px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:bg-gray-100 ${
+                                            requested || quantity === 0 ? "cursor-not-allowed" : ""
+                                        }`}
+                                          disabled={
                                             requested ||
-                                            totalDays >= (book?.maxDays || 1)
+                                            totalDays >= (book?.maxDays || 1) || quantity==0
                                         }>
                                         +
                                     </button>
@@ -490,8 +528,10 @@ const BookDetail: React.FC = () => {
                             <div className="flex items-center space-x-2">
                                 <button
                                     onClick={decrementQuantity}
-                                    className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:bg-gray-100"
-                                    disabled={requested || quantity <= 1}>
+                                    className={`px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:bg-gray-100 ${
+                                        requested || quantity === 0 ? "cursor-not-allowed" : ""
+                                    }`}
+                                     disabled={requested || quantity==0}>
                                     -
                                 </button>
                                 <span className="border border-gray-300 rounded px-3 py-1 bg-white text-center">
@@ -499,11 +539,10 @@ const BookDetail: React.FC = () => {
                                 </span>
                                 <button
                                     onClick={incrementQuantity}
-                                    className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:bg-gray-100"
-                                    disabled={
-                                        requested ||
-                                        quantity >= (book?.quantity || 1)
-                                    }>
+                                    className={`px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:bg-gray-100 ${
+                                        requested || quantity === 0 ? "cursor-not-allowed" : ""
+                                    }`}
+                                     disabled={requested || quantity==0}>
                                     +
                                 </button>
                             </div>
@@ -535,4 +574,4 @@ const BookDetail: React.FC = () => {
     );
 };
 
-export default BookDetail;
+export default BookDetailPage;

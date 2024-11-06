@@ -49,7 +49,7 @@ interface Order {
     statusUpdateRenterDate: Date;
 }
 
-const LendList: React.FC = () => {
+const LendedBooks: React.FC = () => {
     const [selectedOption, setSelectedOption] = useState("all");
     const options = [
         "all",
@@ -186,7 +186,7 @@ const LendList: React.FC = () => {
     const fetchOrders = async () => {
         try {
             const response = await userAxiosInstance.get(
-                `/lend-list/${userId}`
+                `/books/lent/${userId}`
             );
             setOrders(response.data.orders);
             setLoading(false);
@@ -225,16 +225,21 @@ const LendList: React.FC = () => {
     const confirmStatusUpdate = async () => {
         if (selectedOrderId === null || isBookHandover === null) return;
         try {
-            const response = await userAxiosInstance.post(
-                `/update-order-status-from-lender/${selectedOrderId}`,
+            await userAxiosInstance.post(
+                `/books/lent-orders/lender/status/${selectedOrderId}`,
                 {
                     isBookHandover: isBookHandover,
                 }
             );
             fetchOrders();
             setShowModal(false);
-        } catch (error) {
-            console.error("Error updating status:", error);
+        } catch (error:any) {
+            if (error.response && error.response.status === 403) {
+                toast.error(error.response.data.message);
+            } else {
+                toast.error("An error occurred, please try again later");
+                console.error("Error updating status:", error);
+            }
         }
     };
 
@@ -624,4 +629,4 @@ const LendList: React.FC = () => {
     );
 };
 
-export default LendList;
+export default LendedBooks;

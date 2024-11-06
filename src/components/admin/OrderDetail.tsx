@@ -57,7 +57,7 @@ const OrderDetail = () => {
         const fetchOrderDetails = async () => {
             try {
                 const response = await adminAxiosInstance.get(
-                    `/order-detail/${orderId}`
+                    `/books/rental-order/${orderId}`
                 );
                 setOrder(response?.data);
             } catch (error) {
@@ -90,7 +90,7 @@ const OrderDetail = () => {
         <div className="bg-white shadow-md rounded p-4 h-full">
             <h1 className="text-xl font-serif mb-6 text-center text-black mt-12">
                 Order Details
-            </h1>   
+            </h1>
 
             <div className="bg-white  rounded-lg p-8 max-w-5xl mx-auto">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -144,11 +144,10 @@ const OrderDetail = () => {
                                         {order?.bookId?.address?.pincode}
                                     </p>
                                 ) : (
-                                    <p className="text-gray-600">{" "}</p>
+                                    <p className="text-gray-600"> </p>
                                 )}
                             </div>
                         </div>
-                       
                     </div>
 
                     <div>

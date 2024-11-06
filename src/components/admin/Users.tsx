@@ -4,6 +4,8 @@ import { toast } from "sonner";
 import userLogo from "../../assets/userLogo.png";
 import { AiOutlineSearch } from "react-icons/ai";
 import { FaGreaterThan, FaLessThan } from "react-icons/fa";
+import {useDispatch} from 'react-redux';
+import { addUser } from '../../utils/ReduxStore/slice/userSlice'
 
 interface User {
     _id: string;
@@ -20,12 +22,11 @@ const Users: React.FC = () => {
     const [users, setUsers] = useState<User[]>([]);
     const [viewMode, setViewMode] = useState<string>("all");
     const [searchKey, setSearchKey] = useState<string>("");
-    const [sortByDate, setSortByDate] = useState<boolean>(false);
-
+    const dispatch = useDispatch();
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const response = await adminAxiosInstance.get("/get-users");
+                const response = await adminAxiosInstance.get("/users");
 
                 setUsers(response.data);
             } catch (err: any) {
@@ -41,10 +42,6 @@ const Users: React.FC = () => {
 
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchKey(event.target.value);
-    };
-
-    const handleSortByDate = () => {
-        setSortByDate((prevSortByDate) => !prevSortByDate);
     };
 
     const filteredUsers = () => {
@@ -64,14 +61,6 @@ const Users: React.FC = () => {
         if (searchKey) {
             filtered = filtered.filter((user) =>
                 user.name.toLowerCase().includes(searchKey.toLowerCase())
-            );
-        }
-
-        if (sortByDate) {
-            filtered = filtered.sort(
-                (a, b) =>
-                    new Date(b.createdAt).getTime() -
-                    new Date(a.createdAt).getTime()
             );
         }
 
@@ -123,10 +112,11 @@ const Users: React.FC = () => {
         (_, i) => visiblePageStart + i
     );
 
-    const handleBlock = (userId: string) => {
-        adminAxiosInstance
-            .post("/block-user", { _id: userId })
-            .then(() => {
+    const handleBlock = async (userId: string) => {
+        try{ 
+        const response = await adminAxiosInstance
+            .post("/user/block", { _id: userId })
+                const user = response.data;
                 setUsers((prevUsers) => {
                     const newUsers = prevUsers.map((user) =>
                         user._id === userId
@@ -135,36 +125,35 @@ const Users: React.FC = () => {
                     );
                     return newUsers;
                 });
-            })
-            .catch((error) => {
+            }catch(error:any) {
                 if (error.response && error.response.status === 400) {
                     toast.error(error.response.data.message);
                 } else {
                     toast.error("An error occurred, try again later");
                 }
-            });
+            }
     };
 
-    const handleUnblock = (userId: string) => {
-        adminAxiosInstance
-            .post("/unblock-user", { _id: userId })
-            .then((response) => {
-                const updatedUser = response.data;
+    const handleUnblock = async (userId: string) => {
+       try{
+        const response =  await adminAxiosInstance
+            .post("/user/unblock", { _id: userId })
+                const user = response.data;
                 setUsers((prevUsers) =>
                     prevUsers.map((user) =>
                         user._id === userId
-                            ? { ...user, isBlocked: updatedUser.isBlocked }
+                            ? { ...user, isBlocked: false }
                             : user
                     )
                 );
-            })
-            .catch((error: any) => {
+            }
+            catch(error: any) {
                 if (error.response && error.response.status === 400) {
                     toast.error(error.response.data.message);
                 } else {
                     toast.error("An error occurred, try again later");
                 }
-            });
+            }
     };
 
     if (users.length === 0) {
@@ -216,92 +205,86 @@ const Users: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {currentUsers.length > 0 ? (
-                currentUsers.map((user) => (
-                    <div
-                        key={user._id}
-                        className="bg-gray-100 hover:shadow-lg hover:rounded-lg hover:bg-white p-4 rounded flex items-start cursor-pointer min-h-[120px]">
-                        <img
-                            src={user.image || userLogo}
-                            alt={user.name}
-                            className="rounded-full w-16 h-16 mr-4 object-cover flex-shrink-0"
-                        />
-                        <div className="flex flex-col justify-center">
-                            <h2 className="font-bold text-lg">{user.name}</h2>
-                            <p className="text-sm text-gray-600 truncate max-w-[150px]">
-                                {user.email}
-                            </p>
-                            <div>
-                                <p
-                                    className={`font-semibold text-sm mt-2 inline-block ${
-                                        user.isBlocked
-                                            ? "text-red-500 border border-red-400 rounded-md px-2 py-0.5"
-                                            : "text-green-500 border border-green-400 rounded-md px-2 py-0.5"
-                                    }`}>
-                                    {user.isBlocked ? "Blocked" : "Active"}
+                {currentUsers.length > 0 ? (
+                    currentUsers.map((user) => (
+                        <div
+                            key={user._id}
+                            className="bg-gray-100 hover:shadow-lg hover:rounded-lg hover:bg-white p-4 rounded flex items-start cursor-pointer min-h-[120px]">
+                            <img
+                                src={user.image || userLogo}
+                                alt={user.name}
+                                className="rounded-full w-16 h-16 mr-4 object-cover flex-shrink-0"
+                            />
+                            <div className="flex flex-col justify-center">
+                                <h2 className="font-bold text-lg">
+                                    {user.name}
+                                </h2>
+                                <p className="text-sm text-gray-600 truncate max-w-[150px]">
+                                    {user.email}
                                 </p>
-                                <button
-                                                    onClick={() =>
-                                                        user.isBlocked
-                                                            ? handleUnblock(
-                                                                  user._id
-                                                              )
-                                                            : handleBlock(
-                                                                  user._id
-                                                              )
-                                                    }
-                                                    className={`px-2 py-1 w-20 h-8 ml-4  rounded ${
-                                                        user.isBlocked
-                                                            ? "bg-red-500"
-                                                            : "bg-teal-800"
-                                                    } text-white`}>
-                                                    {user.isBlocked
-                                                        ? "Unblock"
-                                                        : "Block"}
-                                                </button>
+                                <div>
+                                    <p
+                                        className={`font-semibold text-sm mt-2 inline-block ${
+                                            user.isBlocked
+                                                ? "text-red-500 border border-red-400 rounded-md px-2 py-0.5"
+                                                : "text-green-500 border border-green-400 rounded-md px-2 py-0.5"
+                                        }`}>
+                                        {user.isBlocked ? "Blocked" : "Active"}
+                                    </p>
+                                    <button
+                                        onClick={() =>
+                                            user.isBlocked
+                                                ? handleUnblock(user._id)
+                                                : handleBlock(user._id)
+                                        }
+                                        className={`px-2 py-1 w-20 h-8 ml-4  rounded ${
+                                            user.isBlocked
+                                                ? "bg-red-500"
+                                                : "bg-teal-800"
+                                        } text-white`}>
+                                        {user.isBlocked ? "Unblock" : "Block"}
+                                    </button>
+                                </div>
                             </div>
-                            
                         </div>
+                    ))
+                ) : (
+                    <div className="col-span-full flex justify-center items-center h-48">
+                        <p className="text-gray-500 text-lg">Empty</p>
                     </div>
-                ))
-            ) : (
-                <div className="col-span-full flex justify-center items-center h-48">
-                    <p className="text-gray-500 text-lg">Empty</p>
-                </div>
-            )}
+                )}
             </div>
             {currentUsers.length && (
-                     <div
-                     className="px-12 flex  items-center  justify-center"
-                     style={{ height: "200px" }}>
-                     <button
-                         onClick={prevPage}
-                         disabled={currentPage === 1}
-                         className="px-3 py-1 text-gray-700 rounded disabled:opacity-50">
-                         <FaLessThan />
-                     </button>
-     
-                     {pageNumbers.map((page) => (
-                         <button
-                             key={page}
-                             onClick={() => goToPage(page)}
-                             className={`px-3 py-1 mx-1 rounded ${
-                                 currentPage === page
-                                     ? "bg-cyan-800 text-white"
-                                     : "bg-gray-200 text-gray-700"
-                             }`}>
-                             {page}
-                         </button>
-                     ))}
-                     <button
-                         onClick={nextPage}
-                         disabled={currentPage === totalPages}
-                         className="px-3 py-1 text-gray-700 rounded disabled:opacity-50">
-                         <FaGreaterThan />
-                     </button>
-                 </div>
+                <div
+                    className="px-12 flex  items-center  justify-center"
+                    style={{ height: "200px" }}>
+                    <button
+                        onClick={prevPage}
+                        disabled={currentPage === 1}
+                        className="px-3 py-1 text-gray-700 rounded disabled:opacity-50">
+                        <FaLessThan />
+                    </button>
+
+                    {pageNumbers.map((page) => (
+                        <button
+                            key={page}
+                            onClick={() => goToPage(page)}
+                            className={`px-3 py-1 mx-1 rounded ${
+                                currentPage === page
+                                    ? "bg-cyan-800 text-white"
+                                    : "bg-gray-200 text-gray-700"
+                            }`}>
+                            {page}
+                        </button>
+                    ))}
+                    <button
+                        onClick={nextPage}
+                        disabled={currentPage === totalPages}
+                        className="px-3 py-1 text-gray-700 rounded disabled:opacity-50">
+                        <FaGreaterThan />
+                    </button>
+                </div>
             )}
-       
         </div>
     );
 };
