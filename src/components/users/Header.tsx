@@ -157,12 +157,15 @@ const Header: React.FC = () => {
                     !visible && "transform -translate-y-full"
                 }`}
                 style={{ height: "80px" }}>
-                <div className="flex items-center ml-4">
+                     <Link to="/home">
+                <div
+                 className="flex items-center ml-4">
                     <img src={logo} alt="Logo" className="h-12" />
                     <span className="font-serif ml-2 text-emerald-800 text-xl">
                         Book.D
                     </span>
                 </div>
+                </Link>
 
                 <div className="flex items-center md:hidden mr-4">
                     <button onClick={toggleMenu} className="focus:outline-none">
@@ -229,7 +232,7 @@ const Header: React.FC = () => {
                                 <FaBook className="text-gray-800 text-xl" />
                             </div>
                             <div className="absolute top-8 bg-gray-800 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-opacity">
-                                RentBook
+                                LendBook
                             </div>
                         </div>
                     </Link>

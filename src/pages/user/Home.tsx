@@ -16,8 +16,6 @@ import LendOrderDetailPage from '../../components/users/DetailPage';
 import RentalPaymentDetails from "../../components/users/LenderDetails";
 import PaymentSuccess from "../../components/users/Successfull";
 import Orders from "../../components/users/Orders";
-import LendedBooks from "../../components/users/LendList";
-import RentedBooks from "../../components/users/RentList";
 import EditBookForm from "../../components/users/EditBookForm";
 import LendBookForm from "../../components/users/AddBookForm";
 import Footer from "../../components/users/Footer";

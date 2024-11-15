@@ -382,7 +382,7 @@ const LendBookForm: React.FC = () => {
         <div className="flex flex-col items-center justify-center py-24">
             <div className="mb-12 text-center">
                 <h1 className="text-23xl font-bold text-gray-800 sm:text-2xl">
-                    Rent Out Your Books
+                    Lend Out Your Books
                 </h1>
                 <p className="text-sm text-gray-600 mt-2 sm:text-base md:p-1 p-3">
                     Share your favorite reads and let others enjoy them while
