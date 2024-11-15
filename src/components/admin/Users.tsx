@@ -173,7 +173,7 @@ const Users: React.FC = () => {
                         className="pl-10 pr-4 py-2 border rounded w-full"
                     />
                 </div>
-                <div className="flex space-x-2 pr-12">
+                <div className="flex space-x-2 pr-12 ">
                     <button
                         onClick={() => handleViewModeChange("all")}
                         className={`px-4 py-2 rounded-md text-sm ${
@@ -203,7 +203,6 @@ const Users: React.FC = () => {
                     </button>
                 </div>
             </div>
-
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {currentUsers.length > 0 ? (
                     currentUsers.map((user) => (
@@ -224,7 +223,7 @@ const Users: React.FC = () => {
                                 </p>
                                 <div>
                                     <p
-                                        className={`font-semibold text-sm mt-2 inline-block ${
+                                        className={`font-semibold text-sm  inline-block ${
                                             user.isBlocked
                                                 ? "text-red-500 border border-red-400 rounded-md px-2 py-0.5"
                                                 : "text-green-500 border border-green-400 rounded-md px-2 py-0.5"

@@ -20,12 +20,10 @@ interface IWallet {
     transactions: ITransaction[];
 }
 
-interface IBooks {
-    bookTitle: string;
-}
+
 interface IOrder {
     _id: string;
-    bookId: IBooks;
+    bookTitle: string;
 }
 const WalletTransactions: React.FC = () => {
     const [wallet, setWallet] = useState<IWallet | null>(null);
@@ -44,6 +42,7 @@ const WalletTransactions: React.FC = () => {
                     "/wallet/transactions"
                 );
                 if (response?.data?.wallet) {
+                    console.log(response,'responsee wallet')
                     setBalance(response?.data?.wallet?.balance);
                     setWallet(response.data.wallet);
                 } else {
@@ -75,7 +74,7 @@ const WalletTransactions: React.FC = () => {
         indexOfFirstTransaction,
         indexOfLastTransaction
     );
-    console.log(currentTransactions,'currentTransactions')
+    // console.log(currentTransactions,'currentTransactions')
 
     const prevPage = () => {
         if (currentPage > 1) setCurrentPage(currentPage - 1);
@@ -90,11 +89,15 @@ const WalletTransactions: React.FC = () => {
     };
 
     if (!wallet || !wallet.transactions) {
-        return <div>Loading wallet transactions...</div>;
+        return (
+            <div className="flex items-center justify-center h-screen">
+                <p className="text-gray-600 text-lg font-semibold">No wallet transactions</p>
+            </div>
+        );
     }
 
     return (
-        <div className="flex flex-col justify-center items-center py-4 bg-gray-100">
+        <div className="flex flex-col justify-center items-center py-24 bg-gray-100 min-h-screen">
             <div className="mb-6 flex items-center justify-center flex-col">
                 <h1 className="text-2xl font-bold text-gray-700">Wallet</h1>
                 <p className="text-sm text-gray-600 mt-2">
@@ -113,7 +116,7 @@ const WalletTransactions: React.FC = () => {
 
             {wallet && (
                 <>
-                    <div className="w-full md:w-3/4 p-3">
+                    <div className="w-full md:w-3/4 p-3 min-h-[60vh]">
                         {currentTransactions.filter(
                             (transaction) => transaction.total_amount > 0
                         ).length > 0 ? (
@@ -154,9 +157,7 @@ const WalletTransactions: React.FC = () => {
                                                     <td className="py-4 font-medium text-gray-700 text-sm text-left">
                                                        
                                                         {
-                                                            transaction.orderId
-                                                                ?.bookId
-                                                                ?.bookTitle
+                                                            transaction.orderId?.bookTitle
                                                         }
                                                     </td>
                                                     <td className="px- py- font-medium text-gray-700 text-sm text-left">

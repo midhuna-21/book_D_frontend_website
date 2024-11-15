@@ -9,6 +9,10 @@ import BookDetailPage from "../../components/users/BookDetail";
 import UserNotifications from "../../components/users/Notifications";
 import UserChat from "../../components/users/Chat";
 import UserLendBooks from "../../components/users/MyBooks";
+import Rent from "../../components/users/Rent";
+import Lend from "../../components/users/Lend";
+import OrderDetail from '../../components/users/OrderDetail';
+import LendOrderDetailPage from '../../components/users/DetailPage';
 import RentalPaymentDetails from "../../components/users/LenderDetails";
 import PaymentSuccess from "../../components/users/Successfull";
 import Orders from "../../components/users/Orders";
@@ -22,18 +26,16 @@ import { ProfileProtectRoute } from "../../routes/ProfilePrivateRoute";
 
 const Home: React.FC = () => {
     return (
-        <div className="flex flex-col min-h-screen">
+        <>
             <Header />
-            <div className="flex-grow pt-16">
-                <div className="container mx-auto">
-                    <Routes>
-                        <Route path="/home" element={<CenterOfHome />} />
-                        <Route path="/*" element={<NestedRoutes />} />
-                    </Routes>
-                    <Footer />
-                </div>
-            </div>
-        </div>
+            <div className="flex flex-col">
+                <Routes>
+                    <Route path="/home" element={<CenterOfHome />} />
+                    <Route path="/*" element={<NestedRoutes />} />
+                </Routes>
+            </div>  
+            <Footer />
+        </>
     );
 };
 
@@ -108,22 +110,6 @@ const NestedRoutes: React.FC = () => {
                     }
                 />
                 <Route
-                    path="/:username/books/lend"
-                    element={
-                        <PrivateRoute>
-                              <ProfileProtectRoute children={LendedBooks}/>
-                        </PrivateRoute>
-                    }
-                />
-                <Route
-                    path=":username/books/rent"
-                    element={
-                        <PrivateRoute>
-                              <ProfileProtectRoute children={RentedBooks} />
-                        </PrivateRoute>
-                    }
-                />
-                <Route
                     path="/books/update/:bookId"
                     element={
                         <PrivateRoute>
@@ -156,6 +142,38 @@ const NestedRoutes: React.FC = () => {
                     element={
                         <PrivateRoute>
                             <ProfileProtectRoute children={UserLendBooks} />
+                        </PrivateRoute>
+                    }
+                />
+                <Route
+                    path="/:username/books/lend"
+                    element={
+                        <PrivateRoute>
+                            <ProfileProtectRoute children={Lend} />
+                        </PrivateRoute>
+                    }
+                />
+                <Route
+                    path="/:username/books/rent"
+                    element={
+                        <PrivateRoute>
+                            <ProfileProtectRoute children={Rent} />
+                        </PrivateRoute>
+                    }
+                />
+                 <Route
+                    path="/:username/books/rent/order-detail/:orderId"
+                    element={
+                        <PrivateRoute>
+                            <ProfileProtectRoute children={OrderDetail} />
+                        </PrivateRoute>
+                    }
+                />
+                   <Route
+                    path="/:username/books/lend/order-detail/:orderId"
+                    element={
+                        <PrivateRoute>
+                            <ProfileProtectRoute children={LendOrderDetailPage} />
                         </PrivateRoute>
                     }
                 />

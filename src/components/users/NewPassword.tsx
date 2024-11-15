@@ -15,7 +15,6 @@ const NewPassword: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const email = location.state?.response?.email;
-
     const togglePasswordVisibility = () => {
         setIsPasswordVisible(!isPasswordVisible);
     };

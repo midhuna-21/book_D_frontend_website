@@ -25,11 +25,8 @@ interface RentalOrder {
     cartId: Cart;
     bookId: Book;
     name: string;
-    bookStatusFromRenter: string;
-    bookStatusFromLender: string;
-    rentalDate: string;
-    returnDate: string;
-    statusUpdateRenterDate: string;
+    bookStatus: string;
+    checkoutDate: string;
 }
 
 const RentalOrdersList: React.FC = () => {
@@ -74,30 +71,30 @@ const RentalOrdersList: React.FC = () => {
             case "not_returned":
                 filtered = filtered.filter(
                     (order) =>
-                        order.bookStatusFromLender &&
-                        order.bookStatusFromRenter === "not_returned"
+                        order.bookStatus &&
+                        order.bookStatus === "not_returned"
                 );
                 break;
             case "completed":
                 filtered = filtered.filter(
                     (order) =>
-                        order.bookStatusFromLender &&
-                        order.bookStatusFromRenter === "completed"
+                        order.bookStatus &&
+                        order.bookStatus === "completed"
                 );
                 break;
-            case "not_reached":
+            case "not_picked_up":
                 filtered = filtered.filter(
                     (order) =>
-                        order.bookStatusFromLender === "not_reached" ||
-                        order.bookStatusFromRenter === "not_reached"
+                        order.bookStatus === "not_picked_up" ||
+                        order.bookStatus === "not_picked_up"
                 );
                 break;
 
             case "overdue":
                 filtered = filtered.filter(
                     (order) =>
-                        order.bookStatusFromLender &&
-                        order.bookStatusFromRenter === "overdue"
+                        order.bookStatus &&
+                        order.bookStatus === "overdue"
                 );
                 break;
             default:
@@ -147,6 +144,15 @@ const RentalOrdersList: React.FC = () => {
                         All Orders
                     </button>
                     <button
+                        onClick={() => handleViewModeChange("not_picked_up")}
+                        className={`px-4 py-2 rounded ${
+                            viewMode === "not_picked_up"
+                                ? "bg-yellow-600 text-white"
+                                : "bg-gray-200"
+                        } mr-2`}>
+                        Not Picked Yet
+                    </button>
+                    <button
                         onClick={() => handleViewModeChange("not_returned")}
                         className={`px-4 py-2 rounded ${
                             viewMode === "not_returned"
@@ -165,13 +171,13 @@ const RentalOrdersList: React.FC = () => {
                         Completed Orders
                     </button>
                     <button
-                        onClick={() => handleViewModeChange("not_reached")}
+                        onClick={() => handleViewModeChange("overdue")}
                         className={`px-4 py-2 rounded ${
-                            viewMode === "not_reached"
+                            viewMode === "overdue"
                                 ? "bg-yellow-800 text-white"
                                 : "bg-gray-200"
                         } mr-2`}>
-                        Pending Orders
+                        Overdue
                     </button>
                 </div>
                 <div className="flex space-x-2">
@@ -188,7 +194,7 @@ const RentalOrdersList: React.FC = () => {
                 {filteredOrders().length === 0 ? (
                     <div className="text-gray-500 mb-4 flex items-center justify-center h-full">
                         {viewMode === "completed" && "No orders"}
-                        {viewMode === "not_reached" && "No orders"}
+                        {viewMode === "not_picked_up" && "No orders"}
                     </div>
                 ) : (
                     <div className="table-container">
@@ -201,20 +207,15 @@ const RentalOrdersList: React.FC = () => {
                                     <th className="py-2 px-4 border-b text-center">
                                         Renter
                                     </th>
-                                    <th className="py-2 px-4 border-b text-center">
-                                        Status from Renter
-                                    </th>
+                                    
                                     <th className="py-2 px-4 border-b text-center">
                                         Lender
                                     </th>
                                     <th className="py-2 px-4 border-b text-center">
-                                        Status from Lender
+                                        Status
                                     </th>
                                     <th className="py-2 px-4 border-b text-center">
-                                        Rented Date
-                                    </th>
-                                    <th className="py-2 px-4 border-b text-center">
-                                        Return Date
+                                        Checkout Date
                                     </th>
                                     {/* <th className="py-2 px-4 border-b text-center">
                                         Actions
@@ -230,76 +231,40 @@ const RentalOrdersList: React.FC = () => {
                                         <td className="py-2 px-4 border-b text-black text-center truncate max-w-[150px]">
                                             {order?.userId?.name}
                                         </td>
-                                        <td
-                                            className={`py-2 px-4 border-b text-black text-center truncate max-w-[150px] ${
-                                                order.bookStatusFromRenter ===
-                                                "completed"
-                                                    ? "bg-green-600"
-                                                    : order.bookStatusFromRenter ===
-                                                      "overdue"
-                                                    ? "bg-yellow-600"
-                                                    : order.bookStatusFromRenter ===
-                                                      "not_returned"
-                                                    ? "bg-red-600"
-                                                    : order.bookStatusFromRenter ===
-                                                      "not_reached"
-                                                    ? "bg-blue-600"
-                                                    : order.bookStatusFromRenter ===
-                                                      "cancelled"
-                                                    ? "bg-red-900"
-                                                    : ""
-                                            }`}>
-                                            {" "}
-                                            {order.bookStatusFromRenter}
-                                        </td>
+                                  
                                         <td className="py-2 px-4 border-b text-black text-center truncate max-w-[150px]">
                                             {order?.lenderId?.name}
                                         </td>
 
                                         <td
                                             className={`py-2 px-4 border-b text-black text-center truncate max-w-[150px] ${
-                                                order.bookStatusFromLender ===
+                                                order.bookStatus ===
                                                 "completed"
                                                     ? "bg-green-600"
-                                                    : order.bookStatusFromLender ===
+                                                    : order.bookStatus ===
                                                       "overdue"
                                                     ? "bg-yellow-600"
-                                                    : order.bookStatusFromLender ===
+                                                    : order.bookStatus ===
                                                       "not_returned"
                                                     ? "bg-red-600"
-                                                    : order.bookStatusFromLender ===
-                                                      "not_reached"
+                                                    : order.bookStatus ===
+                                                      "not_picked_up"
                                                     ? "bg-blue-600"
-                                                    : order.bookStatusFromLender ===
+                                                    : order.bookStatus ===
                                                       "cancelled"
                                                     ? "bg-red-900"
                                                     : ""
                                             }`}>
-                                            {order.bookStatusFromLender}
+                                            {order.bookStatus}
                                         </td>
                                         <td className="py-2 px-4 border-b text-black text-center truncate max-w-[150px]">
-                                            {order.statusUpdateRenterDate
+                                            {order.checkoutDate
                                                 ? new Date(
-                                                      order.statusUpdateRenterDate
+                                                      order.checkoutDate
                                                   ).toLocaleDateString()
-                                                : " "}
+                                                : "Not yet"}
                                         </td>
-                                        <td className="py-2 px-4 border-b text-black text-center truncate max-w-[150px]">
-                                            {order.statusUpdateRenterDate &&
-                                            order?.cartId?.totalDays
-                                                ? new Date(
-                                                      new Date(
-                                                          order.statusUpdateRenterDate
-                                                      ).getTime() +
-                                                          order?.cartId
-                                                              ?.totalDays *
-                                                              24 *
-                                                              60 *
-                                                              60 *
-                                                              1000
-                                                  ).toLocaleDateString()
-                                                : " "}
-                                        </td>
+                                       
 
                                         <td className="py-2 px-4 border-b text-black text-center">
                                             <button

@@ -21,6 +21,7 @@ interface Cart {
 }
 interface Order {
     _id: string;
+    bookTitle:string;
     bookId: {
         bookTitle: string;
         rentalFee: number;
@@ -44,13 +45,14 @@ interface Order {
     bookStatusFromLender: string;
     createdAt: Date;
     statusUpdateRenterDate: Date;
+    bookAddress:string;
 }
 
 const RentedBooks: React.FC = () => {
     const [selectedOption, setSelectedOption] = useState("all");
     const options = [
         "all",
-        "not_reached",
+        "not_picked_up",
         "not_returned",
         "completed",
         "cancelled",
@@ -61,8 +63,8 @@ const RentedBooks: React.FC = () => {
         setSelectedOption(option);
         if (option === "all") {
             handleViewModeChange("all");
-        } else if (option === "not_reached") {
-            handleViewModeChange("not_reached");
+        } else if (option === "not_picked_up") {
+            handleViewModeChange("not_picked_up");
         } else if (option === "not_returned") {
             handleViewModeChange("not_returned");
         } else if (option == "completed") {
@@ -99,9 +101,9 @@ const RentedBooks: React.FC = () => {
         let filtered = orders;
 
         switch (viewMode) {
-            case "not_reached":
+            case "not_picked_up":
                 filtered = filtered.filter(
-                    (orders) => orders?.bookStatusFromRenter == "not_reached"
+                    (orders) => orders?.bookStatusFromRenter == "not_picked_up"
                 );
 
                 break;
@@ -210,7 +212,7 @@ const RentedBooks: React.FC = () => {
         statusUpdateRenterDate: Date,
         totalDays: number
     ) => {
-        if (bookStatusFromRenter === "not_reached") {
+        if (bookStatusFromRenter === "not_picked_up") {
             const currentDate = new Date();
             const orderCreationDate = new Date(orderDate);
             const timeDifference =
@@ -248,7 +250,7 @@ const RentedBooks: React.FC = () => {
                         `The book has not been handed over to ${lenderName}. After the confirmation update, you will be able to update the status.`
                     );
                     return;
-                } else if (bookStatusFromLender === "not_reached") {
+                } else if (bookStatusFromLender === "not_picked_up") {
                     toast.info("you already updated");
                     return;
                 } else {
@@ -267,7 +269,7 @@ const RentedBooks: React.FC = () => {
     const confirmStatusUpdate = async () => {
         if (selectedOrderId === null || isBookHandover === null) return;
         try {
-            await userAxiosInstance.post(
+            await userAxiosInstance.put(
                 `/books/rental-orders/status/update/${selectedOrderId}`,
                 {
                     isBookHandover: isBookHandover,
@@ -366,7 +368,7 @@ const RentedBooks: React.FC = () => {
                                             key={order._id}
                                             className="odd:bg-white even:bg-gray-50 border-b">
                                             <td className="px-6 py-4 font-medium text-gray-700 text-sm  max-w-[150px] truncate text-center">
-                                                {order.bookId.bookTitle}
+                                                {order?.bookTitle}
                                             </td>
                                             <td className="px-6 py-4 text-gray-600 text-sm max-w-[150px] truncate text-center">
                                                 {order.lenderId.name}
@@ -390,37 +392,16 @@ const RentedBooks: React.FC = () => {
                                             </td>
                                             {/* <td className="px-6 py-4 text-gray-600">{order.bookId?.address?.street},{order.bookId?.address?.city},{order.bookId?.address?.district},{order.bookId?.address?.state},{order.bookId?.address?.pincode}</td> */}
                                             <td className="px-6 py-4 text-gray-600 text-sm max-w-[150px] truncate text-center">
-                                                <a
+                                               <a
                                                     href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
-                                                        `${order.bookId?.address?.street} ${order.bookId?.address?.city} ${order.bookId?.address?.district} ${order.bookId?.address?.state} ${order.bookId?.address?.pincode}`
+                                                        `${order?.bookAddress}`
                                                     )}`}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
                                                     className="text-blue-600 underline hover:text-blue-800">
-                                                    {
-                                                        order.bookId?.address
-                                                            ?.street
-                                                    }{" "}
-                                                    {
-                                                        order.bookId?.address
-                                                            ?.city
-                                                    }
-                                                    ,{" "}
-                                                    {
-                                                        order.bookId?.address
-                                                            ?.district
-                                                    }
-                                                    ,{" "}
-                                                    {
-                                                        order.bookId?.address
-                                                            ?.state
-                                                    }
-                                                    ,{" "}
-                                                    {
-                                                        order.bookId?.address
-                                                            ?.pincode
-                                                    }
+                                                    {order?.bookAddress}
                                                 </a>
+                                               
                                             </td>
                                             <td className="px-6 py-4 text-gray-600 text-sm max-w-[150px] truncate text-center">
                                                 {new Date(

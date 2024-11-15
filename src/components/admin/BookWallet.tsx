@@ -3,9 +3,11 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../utils/ReduxStore/store/store";
 import { adminAxiosInstance } from "../../utils/api/adminAxiosInstance";
 
+import { FaGreaterThan, FaLessThan } from "react-icons/fa";
+
 interface ITransaction {
     _id: string;
-    type: "credit" | "debit";
+    status: string;
     total_amount: number;
     source: string;
     createdAt: Date;
@@ -22,7 +24,7 @@ const BookWallet: React.FC = () => {
     const [wallet, setWallet] = useState<IWallet | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [balance, setBalance] = useState(0);
-    const [transactionsPerPage] = useState(5);
+    const [transactionsPerPage] = useState(10);
     const userInfo = useSelector(
         (state: RootState) => state.user.userInfo?.user
     );
@@ -34,9 +36,9 @@ const BookWallet: React.FC = () => {
                 const response = await adminAxiosInstance.get(
                     "/wallet/transactions"
                 );
-
                 if (Array.isArray(response?.data) && response.data.length > 0) {
                     const walletData = response.data[0];
+                    console.log(walletData, "wallet");
                     setBalance(walletData.balance);
                     setWallet(walletData);
                 } else {
@@ -50,12 +52,7 @@ const BookWallet: React.FC = () => {
     }, [userId]);
 
     const transactions = wallet?.transactions ?? [];
-    console.log(transactions, "transactions");
-
-    const totalPages =
-        transactions.length > 0
-            ? Math.ceil(transactions.length / transactionsPerPage)
-            : 1;
+    const totalPages = Math.ceil(transactions.length / transactionsPerPage);
 
     const indexOfLastTransaction = currentPage * transactionsPerPage;
     const indexOfFirstTransaction =
@@ -63,6 +60,15 @@ const BookWallet: React.FC = () => {
     const currentTransactions = transactions.slice(
         indexOfFirstTransaction,
         indexOfLastTransaction
+    );
+
+    const prevPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
+    const nextPage = () =>
+        setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+    const goToPage = (pageNumber: number) => setCurrentPage(pageNumber);
+    const pageNumbers = Array.from(
+        { length: totalPages },
+        (_, index) => index + 1
     );
 
     return (
@@ -84,7 +90,7 @@ const BookWallet: React.FC = () => {
             </div>
 
             {wallet && (
-                <div className="w-full max-w-[1300px] p-3 mx-auto">
+                <div className="w-full max-w-[1300px] p-3 mx-auto min-h-[80vh]">
                     <div className="w-full overflow-x-auto">
                         <span className="text-lg font-semibold text-white block mb-3">
                             Balance: {wallet.balance}₹
@@ -126,16 +132,10 @@ const BookWallet: React.FC = () => {
                                                     )}
                                                 </td>
                                                 <td className="font-medium text-gray-700 text-sm text-left px-4 whitespace-nowrap">
-                                                    {transaction.source ===
-                                                    "payment_to_lender"
-                                                        ? "Payment"
-                                                        : "Refund"}
+                                                    {transaction.source}
                                                 </td>
                                                 <td className="font-medium text-gray-700 text-sm text-left px-4 whitespace-nowrap">
-                                                    {transaction.type ===
-                                                    "credit"
-                                                        ? "Credit"
-                                                        : "Debit"}
+                                                    {transaction.status}
                                                 </td>
                                                 <td className="font-medium text-gray-700 text-sm text-left px-4 whitespace-nowrap">
                                                     {new Date(
@@ -154,6 +154,34 @@ const BookWallet: React.FC = () => {
                     </div>
                 </div>
             )}
+            <div className="px-12 flex items-center justify-center py-6">
+                <button
+                    onClick={prevPage}
+                    disabled={currentPage === 1}
+                    className="px-3 py-1 text-gray-700 rounded disabled:opacity-50">
+                    <FaLessThan />
+                </button>
+
+                {pageNumbers.map((page) => (
+                    <button
+                        key={page}
+                        onClick={() => goToPage(page)}
+                        className={`px-3 py-1 mx-1 rounded ${
+                            currentPage === page
+                                ? "bg-cyan-800 text-white"
+                                : "bg-gray-200 text-gray-700"
+                        }`}>
+                        {page}
+                    </button>
+                ))}
+
+                <button
+                    onClick={nextPage}
+                    disabled={currentPage === totalPages}
+                    className="px-3 py-1 text-gray-700 rounded disabled:opacity-50">
+                    <FaGreaterThan />
+                </button>
+            </div>
         </div>
     );
 };

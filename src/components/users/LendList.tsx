@@ -27,6 +27,8 @@ interface Order {
         extraFee: number;
         address: Address;
     };
+    bookTitle:string;
+    bookAddress:string;
     lenderId: {
         name: string;
     };
@@ -53,7 +55,7 @@ const LendedBooks: React.FC = () => {
     const [selectedOption, setSelectedOption] = useState("all");
     const options = [
         "all",
-        "not_reached",
+        "not_picked_up",
         "not_returned",
         "completed",
         "cancelled",
@@ -64,8 +66,8 @@ const LendedBooks: React.FC = () => {
         setSelectedOption(option);
         if (option === "all") {
             handleViewModeChange("all");
-        } else if (option === "not_reached") {
-            handleViewModeChange("not_reached");
+        } else if (option === "not_picked_up") {
+            handleViewModeChange("not_picked_up");
         } else if (option === "not_returned") {
             handleViewModeChange("not_returned");
         } else if (option == "completed") {
@@ -102,9 +104,9 @@ const LendedBooks: React.FC = () => {
         let filtered = orders;
 
         switch (viewMode) {
-            case "not_reached":
+            case "not_picked_up":
                 filtered = filtered.filter(
-                    (orders) => orders?.bookStatusFromLender == "not_reached"
+                    (orders) => orders?.bookStatusFromLender == "not_picked_up"
                 );
 
                 break;
@@ -208,8 +210,8 @@ const LendedBooks: React.FC = () => {
         statusUpdateRenterDate: Date,
         totalDays: number
     ) => {
-        if (bookStatusFromLender === "not_reached") {
-            if (bookStatusFromRenter === "not_reached") {
+        if (bookStatusFromLender === "not_picked_up") {
+            if (bookStatusFromRenter === "not_picked_up") {
                 toast.info(
                     `The book has not been received by the ${rentername}. You cannot update the status.`
                 );
@@ -225,8 +227,8 @@ const LendedBooks: React.FC = () => {
     const confirmStatusUpdate = async () => {
         if (selectedOrderId === null || isBookHandover === null) return;
         try {
-            await userAxiosInstance.post(
-                `/books/lent-orders/lender/status/${selectedOrderId}`,
+            await userAxiosInstance.put(
+                `/books/lent-orders/lender/status/update/${selectedOrderId}`,
                 {
                     isBookHandover: isBookHandover,
                 }
@@ -326,7 +328,7 @@ const LendedBooks: React.FC = () => {
                                             key={order._id}
                                             className="odd:bg-white even:bg-gray-50 border-b">
                                             <td className="px-6 py-4 font-medium text-gray-700 text-sm  max-w-[150px] truncate text-center">
-                                                {order.bookId.bookTitle}
+                                                {order.bookTitle}
                                             </td>
                                             <td className="px-6 py-4 text-gray-600 text-sm max-w-[150px] truncate text-center">
                                                 {order.userId.name}
@@ -352,34 +354,15 @@ const LendedBooks: React.FC = () => {
                                             <td className="px-6 py-4 text-gray-600 text-sm max-w-[150px] truncate text-center">
                                                 <a
                                                     href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
-                                                        `${order.bookId?.address?.street} ${order.bookId?.address?.city} ${order.bookId?.address?.district} ${order.bookId?.address?.state} ${order.bookId?.address?.pincode}`
+                                                        `${order?.bookAddress}`
                                                     )}`}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
                                                     className="text-blue-600 underline hover:text-blue-800">
                                                     {
-                                                        order.bookId?.address
-                                                            ?.street
+                                                        order?.bookAddress
                                                     }{" "}
-                                                    {
-                                                        order.bookId?.address
-                                                            ?.city
-                                                    }
-                                                    ,{" "}
-                                                    {
-                                                        order.bookId?.address
-                                                            ?.district
-                                                    }
-                                                    ,{" "}
-                                                    {
-                                                        order.bookId?.address
-                                                            ?.state
-                                                    }
-                                                    ,{" "}
-                                                    {
-                                                        order.bookId?.address
-                                                            ?.pincode
-                                                    }
+                                                   
                                                 </a>
                                             </td>
                                             <td className="px-6 py-4 max-w-[150px] truncate text-center">

@@ -6,12 +6,8 @@ import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Swal from "sweetalert2";
 import { toast } from "sonner";
-import { FaBookOpen } from "react-icons/fa";
-import {
-    faUser,
-    faBuilding,
-    faMapMarkerAlt,
-} from "@fortawesome/free-solid-svg-icons";
+import { FaEdit, FaTrash, FaBookReader } from "react-icons/fa";
+import { MdOutlineArchive } from "react-icons/md";
 import { useSelector } from "react-redux";
 import { io, Socket } from "socket.io-client";
 import config from "../../config/config";
@@ -21,6 +17,7 @@ const BookDetailPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const userInfo = useSelector((state: any) => state.user.userInfo?.user);
     const userId = userInfo?._id || "";
+    const username = userInfo?.name;
     const [book, setBook] = useState<any>(null);
     const bookId = book?._id!;
     const rentalFee = book?.rentalFee!;
@@ -28,8 +25,13 @@ const BookDetailPage: React.FC = () => {
     const [totalDays, setTotalDays] = useState<any>(null);
     const [lender, setLender] = useState<any>(null);
     const [requested, setRequested] = useState(false);
+    const [isArchived, setIsArchived] = useState<boolean>(
+        book?.isArchived || false
+    );
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+
     const [socket, setSocket] = useState<Socket | null>(null);
-    const [quantity, setQuantity] = useState<number>(0);
+    const [quantity, setQuantity] = useState<number>(1);
     const location = useLocation();
     const myBook = location?.state?.from;
     const [isExpanded, setIsExpanded] = useState(false);
@@ -94,8 +96,8 @@ const BookDetailPage: React.FC = () => {
             if (bookData && Object.keys(bookData).length > 0) {
                 setBook(bookData);
                 setTotalDays(bookData.minDays);
-                setLender(response.data.lender);
-                setQuantity(bookData.quantity);
+                setLender(bookData.lenderId);
+                setQuantity(bookData.quantity > 0 ? 1 : 0);
             } else {
                 console.log("Book data is empty or unavailable.");
                 toast.error("Book details are unavailable.");
@@ -286,19 +288,26 @@ const BookDetailPage: React.FC = () => {
         }
     };
 
-    const handleArchive = async (bookId: string) => {
+    const toggleArchiveStatus = async (bookId: string, isArchived: boolean) => {
         try {
-            console.log(bookId, "book");
-            // const response = await userAxiosInstance.post("/books/archive", {
-            //      bookId,
-            // });
-            // console.log(response,'response')
-            // const book = response.data;
-            // setBooks((prevBooks) =>
-            //     prevBooks.map((book) =>
-            //         book._id === bookId ? { ...book, isArchived: true } : book
-            //     )
-            // );
+            const endpoint = isArchived ? "/books/unarchive" : "/books/archive";
+            const response = await userAxiosInstance.post(endpoint, { bookId });
+            const bookData = response.data?.book;
+
+            if (bookData && Object.keys(bookData).length > 0) {
+                setBook(bookData);
+                setTotalDays(bookData.minDays);
+                setLender(bookData.lenderId);
+                setQuantity(bookData.quantity);
+                toast.success(
+                    bookData.isArchived
+                        ? "Book archived successfully!"
+                        : "Book restored successfully!"
+                );
+            } else {
+                console.log("Book data is empty or unavailable.");
+                toast.error("Book details are unavailable.");
+            }
         } catch (error: any) {
             if (error.response && error.response.status === 400) {
                 toast.error(error.response.data.message);
@@ -308,18 +317,15 @@ const BookDetailPage: React.FC = () => {
         }
     };
 
-    const handleUnArchive = async (bookId: string) => {
+    const handlePermanentDelete = async (bookId: string) => {
         try {
-            // const response = await userAxiosInstance.post("/books/unarchive", {
-            //     bookId,
-            // });
-            // console.log(response,'reposnse')
-            // const book = response.data;
-            // setBooks((prevBooks) =>
-            //     prevBooks.map((book) =>
-            //         book._id === bookId ? { ...book, isArchived: false } : book
-            //     )
-            // );
+            const response = await userAxiosInstance.delete(
+                `/books/remove/${bookId}`
+            );
+            console.log(response.data);
+            if (response.status == 200) {
+                navigate(`/${username}/lend-books`);
+            }
         } catch (error: any) {
             if (error.response && error.response.status === 400) {
                 toast.error(error.response.data.message);
@@ -333,26 +339,31 @@ const BookDetailPage: React.FC = () => {
     const handleEditClick = async (bookId: string) => {
         navigate(`/books/update/${bookId}`);
     };
-
     if (!book) return <div>Loading...</div>;
 
     return (
-        <div className="flex flex-col items-center justify-center py-12 min-h-screen">
-            <div className="mb-12 text-center">
+        <div className="flex flex-col items-center justify-center py-24 min-h-screen">
+            <div className="mb-6 text-center ">
                 <h1 className="text-23xl font-bold text-gray-800 sm:text-2xl">
                     {myBook ? "Yours Books Store" : "Request and Get Your Book"}
                 </h1>
-                <p className="text-sm text-gray-600 mt-2 sm:text-base">
+                <p className="text-sm text-gray-600 mt-2 sm:text-base p-2">
                     {myBook
                         ? "Manage your books "
                         : " Start your reading journey with us and dive into the world of books."}
                 </p>
+                <div className="flex justify-center items-center mt-4">
+                    <div className="flex items-center w-3/4 sm:w-1/2">
+                        <div className="flex-grow border-t border-gray-400"></div>
+                        <FaBookReader className="mx-3 rounded-full text-gray-800 text-xxl" />
+                        <div className="flex-grow border-t border-gray-400"></div>
+                    </div>
+                </div>
             </div>
-            {/* <div className="w-full px-4 sm:px-6 md:px-8"> */}
-            <div className="bg-white shadow-md p-4 flex flex-col md:flex-row justify-center  space-y-4 md:space-y-0 md:space-x-16">
-                <div className="w-full md:w-1/3 relative">
-                    <div className="mb-4">
-                        <div className="flex items-center mb-2">
+            <div className="w-full p-2 flex flex-col md:flex-row justify-center space-y-1 md:space-y-0 md:space-x-5">
+            <div className={`relative rounded-2xl p-5 ${myBook ? "shadow-lg" : ""}`}>
+
+                        <div className="flex items-center  border-gray-500 rounded-full">
                             <img
                                 src={lender.image}
                                 alt={lender.name}
@@ -366,52 +377,84 @@ const BookDetailPage: React.FC = () => {
                                     {lender.name}
                                 </span>
                             </div>
-                        </div>
+                        
                     </div>
                     <div className="flex flex-col justify-center items-center">
-                        <Carousel showThumbs={false} className="w-80">
-                            {book.images.map((image: string, index: number) => (
-                                <div
-                                    key={index}
-                                    className="w-80 h-96 flex justify-center items-center">
-                                    <img
-                                        src={image}
-                                        alt={`Book ${index}`}
-                                        className="w-72 h-96 object-fit shadow-md"
-                                    />
-                                </div>
-                            ))}
-                        </Carousel>
+                        <div className="border-gray-300 border-2">
+                            <Carousel showThumbs={false} className="w-80">
+                                {book.images.map(
+                                    (image: string, index: number) => (
+                                        <div
+                                            key={index}
+                                            className="w-80 h-96 flex justify-center items-center">
+                                            <img
+                                                src={image}
+                                                alt={`Book ${index}`}
+                                                className="w-72 h-96 object-fit shadow-md"
+                                            />
+                                        </div>
+                                    )
+                                )}
+                            </Carousel>
+                        </div>
                         {myBook ? (
-                            <div className="flex flex-row gap-4 items-center mt-8">
-                                <button
-                                    onClick={() => handleEditClick(book._id)}
-                                    className="bg-gradient-to-r from-teal-900 via-zinc-700 to-gray-600 text-white font-mono px-6 py-3 rounded-lg shadow-lg transition duration-300 hover:from-teal-800 hover:via-zinc-600 hover:to-gray-500 focus:ring-2 focus:ring-teal-700 focus:outline-none">
-                                    Edit
-                                </button>
+                            <>
+                                <div className="mt-10 w-2/3">
+                                    <h2 className="text-lg font-bold mb-4 text-gray-700 p-3 relative">
+                                        Manage Book
+                                        <span className="absolute bottom-0 left-3 w-[90%] h-[2px] bg-zinc-500"></span>
+                                    </h2>
+                                    <div
+                                        onClick={() =>
+                                            handleEditClick(book._id)
+                                        }
+                                        className="flex items-center justify-between py-3 px-4 border-b cursor-pointer hover:bg-gray-300">
+                                        <p className="text-gray-700">Edit</p>
+                                        <FaEdit className="text-blue-600 text-lg cursor-pointer hover:text-blue-500 transition duration-150" />
+                                    </div>
+                                    <div
+                                        onClick={() =>
+                                            !isLoading &&
+                                            toggleArchiveStatus(
+                                                book._id,
+                                                book.isArchived
+                                            )
+                                        }
+                                        className={`flex items-center justify-between py-3 px-4 border-b cursor-pointer 
+        ${isLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-300"}`}>
+                                        <p className="text-gray-700">
+                                            {book.isArchived
+                                                ? "Restore"
+                                                : "Archive"}
+                                        </p>
+                                        <MdOutlineArchive
+                                            className={`text-2xl transition duration-150 ${
+                                                book.isArchived
+                                                    ? "text-green-600 hover:text-green-500"
+                                                    : "text-gray-600 hover:text-gray-500"
+                                            } ${
+                                                isLoading ? "animate-spin" : ""
+                                            }`}
+                                        />
+                                    </div>
 
-                                {/* <button
-                                    className={`${
-                                        book.isArchived
-                                            ? "bg-green-600 hover:bg-green-500 focus:ring-2 focus:ring-green-400"
-                                            : "bg-gray-600 hover:bg-gray-500 focus:ring-2 focus:ring-gray-400"
-                                    } text-white px-6 py-3 rounded-lg shadow-lg transition duration-300 focus:outline-none`}
-                                    style={{
-                                        width: "100px",
-                                    }}
-                                    onClick={() =>
-                                        book.isArchived
-                                            ? handleUnArchive(book._id)
-                                            : handleArchive(book._id)
-                                    }>
-                                    {book.isArchived ? "Unarchive" : "Archive"}
-                                </button> */}
-                            </div>
+                                    {/* <div
+                                        onClick={() =>
+                                            handlePermanentDelete(book._id)
+                                        }
+                                        className="flex items-center justify-between py-3 px-4 cursor-pointer hover:bg-gray-300">
+                                        <p className="text-gray-700">
+                                            Permanently delete
+                                        </p>
+                                        <FaTrash className="text-red-600 text-lg cursor-pointer hover:text-red-500 transition duration-150" />
+                                    </div> */}
+                                </div>
+                            </>
                         ) : (
                             <div className="items-center justify-center flex flex-col">
                                 <button
                                     onClick={handleRequest}
-                                    className={`mt-8 w-2/3 md:w-full  ${
+                                    className={`mt-8  md:w-full  ${
                                         book.quantity === 0 || requested
                                             ? "bg-gray-400 cursor-not-allowed"
                                             : "bg-gradient-to-r from-teal-900 via-zinc-700 to-gray-600"
@@ -432,120 +475,101 @@ const BookDetailPage: React.FC = () => {
                         )}
                     </div>
                 </div>
-                <div className="w-full md:w-2/3 max-w-md mx-auto p-6 bg-white rounded-lg">
-                    <h1 className="text-2xl md:text-3xl font-serif text-gray-800 mb-4">
+                <div className="md:w-1/2 w-full mx-auto p-6 bg- rounded-lg space-y-5">
+                    <h1 className="text-lg md:text-xl font-bold mb-4 ">
                         {book.bookTitle}
                     </h1>
-                    <p className="text-lg mb-2 flex items-center">
-                        <FaBookOpen className="mr-2 text-gray-600" />
-                        <span className="font-semibold text-gray-700">
-                            Genre :
-                        </span>{" "}
-                        <span className="data font-mono">{book.genre}</span>
-                    </p>
 
-                    <p className="text-lg mb-2">
-                        <FontAwesomeIcon
-                            icon={faUser}
-                            className="mr-2 text-gray-600"
-                        />
-                        <span className="font-semibold text-gray-700">
-                            Author :
-                        </span>{" "}
-                        <span className="data font-mono"> {book.author}</span>
-                    </p>
-                    <p className="text-lg mb-2">
-                        <FontAwesomeIcon
-                            icon={faBuilding}
-                            className="mr-2 text-gray-600"
-                        />
-                        <span className="font-semibold text-gray-700">
-                            Publisher :
-                        </span>{" "}
-                        <span className="data font-mono">
-                            {" "}
-                            {book.publisher}
+                    <p className="mb-5">
+                        <span
+                            className={`${
+                                isExpanded ? "" : "line-clamp-2"
+                            } transition-all duration-300 ease-in-out text-gray-600`}>
+                            {book.description}
                         </span>
+                        {book.description.length > 100 && (
+                            <button
+                                onClick={toggleReadMore}
+                                className="text-blue-600 cursor-pointer hover:underline px-2">
+                                {isExpanded ? "Read less" : "Read more"}
+                            </button>
+                        )}
                     </p>
-                    <p className="text-lg mb-2">
-                        {/* <FontAwesomeIcon icon={faBuilding} className="mr-2 text-gray-600" /> */}
-                        <span className="font-semibold text-gray-700">
-                            Published Year :
+                    <p className=" mb-2 flex items-center">
+                        <span className="font-semibold w-40 text-sm">
+                            GENRE
                         </span>{" "}
-                        <span className="data font-mono">
-                            {" "}
-                            {book.publishedYear}
-                        </span>
+                        <span>{book.genre}</span>
                     </p>
-                    <p className="text-lg mb-2">
-                        <FontAwesomeIcon
-                            icon={faMapMarkerAlt}
-                            className="text-gray-600"
-                        />
-                        <span className="font-semibold text-gray-700">
-                            Location :
+                    <p className="mb-2 flex items-center">
+                        <span className="font-semibold w-40 text-sm">
+                            AUTHOR
+                        </span>{" "}
+                        <span> {book.author}</span>
+                    </p>
+                    <p className="mb-2 flex items-center">
+                    <span className="font-semibold text-sm w-40">
+                            PUBLISHER
+                        </span>{" "}
+                        <span className="md:ml-0 ml-4"> {book.publisher}</span>
+                    </p>
+                    <p className="mb-2 flex items-center">
+                        <span className="font-semibold w-40 text-sm">
+                            PUBLISHED YEAR
+                        </span>{" "}
+                        <span> {book.publishedYear}</span>
+                    </p>
+                    <p className="mb-2 flex items-center">
+                        <span className="font-semibold text-sm w-60 md:w-40">
+                            LOCATION
                         </span>
-                        <span className="data font-mono">
+                        <span>
                             {book?.address?.street}, {book?.address?.city},{" "}
                             {book?.address?.district}, {book?.address?.state}
                         </span>
                     </p>
                     {book.maxDistance !== null && (
-                        <p className="text-lg mb-2">
-                            {/* <FontAwesomeIcon icon={faMapMarkerAlt} className="text-gray-600" /> */}
-                            <span className="font-semibold text-gray-700">
-                                Maximum Distance available:{" "}
+                        <p className="mb-2 flex items-center">
+                            <span className="font-semibold text-sm w-40">
+                                MAXIMUM DISTANCE AVAILABLE{" "}
                             </span>
-                            <span className="data font-mono">
-                                {book?.maxDistance} km
-                            </span>
+                            <span>{book?.maxDistance} km</span>
                         </p>
                     )}
-                    <p className="text-lg mb-2">
-                        <span className="font-semibold text-gray-700">
-                            Rental Fee / day :
+                    <p className="mb-2 flex items-center">
+                        <span className="font-semibold text-sm w-40">
+                            RENTAL PRICE PER DAY
                         </span>
-                        <span className="data font-mono">
-                            {" "}
-                            {book.rentalFee} ₹
-                        </span>
+                        <span> {book.rentalFee} ₹</span>
                     </p>
-                    <p className="text-lg mb-2">
-                        <span className="font-semibold text-gray-700">
-                            Refundable Deposit :
+                    <p className="mb-2 flex items-center">
+                        <span className="font-semibold text-sm w-40">
+                            REFUNDABLE DEPOSIT
                         </span>
-                        <span className="data font-mono">
-                            {" "}
-                            {totalDepositAmount} ₹
-                        </span>
+                        <span> {totalDepositAmount} ₹</span>
                     </p>
-                    <p className="text-sm text-gray-600 mb-4">
+                    <p className="mb-4">
                         This deposit is taken as a security deposit for any
                         potential damages or issues with the book. It is fully
                         refundable upon the safe return of the book without any
                         damages.
                     </p>
-
-                    <p className="text-lg mb-2">
-                        <span className="font-semibold text-gray-700">
-                            Total Rental Price:
+                    <p className="mb-2 flex items-center">
+                        <span className="font-semibold text-sm w-40">
+                            TOTAL RENTAL PRICE
                         </span>
-                        <span className="data font-mono">
-                            {" "}
-                            {totalRentalPrice} ₹
-                        </span>
+                        <span> {totalRentalPrice} ₹</span>
                     </p>
-
-                    <div className="mb-4">
+                    <div className="mb-4 flex items-center">
                         {myBook ? (
-                            <label className="font-semibold text-gray-700 mr-4 whitespace-normal text-sm sm:text-base">
-                                Rental Period: {book?.maxDays} days:
+                            <label className="font-semibold  mr-4 white space-normal text-sm sm:text-sm w-40">
+                                RENTAL PERIOD {book?.maxDays} DAYS
                             </label>
                         ) : (
-                            <div className="flex flex-col md:flex-row mb-4">
-                                <label className="font-semibold text-gray-700 mr-4 whitespace-normal text-sm sm:text-base">
-                                    Choose Rental Period (within {book?.minDays}{" "}
-                                    - {book?.maxDays} days):
+                            <div className="flex flex-col md:flex-row mb-4 ">
+                                <label className="font-semibold mr-4 whitespace-normal text-sm sm:text-sm">
+                                    CHOOSE (WITHIN {book?.minDays} -{" "}
+                                    {book?.maxDays} days)
                                 </label>
 
                                 <div className="flex items-center space-x-2">
@@ -584,10 +608,9 @@ const BookDetailPage: React.FC = () => {
                             </div>
                         )}
                     </div>
-
                     <div className="flex flex-col md:flex-row">
-                        <label className="font-semibold text-gray-700 mr-2">
-                            Quantity :
+                        <label className="font-semibold text-sm mr-2  md:w-40">
+                            QUANTITY
                         </label>
                         {myBook ? (
                             <span>{book?.quantity}</span>
@@ -619,27 +642,7 @@ const BookDetailPage: React.FC = () => {
                             </div>
                         )}
                     </div>
-
-                    <p className="text-lg mb-4">
-                        <span className="font-mono text-gray-500 underline decoration-zinc-400 mb-1">
-                            About
-                        </span>
-                        <span
-                            className={`data font-mono ${
-                                isExpanded ? "" : "line-clamp-2"
-                            } transition-all duration-300 ease-in-out`}>
-                            {book.description}
-                        </span>
-                        {book.description.length > 100 && (
-                            <button
-                                onClick={toggleReadMore}
-                                className="text-blue-600 cursor-pointer hover:underline px-2">
-                                {isExpanded ? "Read Less" : "Read More"}
-                            </button>
-                        )}
-                    </p>
                 </div>
-                {/* </div> */}
             </div>
         </div>
     );

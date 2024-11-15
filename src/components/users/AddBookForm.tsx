@@ -289,8 +289,8 @@ const LendBookForm: React.FC = () => {
             }));
         }
 
-        // const errors = validateFormData(formData);
-        // if (errors.length === 0) {
+        const errors = validateFormData(formData);
+        if (errors.length === 0) {
             const formDataWithImages = new FormData();
             formDataWithImages.append("bookTitle", formData.bookTitle);
             if (formData.images) {
@@ -372,19 +372,19 @@ const LendBookForm: React.FC = () => {
                     toast.error("An error occurred, please try again later");
                 }
             }
-        // } else {
-        //     console.error("Form validation errors:", errors);
-        //     toast.error(errors);
-        // }
+        } else {
+            console.error("Form validation errors:", errors);
+            toast.error(errors);
+        }
     };
 
     return (
-        <div className="flex flex-col items-center justify-center py-12">
+        <div className="flex flex-col items-center justify-center py-24">
             <div className="mb-12 text-center">
                 <h1 className="text-23xl font-bold text-gray-800 sm:text-2xl">
                     Rent Out Your Books
                 </h1>
-                <p className="text-sm text-gray-600 mt-2 sm:text-base">
+                <p className="text-sm text-gray-600 mt-2 sm:text-base md:p-1 p-3">
                     Share your favorite reads and let others enjoy them while
                     earning along the way.
                 </p>

@@ -351,8 +351,9 @@ const EditBookForm: React.FC = () => {
             }));
         }
 
-        // const errors = validateFormData(formData);
-        // if (errors.length === 0) {
+        const errors = validateFormData(formData);
+        
+        if (errors.length === 0) {
             const formDataWithImages = new FormData();
             formDataWithImages.append("bookTitle", formData.bookTitle);
             if (formData.images) {
@@ -434,17 +435,17 @@ const EditBookForm: React.FC = () => {
                     toast.error("An error occurred, please try again later");
                 }
             }
-        // } else {
-        //     console.error("Form validation errors:", errors);
-        //     toast.error(errors);
-        // }
+        } else {
+            console.error("Form validation errors:", errors);
+            toast.error(errors);
+        }
     };
     return (
-        <div className="flex min-h-screen bg-cover flex-col py-12">
+        <div className="flex min-h-screen bg-cover flex-col py-24">
             <h2 className="text-center text-lg md:py-0 py-12 font-bold text-gray-600">
                 Update your book details
             </h2>
-            <form className="space-y-6 py-12" encType="multipart/form-data">
+            <form className="space-y-6 md:py-12" encType="multipart/form-data">
                 <div className="flex flex-col md:flex-row gap-3 px-12">
                     <div className="bg-white opacity-95 shadow-lg rounded-lg px-8 py-6">
                         <div className="flex  mb-6">
@@ -454,7 +455,7 @@ const EditBookForm: React.FC = () => {
                                 Rent Book
                             </button>
                         </div>
-                        <div className="flex flex-col sm:flex-row sm:space-x-6">
+                        <div className="flex flex-col sm:flex-row sm:space-x-">
                             <div className="flex-1">
                                 <label
                                     className="block text-gray-700 font-medium mb-2"

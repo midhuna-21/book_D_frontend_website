@@ -16,37 +16,26 @@ interface Cart {
     totalDays: number;
     totalPrice: number;
     totalRentalPrice: number;
-}
-
-interface Book {
-    _id: string;
-    bookTitle: string;
-    address: Address;
-}
-
-interface Address {
-    street: string;
-    city: string;
-    district: string;
-    state: string;
-    pincode: string;
+    totalAmount:number;
 }
 
 interface User {
     _id: string;
     name: string;
-    address?: Address;
 }
 
 interface Order {
     _id: string;
-    bookId: Book;
+    bookTitle:string;
     lenderId: User;
     userId: User;
     cartId: Cart;
     statusUpdateRenterDate: string;
     bookStatus: string;
     totalPrice: number;
+    bookAddress:string;
+    rentedOn:Date;
+    dueDate:Date;
 }
 
 const OrderDetail = () => {
@@ -74,17 +63,7 @@ const OrderDetail = () => {
         return <div>No order details available.</div>;
     }
 
-    const rentalStartDate = order.statusUpdateRenterDate
-        ? new Date(order?.statusUpdateRenterDate).toLocaleDateString()
-        : " ";
-
-    const rentalEndDate =
-        order?.statusUpdateRenterDate && order?.cartId?.totalDays
-            ? new Date(
-                  new Date(order?.statusUpdateRenterDate).getTime() +
-                      order?.cartId?.totalDays * 24 * 60 * 60 * 1000
-              ).toLocaleDateString()
-            : " ";
+  console.log(order,'order')
 
     return (
         <div className="bg-white shadow-md rounded p-4 h-full">
@@ -102,7 +81,7 @@ const OrderDetail = () => {
                                     Book Title:
                                 </h2>
                                 <p className="text-gray-600">
-                                    {order?.bookId?.bookTitle}
+                                    {order?.bookTitle}
                                 </p>
                             </div>
                         </div>
@@ -135,17 +114,11 @@ const OrderDetail = () => {
                                 <h2 className="text-xl font-semibold">
                                     Lender Address:
                                 </h2>
-                                {order?.bookId?.address ? (
+                               
                                     <p className="text-gray-600">
-                                        {order?.bookId?.address?.street},{" "}
-                                        {order?.bookId?.address?.city},
-                                        {order?.bookId?.address?.district},{" "}
-                                        {order?.bookId?.address?.state},
-                                        {order?.bookId?.address?.pincode}
+                                        {order?.bookAddress}
                                     </p>
-                                ) : (
-                                    <p className="text-gray-600"> </p>
-                                )}
+                               
                             </div>
                         </div>
                     </div>
@@ -158,7 +131,9 @@ const OrderDetail = () => {
                                     Rental Start Date:
                                 </h2>
                                 <p className="text-gray-600">
-                                    {rentalStartDate}
+                                {new Date(
+                                            order?.rentedOn
+                                        ).toLocaleDateString()}
                                 </p>
                             </div>
                         </div>
@@ -168,7 +143,9 @@ const OrderDetail = () => {
                                 <h2 className="text-xl font-semibold">
                                     Rental End Date:
                                 </h2>
-                                <p className="text-gray-600">{rentalEndDate}</p>
+                                <p className="text-gray-600"> {new Date(
+                                            order?.dueDate
+                                        ).toLocaleDateString()}</p>
                             </div>
                         </div>
                         <div className="flex items-center mb-6">
@@ -189,7 +166,7 @@ const OrderDetail = () => {
                                     Total Price:
                                 </h2>
                                 <p className="text-gray-600">
-                                    {order?.totalPrice} ₹
+                                    {order?.cartId?.totalAmount} ₹
                                 </p>
                             </div>
                         </div>

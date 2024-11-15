@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams,useNavigate } from "react-router-dom";
 import { FaHome, FaWallet, FaCreditCard } from "react-icons/fa";
 import { userAxiosInstance } from "../../utils/api/userAxiosInstance";
 import { useSelector } from "react-redux";
@@ -7,9 +7,11 @@ import { RootState } from "../../utils/ReduxStore/store/store";
 import { loadStripe, Stripe } from "@stripe/stripe-js";
 import { toast } from "sonner";
 
+
 const RentalPaymentDetails = () => {
     const { cartId } = useParams();
     const [bookDetails, setBookDetails] = useState<any>(null);
+    const navigate = useNavigate()
     const userInfo = useSelector(
         (state: RootState) => state?.user?.userInfo?.user
     );
@@ -47,7 +49,6 @@ const RentalPaymentDetails = () => {
         return <div>Loading...</div>;
     }
 
-    // payment integration
     const makePayment = async () => {
         const stripePromise: Stripe | null = await loadStripe(
             "pk_test_51PsQIxJLTsyLCzN2DBw1f6Od4OEh0vdO34mKYQmfUgomCnP0D7IegGNMvKaZdF8zYjrIb8r6pYOppVveK24egrWn00CdaN0RvG"
@@ -71,6 +72,10 @@ const RentalPaymentDetails = () => {
 
         try {
             if (paymentMethod === "stripe" && stripePromise) {
+                const checkIsExistOrder = await userAxiosInstance.get(`/orders/is-exist/${cartId}`)
+                if(checkIsExistOrder?.data?.isOrderExist?.isPaid==true){
+                    return toast.error('you already paid')
+                }
                 const response = await userAxiosInstance.post(
                     "/payments/checkout",
                     body,
@@ -89,13 +94,23 @@ const RentalPaymentDetails = () => {
                     return;
                 }
             } else if (paymentMethod === "wallet") {
+                const checkIsExistOrder = await userAxiosInstance.get(`/orders/is-exist/${cartId}`)
+                if(checkIsExistOrder?.data?.isOrderExist?.isPaid==true){
+                    return toast.error('you already paid')
+                }
+                const body = {
+                    cartId:bookDetails?._id,
+                    bookId: bookDetails?.bookId?._id,
+                    userId: userId,
+                }
                 const checkWallet = await userAxiosInstance.post(
                     "/wallet/check"
                 );
-
                 const balanceAmount = checkWallet?.data?.isWalletExist?.balance;
-                if (balanceAmount > totalPrice) {
-                    await userAxiosInstance.post("/wallet/payment");
+                if (balanceAmount >= totalPrice) {
+                    const orderResponse = await userAxiosInstance.post('/wallet/payment',body);
+                    const orderId = orderResponse?.data?.order?._id
+                    navigate("/payment/success", { state: { fromWallet: true , orderId: orderId } });
                 } else {
                     toast.warning(
                         "Insufficient balance in your wallet. Please choose another payment method."
@@ -118,7 +133,7 @@ const RentalPaymentDetails = () => {
         bookDetails?.bookId?.extraFee + bookDetails?.totalRentalPrice;
 
     return (
-        <div className="flex flex-col lg:flex-row items-center justify-center py-12 bg-gray-50 min-h-screen gap-10 px-12">
+        <div className="flex flex-col lg:flex-row items-center justify-center py-24 bg-gray-50 min-h-screen gap-10 px-12">
             <div className="p-6 w-full lg:w-1/2 bg-white shadow-lg rounded-lg mx-auto">
                 <div className="text-center mb-8">
                     <h1 className="text-3xl font-bold text-gray-800">

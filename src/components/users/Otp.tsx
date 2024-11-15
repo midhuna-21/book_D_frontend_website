@@ -88,6 +88,7 @@ const Otp: React.FC = () => {
                     navigate("/home");
                     localStorage.removeItem("otpPageVisited");
                 } else {
+                    console.log(user,'user')
                     navigate("/password/update", { state: { response: user } });
                     localStorage.setItem("otpSubmitted", "true");
                 }

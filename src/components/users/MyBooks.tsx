@@ -49,9 +49,8 @@ const UserLendBooks: React.FC = () => {
     };
     const showShimmer = loading || books.length === 0;
 
-
     return (
-        <div className="container mx-auto p-12">
+        <div className="container mx-auto py-24">
             <div className="mb-6 flex items-center justify-center flex-col">
                 <h1 className="text-2xl font-bold text-gray-700">
                     Your Book Collection
@@ -105,19 +104,21 @@ const UserLendBooks: React.FC = () => {
                 </div>
             ) : (
                 <>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 p-3">
                         {currentBooks.map((book) => (
                             <div
                                 key={book._id}
-                                className="bg-white p-4 border border-gray-200 shadow-md mt-5"
-                                style={{ width: "250px", height: "450px" }}
+                                className="p-4 border border-gray-200 shadow-md rounded-lg hover:shadow-2xl"
                                 onClick={() => showBookDetails(book._id)}>
-                                <img
-                                    src={book.images[0]}
-                                    alt={book.name}
-                                    className="mb-4 w-full h-48 object-cover"
-                                />
-                                <div className="flex flex-col items-center text-center h-full">
+                                <div className="relative w-full h-72">
+                                    {" "}
+                                    <img
+                                        src={book.images[0]}
+                                        alt={book.name}
+                                        className="absolute inset-0 w-full h-full object-cover rounded-md"
+                                    />
+                                </div>
+                                <div className="flex flex-col items-center text-center mt-4">
                                     <h3
                                         className="text-lg font-bold mb-1 overflow-hidden"
                                         style={{
@@ -151,22 +152,15 @@ const UserLendBooks: React.FC = () => {
                                               )}...`
                                             : book.description}
                                     </p>
-
-                                    <div className="flex flex-row gap-2">
-                                        <button
-                                            className="bg-stone-700 hover:bg-stone-400 hover:text-black text-white px-4 py-2 rounded-md transition-colors duration-300"
-                                            style={{
-                                                width: "100px",
-                                                height: "40px",
-                                            }}>
-                                            Choose
-                                        </button>
-                                        
-                                    </div>
+{/* 
+                                    <button className="bg-stone-700 hover:bg-stone-400 hover:text-black text-white px-4 py-2 rounded-md transition-colors duration-300 w-1/2 md:w-full">
+                                        Choose
+                                    </button> */}
                                 </div>
                             </div>
                         ))}
                     </div>
+
                     {books.length > 8 && (
                         <div className="flex justify-center mt-8">
                             <button

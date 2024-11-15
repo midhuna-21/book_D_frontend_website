@@ -25,11 +25,11 @@ ChartJS.register(
 const CenterAdmin: React.FC = () => {
     const [totalUsers, setTotalUsers] = useState(0);
     const [totalBooks, setTotalBooks] = useState(0);
-    const [genreData, setGenreData] = useState<any>({
+    const [bookData, setBookData] = useState<any>({
         labels: [],
         datasets: [
             {
-                label: "Books by Genre",
+                label: "Books orders",
                 data: [],
                 backgroundColor: [],
                 hoverBackgroundColor: [],
@@ -53,9 +53,9 @@ const CenterAdmin: React.FC = () => {
         const fetchData = async () => {
             try {
                 const usersResponse = await adminAxiosInstance.get("/users");
-                const booksResponse = await adminAxiosInstance.get("/books");
+                const ordersResponse = await adminAxiosInstance.get("/orders");
                 setTotalUsers(usersResponse?.data?.length || 0);
-                setTotalBooks(booksResponse?.data?.length || 0);
+                setTotalBooks(ordersResponse?.data?.length || 0);
                 const users = Array.isArray(usersResponse.data)
                     ? usersResponse.data
                     : [];
@@ -87,31 +87,31 @@ const CenterAdmin: React.FC = () => {
                         ],
                     });
                 }
-                const books = Array.isArray(booksResponse.data)
-                    ? booksResponse.data
+                const orders = Array.isArray(ordersResponse.data)
+                    ? ordersResponse.data
                     : [];
-                const genreCount: { [genre: string]: number } = {};
-                books.forEach((book: any) => {
-                    const genre = book?.genre;
-                    genreCount[genre] = (genreCount[genre] || 0) + 1;
+                const bookCount: { [book: string]: number } = {};
+                orders.forEach((order: any) => {
+                    const book = order?.bookTitle;
+                    bookCount[book] = (bookCount[book] || 0) + 1;
                 });
 
-                const genreLabels = Object.keys(genreCount);
-                const genreDataValues = Object.values(genreCount);
+                const bookLabels = Object.keys(bookCount);
+                const bookDataValues = Object.values(bookCount);
 
-                const colors = genreLabels.map(() => {
+                const colors = bookLabels.map(() => {
                     const r = Math.floor(Math.random() * 255);
                     const g = Math.floor(Math.random() * 255);
                     const b = Math.floor(Math.random() * 255);
                     return `rgba(${r},${g},${b},0.6)`;
                 });
 
-                setGenreData({
-                    labels: genreLabels,
+                setBookData({
+                    labels: bookLabels,
                     datasets: [
                         {
-                            label: "Books by Genre",
-                            data: genreDataValues,
+                            label: "Books orders",
+                            data: bookDataValues,
                             backgroundColor: colors,
                             hoverBackgroundColor: colors.map((color: string) =>
                                 color.replace("0.6", "0.8")
@@ -128,39 +128,38 @@ const CenterAdmin: React.FC = () => {
     }, []);
 
     return (
-        <div className="bg-stone-800 shadow-md rounded p-4 h-full">
-            <div className="container mx-auto">
-                <h2 className="text-2xl font-serif mb-4 text-white">
+        <div className="bg-white shadow-md rounded p-4 min-h-screen">
+            <div className="container">
+                <h2 className="text-2xl font-serif mb-4 text-black">
                     Admin Dashboard
                 </h2>
 
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-                    <div className="bg-white p-4 rounded shadow">
+                    <div className="bg-white p-4 rounded shadow-lg border-2">
                         <h3 className="text-lg font-bold">Total Users</h3>
                         <p className="text-3xl">{totalUsers}</p>
                     </div>
-                    <div className="bg-white p-4 rounded shadow">
+                    <div className="bg-white p-4 rounded shadow-lg border-2">
                         <h3 className="text-lg font-bold">Total Books</h3>
                         <p className="text-3xl">{totalBooks}</p>
                     </div>
                 </div>
-
                 <div className="flex flex-col lg:flex-row gap-4">
-                    <div className="bg-white p-4 rounded shadow w-full lg:w-1/2">
-                        <h3 className="text-lg font-bold mb-4">Genres</h3>
+                    <div className="bg-white p-4 rounded shadow-lg border-2 w-full lg:w-1/2">
+                        <h3 className="text-lg font-bold mb-4">Books</h3>
                         <div className="flex justify-center">
                             <Pie
-                                data={genreData}
+                                data={bookData}
                                 options={{
                                     maintainAspectRatio: false,
                                     responsive: true,
                                 }}
-                                className="w-[200px] h-[250px] sm:w-[300px] sm:h-[350px] md:w-[400px] md:h-[450px] lg:w-[600px] lg:h-[500px]"
+                                className="w-[150px] h-[200px] sm:w-[200px] sm:h-[250px] md:w-[250px] lg:w-[300px] lg:h-[350px]"
                             />
                         </div>
                     </div>
 
-                    <div className="bg-white p-4 rounded shadow w-full lg:w-1/2">
+                    <div className="bg-white p-4 rounded shadow-lg border-2 w-full lg:w-1/2">
                         <h3 className="text-lg font-bold mb-4">User Growth</h3>
                         <div className="flex justify-center">
                             <Line
@@ -169,7 +168,7 @@ const CenterAdmin: React.FC = () => {
                                     maintainAspectRatio: false,
                                     responsive: true,
                                 }}
-                                className="w-[200px] h-[250px] sm:w-[300px] sm:h-[350px] md:w-[400px] md:h-[450px] lg:w-[600px] lg:h-[500px]"
+                                className="w-[150px] h-[200px] sm:w-[200px] sm:h-[250px] md:w-[250px] lg:w-[300px] lg:h-[350px]"
                             />
                         </div>
                     </div>

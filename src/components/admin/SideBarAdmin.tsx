@@ -30,12 +30,14 @@ const AdminSideBar: React.FC = () => {
         navigate("/admin/login");
     };
 
+    
+
     return (
         <div
-            className={`flex flex-col h-screen bg-stone-900 text-white ${
+            className={`flex flex-col min-h-screen bg-gray-700 text-white ${
                 isCollapsed ? "w-15" : "w-50"
             } transition-all duration-300`}>
-            <div className="h-screen bg-stone-900 text-white flex flex-col">
+            <div className="h-screen  text-white flex flex-col">
                 <div className="flex items-center justify-between h-19 bg-stone- py-3">
                     <div
                         className={`flex ${

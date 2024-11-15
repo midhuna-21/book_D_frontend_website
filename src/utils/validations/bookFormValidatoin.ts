@@ -163,12 +163,17 @@ const validateFormData = (formData: FormData): string[] => {
     } else if (formData.maxDays <= 0) {
         errors.push("Minimum Days must be a positive number.");
     }
+   
 
     if (!formData.latitude || isNaN(formData.latitude)) {
         errors.push("Error in getting location");
     }
     if (!formData.longitude || isNaN(formData.longitude)) {
         errors.push("Error in getting location");
+    }
+
+    if (formData.minDays >= formData.maxDays) {
+        errors.push("Maximum days must be greater than minimum days.");
     }
 
     return errors;

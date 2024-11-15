@@ -26,13 +26,13 @@ const SignInButton: React.FC = () => {
                     }
                 );
                 await axiosUser
-                    .post("/google-login", {
+                .post("/google-login",{
                         name: response.data.name,
                         email: response.data.email,
                         image: response.data.picture,
                     })
                     .then(function (response) {
-                        if (response.data.success && response.data) {
+                        if (response.status ==200) {
                             dispatch(addUser(response.data));
 
                             localStorage.setItem(

@@ -322,19 +322,27 @@ const UserChat: React.FC = () => {
         }
     };
 
+    if (chatRooms.length === 0) {
+        return (
+            <div className="flex items-center justify-center h-screen">
+                <p className="text-gray-600 text-lg font-semibold">No chats</p>
+            </div>
+        );
+    }
+    
     return (
-        <div className="mt-12 mx-auto w-full max-w-6xl flex flex-col md:flex-col space-y-8 md:space-y-0 md:space-x-8 mb-20">
-            <div className="text-center mb-12">
+        <div className=" mx-auto w-full max-w-6xl flex flex-col md:flex-col space-y-8 md:space-y-0 md:space-x-8 mb-20 py-24 min-h-screen">
+            <div className="text-center md:mb-12">
                 <h1 className="text-2xl font-bold text-gray-800 sm:text-2xl">
                     Chat with Your Readers
                 </h1>
-                <p className="text-base text-gray-600 mt-2">
+                <p className="text-base text-gray-600 mt-2 md:p-1 p-3">
                     Engage with lenders directly to discuss book rentals and
                     more.
                 </p>
             </div>
             <div className="flex flex-col md:flex-row gap-6">
-                <div className="w-full md:w-1/2 h-[500px] mt-4 md:mt-0 flex flex-col">
+                <div className="w-full md:w-1/2 h-[525px] mt-4 md:mt-0 flex flex-col">
                     <p className="px-2 text-lg font-bold text-zinc-800">
                         Messages
                     </p>

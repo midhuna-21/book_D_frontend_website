@@ -61,12 +61,12 @@ const ExploreRentalBooks: React.FC = () => {
     const currentBooks = books.slice(indexOfFirstBook, indexOfLastBook);
 
     return (
-        <div className="container mx-auto p-12">
-            <div className="mb-6 flex items-center justify-center flex-col">
+        <div className="container mx-auto py-24">
+            <div className=" flex items-center justify-center flex-col">
                 <h1 className="text-2xl font-bold text-gray-700">
                     Hello, {name}!
                 </h1>
-                <p className="text-sm text-gray-600 mt-2 ">
+                <p className="text-sm text-gray-600 mt-2 md:p-1 p-5">
                     {books.length === 0 ? (
                         <span>
                             <span>
@@ -82,7 +82,7 @@ const ExploreRentalBooks: React.FC = () => {
                 </p>
             </div>
 
-            <div className="flex justify-center items-center mb-8">
+            <div className="flex justify-center items-center md:mb-8 mb-5">
                 <Flex align="center" width="10%" mt="2">
                     <Box h="1px" bg="grey" flex="1" />
                     <Icon
@@ -106,20 +106,25 @@ const ExploreRentalBooks: React.FC = () => {
                 </div>
             ) : (
                 <>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-5 gap-5 justify-items-center">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 p-3">
                         {currentBooks.map((book) => (
+                            
+                            <Link to={`/book/${book._id}`}>
                             <div
                                 key={book._id}
-                                className="bg-white p-4 border border-gray-200 shadow-md mt-5"
-                                style={{ width: "250px", height: "450px" }}>
-                                <img
-                                    src={book.images[0]}
-                                    alt={book.name}
-                                    className="mb-4 w-full h-48 object-cover"
-                                />
+                                className="p-4   border border-gray-200 shadow-md rounded-lg hover:shadow-2xl"
+                                >
+                                <div className="relative w-full h-72">
+                                    {" "}
+                                    <img
+                                        src={book.images[0]}
+                                        alt={book.name}
+                                        className="absolute inset-0 w-full h-full object-cover rounded-md"
+                                    />
+                                </div>
                                 <div className="flex flex-col items-center text-center h-full">
                                     <h3
-                                        className="text-lg font-bold mb-1 overflow-hidden"
+                                        className="text-lg font-bold mt-3 overflow-hidden"
                                         style={{
                                             height: "40px",
                                             lineHeight: "1.2em",
@@ -152,18 +157,19 @@ const ExploreRentalBooks: React.FC = () => {
                                             : book.description}
                                     </p>
 
-                                    <Link to={`/book/${book._id}`}>
-                                        <button
+                                        {/* <button
                                             className="bg-stone-700 hover:bg-stone-400 hover:text-black text-white px-4 py-2 rounded-md transition-colors duration-300"
                                             style={{
                                                 width: "100px",
                                                 height: "40px",
                                             }}>
                                             Choose
-                                        </button>
-                                    </Link>
+                                        </button> */}
+                                    
                                 </div>
+
                             </div>
+                            </Link>
                         ))}
                     </div>
                     {books.length > 8 && (
