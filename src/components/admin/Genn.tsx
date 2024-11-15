@@ -49,6 +49,9 @@ const AddGenre: React.FC = () => {
                 },
             })
             
+            if(response.data.success==false){
+                return toast.error("genre name already exist")
+            }
                 if (response.status === 200) {
                     toast.success("Successfully added");
 

@@ -50,7 +50,18 @@ const EditGenre: React.FC = () => {
         event.preventDefault();
         try {
             const formData = new FormData();
-            const name = genreName.toLowerCase();
+           
+            const name = genreName.trim();
+
+            if (!name) {
+                toast.error("Genre name cannot be empty.");
+                return;
+            }
+            if (/\s/.test(name)) {
+                toast.error("Genre name should not contain spaces.");
+                return;
+            }
+    
             formData.append("genreName", name);
             if (file) {
                 formData.append("file", file);
