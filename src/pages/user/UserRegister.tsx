@@ -49,6 +49,7 @@ const Register: React.FC = () => {
                 { withCredentials: true }
             );
             if (response.status === 200) {
+                toast.success('check your email for otp ')
                 navigate("/verify-otp", {
                     state: { response: response.data, origin: "sign-up" },
                 });

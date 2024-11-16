@@ -294,11 +294,13 @@ const UserNotifications: React.FC = () => {
         setCartQuantity(cartQuantity);
         setIsModalOpenPayment(true);
     };
-    
+
     if (notifications.length === 0) {
         return (
             <div className="flex items-center justify-center h-screen">
-                <p className="text-gray-600 text-lg font-semibold">No notifications</p>
+                <p className="text-gray-600 text-lg font-semibold">
+                    No notifications
+                </p>
             </div>
         );
     }
@@ -339,7 +341,8 @@ const UserNotifications: React.FC = () => {
                                                 <div className="w-12 h-12 rounded-full overflow-hidden mr-4">
                                                     <img
                                                         src={
-                                                            (notification.userId?._id === userid
+                                                            (notification.userId
+                                                                ?._id === userid
                                                                 ? notification
                                                                       ?.receiverId
                                                                       .image
@@ -377,11 +380,10 @@ const UserNotifications: React.FC = () => {
                                                                     rent the
                                                                     book{" "}
                                                                     <strong>
-                                                                        {
-                                                                            notification
-                                                                                ?.bookId
-                                                                                ?.bookTitle || notification?.bookTitle
-                                                                        }
+                                                                        {notification
+                                                                            ?.bookId
+                                                                            ?.bookTitle ||
+                                                                            notification?.bookTitle}
                                                                     </strong>
                                                                 </>
                                                             ) : null
@@ -396,11 +398,10 @@ const UserNotifications: React.FC = () => {
                                                                     rent the
                                                                     book{" "}
                                                                     <strong>
-                                                                        {
-                                                                            notification
-                                                                                ?.bookId
-                                                                                ?.bookTitle || notification?.bookTitle
-                                                                        }
+                                                                        {notification
+                                                                            ?.bookId
+                                                                            ?.bookTitle ||
+                                                                            notification?.bookTitle}
                                                                     </strong>
                                                                 </>
                                                             ) : (
@@ -410,11 +411,10 @@ const UserNotifications: React.FC = () => {
                                                                     to rent the
                                                                     book{" "}
                                                                     <strong>
-                                                                        {
-                                                                            notification
-                                                                                ?.bookId
-                                                                                ?.bookTitle || notification?.bookTitle
-                                                                        }
+                                                                        {notification
+                                                                            ?.bookId
+                                                                            ?.bookTitle ||
+                                                                            notification?.bookTitle}
                                                                     </strong>{" "}
                                                                     was{" "}
                                                                     <span className="text-red-600 font-bold">
@@ -433,8 +433,8 @@ const UserNotifications: React.FC = () => {
                                                             )
                                                         ) : notification?.status ===
                                                           "accepted" ? (
-                                                            notification?.cartId?.ownerId
-                                                                 ===
+                                                            notification?.cartId
+                                                                ?.ownerId ===
                                                             userid ? (
                                                                 <>
                                                                     {" "}
@@ -442,39 +442,30 @@ const UserNotifications: React.FC = () => {
                                                                     rent the
                                                                     book{" "}
                                                                     <strong>
-                                                                        {
-                                                                            notification
-                                                                                ?.bookId
-                                                                                ?.bookTitle || notification?.bookTitle
-                                                                        }
+                                                                        {notification
+                                                                            ?.bookId
+                                                                            ?.bookTitle ||
+                                                                            notification?.bookTitle}
                                                                     </strong>
                                                                 </>
                                                             ) : (
                                                                 <>
-                                                                    {" "}
-                                                                    Your request
-                                                                    to rent the
-                                                                    book{" "}
-                                                                    <strong>
-                                                                        
-                                                                        {
-                                                                            notification
+                                                                    <>
+                                                                        {" "}
+                                                                        has{" "}
+                                                                        <span className="text-green-600 font-bold">
+                                                                            accepted
+                                                                        </span>{" "}
+                                                                        to rent
+                                                                        the book{" "}
+                                                                        <strong>
+                                                                            {notification
                                                                                 ?.bookId
-                                                                                ?.bookTitle || notification?.bookTitle
-                                                                        }
-                                                                    </strong>{" "}
-                                                                    has been{" "}
-                                                                    <span className="text-green-600 font-bold">
-                                                                        accepted
-                                                                    </span>{" "}
-                                                                    by{" "}
-                                                                    <strong>
-                                                                        {
-                                                                            notification
-                                                                                ?.receiverId
-                                                                                ?.name
-                                                                        }
-                                                                    </strong>
+                                                                                ?.bookTitle ||
+                                                                                notification?.bookTitle}
+                                                                        </strong>
+                                                                        .
+                                                                    </>
                                                                     .
                                                                     <br />
                                                                     This is the
@@ -484,7 +475,8 @@ const UserNotifications: React.FC = () => {
                                                                     to the{" "}
                                                                     {notification
                                                                         ?.cartId
-                                                                        ?.isPaid || !notification?.bookId ? (
+                                                                        ?.isPaid ||
+                                                                    !notification?.bookId ? (
                                                                         <a
                                                                             onClick={() =>
                                                                                 handlePayment(
@@ -512,48 +504,49 @@ const UserNotifications: React.FC = () => {
                                                     </p>
                                                 </div>
                                             </div>
-                                            {notification?.bookId ?  
-                                              <div className="ml-auto flex items-center mt-4 sm:mt-0">
-                                              {notification?.status ===
-                                                  "requested" && (
-                                                  <>
-                                                      {notification?.bookId
-                                                          ?.quantity <
-                                                      notification?.cartId
-                                                          ?.quantity ? (
-                                                          <span className="text-yellow-600 font-bold ml-4">
-                                                              Insufficient
-                                                              Quantity
-                                                          </span>
-                                                      ) : (
-                                                          <>
-                                                              <button
-                                                                  className="bg-green-900 rounded-lg text-white p-2 px-4 font-semibold text-sm sm:text-base"
-                                                                  onClick={() => {
-                                                                      setSelectedNotification(
-                                                                          notification
-                                                                      );
-                                                                      setIsModalOpen(
-                                                                          true
-                                                                      );
-                                                                  }}>
-                                                                  Accept
-                                                              </button>
+                                            {notification?.bookId ? (
+                                                <div className="ml-auto flex items-center mt-4 sm:mt-0">
+                                                    {notification?.status ===
+                                                        "requested" && (
+                                                        <>
+                                                            {notification
+                                                                ?.bookId
+                                                                ?.quantity <
+                                                            notification?.cartId
+                                                                ?.quantity ? (
+                                                                <span className="text-yellow-600 font-bold ml-4">
+                                                                    Insufficient
+                                                                    Quantity
+                                                                </span>
+                                                            ) : (
+                                                                <>
+                                                                    <button
+                                                                        className="bg-green-900 rounded-lg text-white p-2 px-4 font-semibold text-sm sm:text-base"
+                                                                        onClick={() => {
+                                                                            setSelectedNotification(
+                                                                                notification
+                                                                            );
+                                                                            setIsModalOpen(
+                                                                                true
+                                                                            );
+                                                                        }}>
+                                                                        Accept
+                                                                    </button>
 
-                                                              {isModalOpen &&
-                                                                  selectedNotification ===
-                                                                      notification && (
-                                                                      <ConfirmationRequest
-                                                                          isOpen={
-                                                                              isModalOpen
-                                                                          }
-                                                                          onClose={
-                                                                              handleModalClose
-                                                                          }
-                                                                          onConfirm={
-                                                                              handleModalConfirm
-                                                                          }
-                                                                          content={` <ul>
+                                                                    {isModalOpen &&
+                                                                        selectedNotification ===
+                                                                            notification && (
+                                                                            <ConfirmationRequest
+                                                                                isOpen={
+                                                                                    isModalOpen
+                                                                                }
+                                                                                onClose={
+                                                                                    handleModalClose
+                                                                                }
+                                                                                onConfirm={
+                                                                                    handleModalConfirm
+                                                                                }
+                                                                                content={` <ul>
                                                                     <li><strong>Renter Name:</strong> ${notification?.userId?.name}</li>
                                                                     <li><strong>Book Name:</strong> ${notification?.bookId?.bookTitle}</li>
                                                                     <li><strong>Total Rental Price:</strong> ₹${notification?.cartId?.totalRentalPrice}</li>
@@ -563,54 +556,57 @@ const UserNotifications: React.FC = () => {
                                                                     <li><strong>Quantity:</strong> ${notification?.cartId?.quantity}</li>
                                                                   </ul>
                                                                       Are you sure you want to accept this request? Once you proceed, the action cannot be undone. By accepting, you agree that <strong>${notification?.userId?.name}</strong> will be required to make the payment to our platform. Both you and <strong>${notification?.userId?.name}</strong> have to provide confirmation after the book is handed over. Once both confirmations are received, you will receive the payment.`}
-                                                                      />
-                                                                  )}
-                                                              <button
-                                                                  className="bg-red-800 rounded-lg text-white p-2 px-4 font-semibold ml-4 text-sm sm:text-base"
-                                                                  onClick={() =>
-                                                                      handleReject(
-                                                                          notification?._id,
-                                                                          notification
-                                                                              ?.bookId
-                                                                              ?._id,
-                                                                          notification
-                                                                              ?.userId
-                                                                              ?._id,
-                                                                          notification
-                                                                              ?.cartId
-                                                                              ?._id
-                                                                      )
-                                                                  }>
-                                                                  Reject
-                                                              </button>
-                                                          </>
-                                                      )}
-                                                  </>
-                                              )}
-                                              {notification?.status ===
-                                                  "accepted" &&
-                                                  notification?.bookId
-                                                      ?.lenderId ===
-                                                      userid && (
-                                                      <span className="text-green-600 font-bold ml-4">
-                                                          Accepted
-                                                      </span>
-                                                  )}
+                                                                            />
+                                                                        )}
+                                                                    <button
+                                                                        className="bg-red-800 rounded-lg text-white p-2 px-4 font-semibold ml-4 text-sm sm:text-base"
+                                                                        onClick={() =>
+                                                                            handleReject(
+                                                                                notification?._id,
+                                                                                notification
+                                                                                    ?.bookId
+                                                                                    ?._id,
+                                                                                notification
+                                                                                    ?.userId
+                                                                                    ?._id,
+                                                                                notification
+                                                                                    ?.cartId
+                                                                                    ?._id
+                                                                            )
+                                                                        }>
+                                                                        Reject
+                                                                    </button>
+                                                                </>
+                                                            )}
+                                                        </>
+                                                    )}
+                                                    {notification?.status ===
+                                                        "accepted" &&
+                                                        notification?.bookId
+                                                            ?.lenderId ===
+                                                            userid && (
+                                                            <span className="text-green-600 font-bold ml-4">
+                                                                Accepted
+                                                            </span>
+                                                        )}
 
-                                              {notification?.status ===
-                                                  "rejected" &&
-                                                  notification?.bookId
-                                                      ?.lenderId ===
-                                                      userid && (
-                                                      <span className="text-red-600 font-bold ml-4">
-                                                          Rejected
-                                                      </span>
-                                                  )}
-                                          </div>
-                                          :  <div className="ml-auto flex items-center mt-4 sm:mt-0">
-                                                <span className="text-yellow-500 font-bold ml-4">Not available</span>
-                                                </div>}
-                                          
+                                                    {notification?.status ===
+                                                        "rejected" &&
+                                                        notification?.bookId
+                                                            ?.lenderId ===
+                                                            userid && (
+                                                            <span className="text-red-600 font-bold ml-4">
+                                                                Rejected
+                                                            </span>
+                                                        )}
+                                                </div>
+                                            ) : (
+                                                <div className="ml-auto flex items-center mt-4 sm:mt-0">
+                                                    <span className="text-yellow-500 font-bold ml-4">
+                                                        Not available
+                                                    </span>
+                                                </div>
+                                            )}
 
                                             {/* <span className="mt-12 ml-3 text-sm text-gray-500">
                                                 {notification.formattedTime}
@@ -630,9 +626,7 @@ const UserNotifications: React.FC = () => {
                         {cartQuantity === "0" ? (
                             <p>The book is no longer available for rent.</p>
                         ) : (
-                            <p>
-                                You have already paid the amount.
-                            </p>
+                            <p>You have already paid the amount.</p>
                         )}
 
                         <div className="mt-4 flex justify-center">
