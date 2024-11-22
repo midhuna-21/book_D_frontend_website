@@ -431,7 +431,6 @@ const EditBookForm: React.FC = () => {
                 );
 
                 if (response.status === 200) {
-                    console.log(username, "usernam");
                     navigate("/profile/lend-books");
                 }
             } catch (error: any) {

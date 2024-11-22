@@ -90,7 +90,7 @@ const UserLogin: React.FC = () => {
                     </p>
                     <span className="text-xs">Don't you have an account?</span>
                     <Link to="/">
-                        <button className="w-1/2 px-4 py-2 text-gray-700 bg-white font-medium cursor-pointer mt-8 rounded-lg">
+                        <button className="w-1/2 px-4 py-2 text-gray-700 bg-white hover:bg-gray-50 font-medium cursor-pointer mt-8 rounded-lg">
                             Sign up
                         </button>
                     </Link>
@@ -134,7 +134,7 @@ const UserLogin: React.FC = () => {
                             </span>
                         </Link>
                         <button
-                            className="w-1/2 px-4 py-2 justify-centert bg-gradient-to-r from-yellow-500 via-red-500 to-orange-500 font-bold cursor-pointer rounded-lg"
+                            className="w-1/2 px-4 py-2 justify-centert bg-gradient-to-r from-yellow-500 via-red-500 to-orange-500 font-bold cursor-pointer rounded-lg hover:from-orange-600 hover:via-orange-600 hover:to-orange-700"
                             onClick={handleLogin}>
                             <p className="text-white">Login</p>
                         </button>

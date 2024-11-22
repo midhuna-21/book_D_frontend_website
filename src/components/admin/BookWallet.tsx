@@ -38,7 +38,6 @@ const BookWallet: React.FC = () => {
                 );
                 if (Array.isArray(response?.data) && response.data.length > 0) {
                     const walletData = response.data[0];
-                    console.log(walletData, "wallet");
                     setBalance(walletData.balance);
                     setWallet(walletData);
                 } else {

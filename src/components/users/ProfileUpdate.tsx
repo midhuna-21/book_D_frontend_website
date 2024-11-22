@@ -174,7 +174,6 @@ const ProfileUpdate: React.FC = () => {
                     dispatch(addUser(response.data));
 
                     setFormData(filteredFormData);
-                    console.log("filteredFormData", filteredFormData);
                     toast.success("Profile updated successfully");
                 }
             } catch (error: any) {

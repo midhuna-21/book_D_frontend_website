@@ -216,7 +216,6 @@ const Rent: React.FC = () => {
     const handleStatusUpdate = (orderId: string, dueDate: Date) => {
         const currentDate = new Date();
         const expiryDate = new Date(dueDate);
-        console.log(currentDate, "currente date");
         if (currentDate < expiryDate) {
             return toast.error("You can't return this book before due date.");
         }

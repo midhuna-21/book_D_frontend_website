@@ -132,7 +132,7 @@ const NewPassword: React.FC = () => {
                         </label>
                         <button
                             type="button"
-                            className="w-32 h-10 bg-gradient-to-r from-yellow-500 via-red-500 to-orange-500 text-white font-bold text-xs cursor-pointer rounded-lg mt-7 flex items-center justify-center"
+                            className="w-32 h-10 bg-gradient-to-r from-yellow-500 via-red-500 to-orange-500 text-white font-bold text-xs cursor-pointer rounded-lg mt-7 flex items-center justify-center hover:from-orange-500 hover:via-orange-600 hover:to-orange-700"
                             onClick={handleSubmit}>
                             Submit
                         </button>

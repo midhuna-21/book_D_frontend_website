@@ -43,7 +43,6 @@ const WalletTransactions: React.FC = () => {
                     "/wallet/transactions"
                 );
                 if (response?.data?.wallet) {
-                    console.log(response, "responsee wallet");
                     setBalance(response?.data?.wallet?.balance);
                     setWallet(response.data.wallet);
                 } else {

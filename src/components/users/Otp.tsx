@@ -77,7 +77,7 @@ const Otp: React.FC = () => {
             if (responses.status == 200) {
                 const { user } = responses.data;
                 if (responses.data?.origin === "sign-up") {
-                    console.log(responses.data);
+                  
                     dispatch(addUser(responses.data));
                     localStorage.setItem(
                         "useraccessToken",
@@ -90,7 +90,6 @@ const Otp: React.FC = () => {
                     navigate("/home");
                     localStorage.removeItem("otpPageVisited");
                 } else {
-                    console.log(user, "user");
                     navigate("/password/update", { state: { response: user } });
                     localStorage.setItem("otpSubmitted", "true");
                 }
@@ -215,7 +214,7 @@ const Otp: React.FC = () => {
                     <div className="flex justify-center items-center gap-4">
                         <button
                             type="button"
-                            className="w-32 h-10 bg-gradient-to-r from-yellow-500 via-red-500 to-orange-500 text-white font-bold text-xs cursor-pointer rounded-lg flex items-center justify-center"
+                            className="w-32 h-10 bg-gradient-to-r from-yellow-500 via-red-500 to-orange-500 text-white font-bold text-xs cursor-pointer rounded-lg flex items-center justify-center hover:from-orange-500 hover:via-orange-700 hover:to-orange-700"
                             onClick={handleResentOtp}
                             disabled={isSendOtp}
                             style={{ opacity: isSendOtp ? 0.5 : 1 }}>
@@ -223,7 +222,7 @@ const Otp: React.FC = () => {
                         </button>
                         <button
                             type="button"
-                            className="w-32 h-10 bg-orange-700 text-white font-bold text-xs cursor-pointer rounded-lg flex items-center justify-center"
+                            className="w-32 h-10 bg-orange-600 hover:bg-orange-700 text-white font-bold text-xs cursor-pointer rounded-lg flex items-center justify-center"
                             onClick={handleVerify}>
                             Verify
                         </button>

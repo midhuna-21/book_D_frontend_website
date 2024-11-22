@@ -84,7 +84,7 @@ const Register: React.FC = () => {
                         Do you have an account?
                     </span>
                     <Link to="/login">
-                        <button className="w-full md:w-1/2 px-4 py-2 text-gray-700 bg-white font-medium cursor-pointer mt-4 md:mt-14 rounded-lg">
+                        <button className="w-full md:w-1/2 px-4 py-2 text-gray-700 bg-white hover:bg-gray-50 font-medium cursor-pointer mt-4 md:mt-14 rounded-lg">
                             Login
                         </button>
                     </Link>
@@ -169,7 +169,7 @@ const Register: React.FC = () => {
                             <div className="flex justify-center items-center">
                                 <button
                                     type="submit"
-                                    className="w-full md:w-32 h-10 bg-gradient-to-r from-orange-500 via-orange-800 to-orange-900 text-white font-bold cursor-pointer rounded-lg mt-4 flex items-center justify-center text-xs"
+                                    className="w-full md:w-32 h-10   bg-gradient-to-r from-orange-500 via-orange-700 to-orange-800 text-white font-bold cursor-pointer rounded-lg mt-4 flex items-center justify-center text-xs hover:from-orange-600 hover:via-orange-900 hover:to-orange-800" 
                                     onClick={handleRegister}>
                                     Register
                                 </button>

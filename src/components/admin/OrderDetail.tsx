@@ -63,8 +63,6 @@ const OrderDetail = () => {
         return <div>No order details available.</div>;
     }
 
-    console.log(order, "order");
-
     return (
         <div className="bg-white shadow-md rounded p-4 h-full">
             <h1 className="text-xl font-serif mb-6 text-center text-black mt-12">

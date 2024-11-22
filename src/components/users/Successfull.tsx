@@ -72,7 +72,6 @@ const PaymentSuccess = () => {
                         "/books/rent/create-order",
                         { bookId, userId, cartId, sessionId }
                     );
-                    console.log(response, "respnse");
                     if (response.status == 200) {
                         setOrderData(response.data.order);
                         hasFetchedData.current = true;
@@ -106,7 +105,6 @@ const PaymentSuccess = () => {
     const handleOkClick = () => {
         navigate(`/profile/books/rent`);
     };
-    console.log(orderData, "orkd");
 
     if (!orderData) {
         return (

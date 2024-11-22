@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useCallback } from "react";
+import { debounce } from "lodash";
 import { userAxiosInstance } from "../../utils/api/userAxiosInstance";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -23,15 +24,21 @@ const ExploreRentalBooks: React.FC = () => {
     const [genres, setGenres] = useState<any[]>([]);
     const [isGenreDropdownVisible, setIsGenreDropdownVisible] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
+    const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
     const limit = 10;
     const [currentGenre, setCurrentGenre] = useState<string>(genreName);
     const navigate = useNavigate();
 
+    const debounceSearch = useCallback(
+        debounce((query: string) => {
+            setDebouncedSearchQuery(query);
+        }, 1000), 
+        []
+    );
+    
     const fetchBooks = async (page: number) => {
         try {
             setLoading(true);
-            console.log(selectedGenre, "selectedGenre");
-            console.log(currentGenre, "currentGenre");
 
             const response = await userAxiosInstance.get(
                 "/books/available-for-rent",
@@ -39,12 +46,11 @@ const ExploreRentalBooks: React.FC = () => {
                     params: {
                         page,
                         limit: booksPerPage,
-                        searchQuery,
+                        searchQuery:debouncedSearchQuery,
                         genreName: currentGenre || selectedGenre || "",
                     },
                 }
             );
-            console.log(response?.data);
             setBooks(response.data.books);
         } catch (error: any) {
             if (error.response && error.response.status === 403) {
@@ -56,10 +62,9 @@ const ExploreRentalBooks: React.FC = () => {
             setLoading(false);
         }
     };
-
     useEffect(() => {
         fetchBooks(currentPage);
-    }, [currentPage, searchQuery, selectedGenre, currentGenre]);
+    }, [currentPage, debouncedSearchQuery, selectedGenre, currentGenre]);
 
     const handleGenreSelect = (genreName: string) => {
         setCurrentGenre("");
@@ -70,7 +75,6 @@ const ExploreRentalBooks: React.FC = () => {
     };
     const handleGenre = async () => {
         const genreResponse = await userAxiosInstance.get("/books/genres");
-        console.log(genreResponse, "genreResponse");
         setGenres(genreResponse?.data);
         setIsGenreDropdownVisible((prev) => !prev);
     };
@@ -79,6 +83,7 @@ const ExploreRentalBooks: React.FC = () => {
         setCurrentGenre("");
         const value = e.target.value;
         setSearchQuery(value);
+        debounceSearch(value);
         setCurrentPage(1);
     };
 

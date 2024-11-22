@@ -121,7 +121,6 @@ const RentalOrdersList: React.FC = () => {
         navigate(`/admin/order-detail/${orderId}`);
     };
 
-    console.log(orders, "orders");
     if (orders.length === 0) {
         return (
             <div>

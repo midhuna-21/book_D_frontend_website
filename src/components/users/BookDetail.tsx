@@ -434,7 +434,6 @@ const BookDetailPage: React.FC = () => {
                         : "Book restored successfully!"
                 );
             } else {
-                console.log("Book data is empty or unavailable.");
                 toast.error("Book details are unavailable.");
             }
         } catch (error: any) {
@@ -451,7 +450,6 @@ const BookDetailPage: React.FC = () => {
             const response = await userAxiosInstance.delete(
                 `/books/remove/${bookId}`
             );
-            console.log(response.data);
             if (response.status == 200) {
                 navigate("/profile/lend-books");
             }

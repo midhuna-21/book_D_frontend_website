@@ -33,7 +33,6 @@ const LinkGoogleEmail: React.FC = () => {
                 email,
                 password,
             });
-            console.log(response.status == 200, "response.status==200");
             if (response.status === 200) {
                 toast.success("Your account has been successfully linked");
                 dispatch(addUser(response.data));
