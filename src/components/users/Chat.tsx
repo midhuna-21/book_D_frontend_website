@@ -6,7 +6,9 @@ import { RootState } from "../../utils/ReduxStore/store/store";
 import { userAxiosInstance } from "../../utils/api/userAxiosInstance";
 import { useSocket } from "../../utils/context/SocketProvider";
 import InputEmoji from "react-input-emoji";
-import {toast} from 'sonner'
+import { toast } from "sonner";
+import chatImage from "../../assets/chat.png";
+import { motion } from "framer-motion";
 
 interface Receivers {
     chatRoomId: string;
@@ -27,7 +29,7 @@ const UserChat: React.FC = () => {
 
     const [chatRooms, setChatRooms] = useState<Receivers[]>([]);
     const [messages, setMessages] = useState<any[]>([]);
-
+    const [loading, setLoading] = useState(true);
     const [messageText, setMessageText] = useState("");
     const [currentChatRoomId, setCurrentChatRoomId] = useState<string>("");
     const [typingUsers, setTypingUsers] = useState(new Set());
@@ -50,6 +52,7 @@ const UserChat: React.FC = () => {
 
     const fetchReceivers = async () => {
         try {
+            setLoading(true);
             const response = await userAxiosInstance.get(`/chats/${userId}`);
             const conversations = response.data.conversations;
             if (Array.isArray(conversations)) {
@@ -88,12 +91,16 @@ const UserChat: React.FC = () => {
                     typeof conversations
                 );
             }
-        } catch (error:any) {
+        } catch (error: any) {
             if (error.response && error.response.status === 403) {
                 toast.error(error.response.data.message);
             } else {
-                toast.error("An error occurred while fetching messages, try again later");
+                toast.error(
+                    "An error occurred while fetching messages, try again later"
+                );
             }
+        } finally {
+            setLoading(false);
         }
     };
     useEffect(() => {
@@ -128,11 +135,13 @@ const UserChat: React.FC = () => {
             } else {
                 console.error("Chat data is not available");
             }
-        } catch (error:any) {
+        } catch (error: any) {
             if (error.response && error.response.status === 403) {
                 toast.error(error.response.data.message);
             } else {
-                toast.error("An error occurred while fetching chatroom, try again later");
+                toast.error(
+                    "An error occurred while fetching chatroom, try again later"
+                );
             }
         }
     };
@@ -248,11 +257,13 @@ const UserChat: React.FC = () => {
             } else {
                 console.error("Failed to send message");
             }
-        } catch (error:any) {
+        } catch (error: any) {
             if (error.response && error.response.status === 403) {
                 toast.error(error.response.data.message);
             } else {
-                toast.error("An error occurred while sending message, try again later");
+                toast.error(
+                    "An error occurred while sending message, try again later"
+                );
             }
         }
     };
@@ -269,7 +280,9 @@ const UserChat: React.FC = () => {
             if (error.response && error.response.status === 403) {
                 toast.error(error.response.data.message);
             } else {
-                toast.error("An error occurred while fetching messages, try again later");
+                toast.error(
+                    "An error occurred while fetching messages, try again later"
+                );
             }
         }
     };
@@ -322,14 +335,52 @@ const UserChat: React.FC = () => {
         }
     };
 
-    if (chatRooms.length === 0) {
+    if (loading) {
         return (
-            <div className="flex items-center justify-center h-screen">
-                <p className="text-gray-600 text-lg font-semibold">No chats</p>
+            <div className="flex flex-col items-center justify-center min-h-screen">
+                <motion.div
+                    className="loader w-12 h-12 border-4 border-blue-500 border-dashed rounded-full animate-spin"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5 }}
+                />
+                <p className="mt-4 text-gray-600 text-md font-semibold">
+                    Loading notifications...
+                </p>
             </div>
         );
     }
-    
+
+    if (chatRooms.length === 0) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-screen">
+                <motion.img
+                    src={chatImage}
+                    alt="Empty Chats"
+                    className="w-56 h-42 mb-4"
+                    // animate={{
+                    //     y: [0, -10, 0],
+                    // }}
+                    transition={{
+                        duration: 2,
+                        ease: "easeInOut",
+                        repeat: Infinity,
+                        repeatType: "loop",
+                    }}
+                />
+                <div className="text-center">
+                    <p className="text-gray-600 text-md font-semibold">
+                        No chats yet.
+                    </p>
+                    <p className="text-gray-600 text-md font-semibold">
+                        Lend, rent, and start connecting with fellow book
+                        lovers!
+                    </p>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className=" mx-auto w-full max-w-6xl flex flex-col md:flex-col space-y-8 md:space-y-0 md:space-x-8 mb-20 py-24 min-h-screen">
             <div className="text-center md:mb-12">
@@ -364,7 +415,7 @@ const UserChat: React.FC = () => {
                                                 alt={chatRoom.userName}
                                                 className="w-full h-full object-cover"
                                             />
-                                   
+
                                             {onlineUsers.has(
                                                 chatRoom.userId
                                             ) && (

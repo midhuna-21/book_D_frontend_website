@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { userAxiosInstance } from "../../utils/api/userAxiosInstance";
 import { Link } from "react-router-dom";
-import {toast} from 'sonner'
+import { toast } from "sonner";
 
 const Books: React.FC = () => {
     const [books, setBooks] = useState<any[]>([]);
@@ -13,12 +13,14 @@ const Books: React.FC = () => {
                     "/books/available-for-rent"
                 );
 
-                setBooks(response.data);
-            } catch (error:any) {
+                setBooks(response.data?.books);
+            } catch (error: any) {
                 if (error.response && error.response.status === 403) {
                     toast.error(error.response.data.message);
                 } else {
-                    toast.error("An error occurred while fetching books, please try again later");
+                    toast.error(
+                        "An error occurred while fetching books, please try again later"
+                    );
                 }
             }
         };
@@ -26,8 +28,9 @@ const Books: React.FC = () => {
         fetchBooks();
     }, []);
 
+    if (books.length == 0) return null;
     return (
-        <div className="container mb-14 mt-14">
+        <div className="container mb-14 mt-14 min-">
             <div className="flex flex-col items-center">
                 <div className="w-full py-6 mb-6 border-b border-gray-200">
                     <h2 className="text-2xl font-serif underline flex justify-center items-center md:text-3xl">

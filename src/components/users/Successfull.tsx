@@ -5,6 +5,7 @@ import { userAxiosInstance } from "../../utils/api/userAxiosInstance";
 import { toast } from "sonner";
 import { RootState } from "../../utils/ReduxStore/store/store";
 import { useSelector } from "react-redux";
+import Spinner from "../users/Spinner";
 
 interface OrderData {
     userId: {
@@ -103,14 +104,14 @@ const PaymentSuccess = () => {
     }, [hasFetchedData, fromWallet]);
 
     const handleOkClick = () => {
-        navigate(`/${username}/books/rent`);
+        navigate(`/profile/books/rent`);
     };
     console.log(orderData, "orkd");
 
     if (!orderData) {
         return (
-            <div className="flex items-center justify-center min-h-screen">
-                Loading...
+            <div>
+                <Spinner />
             </div>
         );
     }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate, Link, useLocation } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useSocket } from "../../utils/context/SocketProvider";
 import {
     FaHome,
@@ -11,15 +11,13 @@ import {
     FaBook,
     FaBars,
     FaSignOutAlt,
-    FaTimes,
-    FaSearch,
 } from "react-icons/fa";
 import { clearUser } from "../../utils/ReduxStore/slice/userSlice";
 import logo from "../../assets/logo.png";
 import userLogo from "../../assets/userLogo.png";
 import { RootState } from "../../utils/ReduxStore/store/store";
 import { userAxiosInstance } from "../../utils/api/userAxiosInstance";
-import {toast} from 'sonner';
+import { toast } from "sonner";
 
 const Header: React.FC = () => {
     const userInfo = useSelector(
@@ -31,13 +29,10 @@ const Header: React.FC = () => {
     const [isHovered, setIsHovered] = useState(false);
     const [prevScrollPos, setPrevScrollPos] = useState(0);
     const [visible, setVisible] = useState(true);
-    const [isSearchVisible, setIsSearchVisible] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [messageCount, setMessageCount] = useState<number>(0);
     const [notificationCount, setNotificationCount] = useState(0);
-    const location = useLocation();
     const { socket } = useSocket();
-    const [searchQuery, setSearchQuery] = useState("");
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -62,30 +57,8 @@ const Header: React.FC = () => {
         navigate("/login");
     };
 
-    const toggleSearch = () => {
-        if (!isSearchVisible) {
-            setIsSearchVisible(true);
-        }
-    };
-
-    const hideSearch = () => {
-        setIsSearchVisible(false);
-    };
-
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);
-    };
-
-    const handleSearch = async (
-        event: React.KeyboardEvent<HTMLInputElement>
-    ) => {
-        if (event.key === "Enter") {
-            try {
-                navigate("/explore-books", { state: { searchQuery } });
-            } catch (error) {
-                console.error("Error fetching search results:", error);
-            }
-        }
     };
 
     useEffect(() => {
@@ -96,12 +69,17 @@ const Header: React.FC = () => {
                         `/notifications/unread/${userId}`
                     );
                     setNotificationCount(response?.data?.count);
-                } catch (error:any) {
+                } catch (error: any) {
                     if (error.response && error.response.status === 403) {
                         toast.error(error.response.data.message);
                     } else {
-                        toast.error("An error occurred, please try again later");
-                        console.error("Failed to fetch notifications count", error);
+                        toast.error(
+                            "An error occurred, please try again later"
+                        );
+                        console.error(
+                            "Failed to fetch notifications count",
+                            error
+                        );
                     }
                 }
             };
@@ -113,18 +91,20 @@ const Header: React.FC = () => {
                         `/messages/unread/${userId}`
                     );
                     setMessageCount(response?.data?.count);
-                } catch (error:any) {
+                } catch (error: any) {
                     if (error.response && error.response.status === 403) {
                         toast.error(error.response.data.message);
                     } else {
-                        toast.error("An error occurred while fetching messages, please try again later");
+                        toast.error(
+                            "An error occurred while fetching messages, please try again later"
+                        );
                         console.error("Failed to fetch message count", error);
                     }
                 }
             };
             fetchMessageCount();
         }
-    },[]);
+    }, []);
 
     useEffect(() => {
         if (socket) {
@@ -145,11 +125,6 @@ const Header: React.FC = () => {
         };
     }, [socket]);
 
-    useEffect(() => {
-        setIsSearchVisible(false);
-        setSearchQuery("");
-    }, [location]);
-
     return (
         <>
             <header
@@ -157,14 +132,13 @@ const Header: React.FC = () => {
                     !visible && "transform -translate-y-full"
                 }`}
                 style={{ height: "80px" }}>
-                     <Link to="/home">
-                <div
-                 className="flex items-center ml-4">
-                    <img src={logo} alt="Logo" className="h-12" />
-                    <span className="font-serif ml-2 text-emerald-800 text-xl">
-                        Book.D
-                    </span>
-                </div>
+                <Link to="/home">
+                    <div className="flex items-center ml-4">
+                        <img src={logo} alt="Logo" className="h-12" />
+                        <span className="font-serif ml-2 text-emerald-800 text-xl">
+                            Book.D
+                        </span>
+                    </div>
                 </Link>
 
                 <div className="flex items-center md:hidden mr-4">
@@ -174,38 +148,6 @@ const Header: React.FC = () => {
                 </div>
                 <div
                     className={`hidden md:flex items-center space-x-4 px-10 mr-12 gap-10`}>
-                    <div className="relative flex items-center">
-                        {isSearchVisible && (
-                            <div className="relative flex items-center">
-                                <input
-                                    type="text"
-                                    placeholder="search..."
-                                    value={searchQuery}
-                                    onChange={(e) =>
-                                        setSearchQuery(e.target.value)
-                                    }
-                                    onKeyDown={handleSearch}
-                                    className="bg-white text-gray-900 placeholder-gray-500 w-96 px-4 py-2 focus:outline-none focus:ring focus:border-blue-900 shadow-lg rounded-3xl"
-                                />
-                                <FaTimes
-                                    className="absolute right-3 text-gray-800 cursor-pointer"
-                                    onClick={hideSearch}
-                                />
-                            </div>
-                        )}
-                        <div
-                            className="relative flex items-center justify-center cursor-pointer px-2 group"
-                            onClick={toggleSearch}>
-                            <div className="relative flex flex-col items-center cursor-pointer ">
-                                <div className="flex items-center justify-center">
-                                    <FaSearch />
-                                </div>
-                            </div>
-                            <div className="absolute top-7 bg-gray-800 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-opacity">
-                                Search
-                            </div>
-                        </div>
-                    </div>
                     <Link to="/home">
                         <div className="relative flex flex-col items-center cursor-pointer group">
                             <div className="flex items-center justify-center">
@@ -222,7 +164,7 @@ const Header: React.FC = () => {
                                 <FaCompass className="text-gray-800 text-xl" />
                             </div>
                             <div className="absolute top-8 bg-gray-800 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-opacity">
-                                Explore
+                                Books for You
                             </div>
                         </div>
                     </Link>
@@ -284,7 +226,7 @@ const Header: React.FC = () => {
                                     onMouseEnter={() => setIsHovered(true)}
                                     onMouseLeave={() => setIsHovered(false)}>
                                     <ul className="py-1">
-                                        <Link to={`/${name}`}>
+                                        <Link to={"/profile"}>
                                             <li className="hover:bg-gray-100 px-4 py-2 cursor-pointer transition duration-200 ease-in-out transform hover:translate-x-1 flex items-center space-x-2">
                                                 <FaUser className="text-gray-500" />
                                                 <span className="text-gray-800">

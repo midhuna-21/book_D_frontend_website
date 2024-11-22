@@ -34,7 +34,6 @@ const ProfileHeader: React.FC = () => {
                 "/profile/update-image",
                 formData,
                 {
-                    withCredentials: true,
                     headers: {
                         "Content-Type": "multipart/form-data",
                     },
@@ -100,7 +99,7 @@ const ProfileHeader: React.FC = () => {
         }
     };
     return (
-        <div className="flex flex-col items-center md:items-start">
+        <div className="flex flex-col items-center md:items-start ">
             <div
                 className="p-6 h-60 flex flex-col items-center relative w-full"
                 style={{

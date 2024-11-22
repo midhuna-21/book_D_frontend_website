@@ -17,7 +17,7 @@ const AboutRentLend: React.FC = () => {
     const openLendModal = () => setIsLendModalOpen(true);
     const closeLendModal = () => setIsLendModalOpen(false);
     return (
-        <div className="container mx-auto px-8 mb-12 flex justify-center items-center">
+        <div className="container mx-auto px-8 mb-12 flex justify-center items-center min-h-[50vh]">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full max-w-4xl">
                 <div
                     onClick={openRentModal}

@@ -1,40 +1,45 @@
 import { useEffect, useState } from "react";
-import { useParams,useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { FaHome, FaWallet, FaCreditCard } from "react-icons/fa";
 import { userAxiosInstance } from "../../utils/api/userAxiosInstance";
 import { useSelector } from "react-redux";
 import { RootState } from "../../utils/ReduxStore/store/store";
 import { loadStripe, Stripe } from "@stripe/stripe-js";
 import { toast } from "sonner";
-
+import Spinner from "../users/Spinner";
+import { motion } from "framer-motion";
 
 const RentalPaymentDetails = () => {
     const { cartId } = useParams();
     const [bookDetails, setBookDetails] = useState<any>(null);
-    const navigate = useNavigate()
+    const navigate = useNavigate();
     const userInfo = useSelector(
         (state: RootState) => state?.user?.userInfo?.user
     );
     const userId = userInfo?._id;
     const [isAgreed, setIsAgreed] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [paymentMethod, setPaymentMethod] = useState<"wallet" | "stripe">(
         "stripe"
     );
 
     useEffect(() => {
         const fetchDetails = async () => {
+            setLoading(true);
             try {
                 const response = await userAxiosInstance.get(
                     `/payments/rental-details/${cartId}`
                 );
                 setBookDetails(response?.data?.details);
-            } catch (error:any) {
+            } catch (error: any) {
                 if (error.response && error.response.status === 403) {
                     toast.error(error.response.data.message);
                 } else {
                     toast.error("An error occurred, please try again later");
                     console.error("Error fetching book details", error);
                 }
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -46,7 +51,11 @@ const RentalPaymentDetails = () => {
     };
 
     if (!bookDetails) {
-        return <div>Loading...</div>;
+        return (
+            <div>
+                <Spinner />
+            </div>
+        );
     }
 
     const makePayment = async () => {
@@ -72,9 +81,11 @@ const RentalPaymentDetails = () => {
 
         try {
             if (paymentMethod === "stripe" && stripePromise) {
-                const checkIsExistOrder = await userAxiosInstance.get(`/orders/is-exist/${cartId}`)
-                if(checkIsExistOrder?.data?.isOrderExist?.isPaid==true){
-                    return toast.error('you already paid')
+                const checkIsExistOrder = await userAxiosInstance.get(
+                    `/orders/is-exist/${cartId}`
+                );
+                if (checkIsExistOrder?.data?.isOrderExist?.isPaid == true) {
+                    return toast.error("you already paid");
                 }
                 const response = await userAxiosInstance.post(
                     "/payments/checkout",
@@ -94,23 +105,30 @@ const RentalPaymentDetails = () => {
                     return;
                 }
             } else if (paymentMethod === "wallet") {
-                const checkIsExistOrder = await userAxiosInstance.get(`/orders/is-exist/${cartId}`)
-                if(checkIsExistOrder?.data?.isOrderExist?.isPaid==true){
-                    return toast.error('you already paid')
+                const checkIsExistOrder = await userAxiosInstance.get(
+                    `/orders/is-exist/${cartId}`
+                );
+                if (checkIsExistOrder?.data?.isOrderExist?.isPaid == true) {
+                    return toast.error("you already paid");
                 }
                 const body = {
-                    cartId:bookDetails?._id,
+                    cartId: bookDetails?._id,
                     bookId: bookDetails?.bookId?._id,
                     userId: userId,
-                }
+                };
                 const checkWallet = await userAxiosInstance.post(
                     "/wallet/check"
                 );
                 const balanceAmount = checkWallet?.data?.isWalletExist?.balance;
                 if (balanceAmount >= totalPrice) {
-                    const orderResponse = await userAxiosInstance.post('/wallet/payment',body);
-                    const orderId = orderResponse?.data?.order?._id
-                    navigate("/payment/success", { state: { fromWallet: true , orderId: orderId } });
+                    const orderResponse = await userAxiosInstance.post(
+                        "/wallet/payment",
+                        body
+                    );
+                    const orderId = orderResponse?.data?.order?._id;
+                    navigate("/payment/success", {
+                        state: { fromWallet: true, orderId: orderId },
+                    });
                 } else {
                     toast.warning(
                         "Insufficient balance in your wallet. Please choose another payment method."
@@ -121,7 +139,11 @@ const RentalPaymentDetails = () => {
             }
         } catch (error: any) {
             console.error("Error creating checkout session:", error);
-            if (error.response || error.response.status === 400 || error.response.status===403) {
+            if (
+                error.response ||
+                error.response.status === 400 ||
+                error.response.status === 403
+            ) {
                 toast.error(error.response.data.message);
             } else {
                 toast.error("An error occured try again later");
@@ -131,6 +153,22 @@ const RentalPaymentDetails = () => {
 
     const totalPrice =
         bookDetails?.bookId?.extraFee + bookDetails?.totalRentalPrice;
+
+    if (loading) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-screen">
+                <motion.div
+                    className="loader w-12 h-12 border-4 border-blue-500 border-dashed rounded-full animate-spin"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5 }}
+                />
+                <p className="mt-4 text-gray-600 text-md font-semibold">
+                    Loading notifications...
+                </p>
+            </div>
+        );
+    }
 
     return (
         <div className="flex flex-col lg:flex-row items-center justify-center py-24 bg-gray-50 min-h-screen gap-10 px-12">

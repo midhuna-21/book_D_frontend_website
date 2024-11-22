@@ -50,7 +50,7 @@ const EditGenre: React.FC = () => {
         event.preventDefault();
         try {
             const formData = new FormData();
-           
+
             const name = genreName.trim();
 
             if (!name) {
@@ -61,7 +61,13 @@ const EditGenre: React.FC = () => {
                 toast.error("Genre name should not contain spaces.");
                 return;
             }
-    
+            const validGenreRegex = /^(?!\d+$)[a-zA-Z0-9 ]+$/;
+
+            if (!validGenreRegex.test(name)) {
+                toast.error("Please enter a valid genre");
+                return;
+            }
+
             formData.append("genreName", name);
             if (file) {
                 formData.append("file", file);

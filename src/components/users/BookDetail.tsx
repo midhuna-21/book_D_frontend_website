@@ -12,10 +12,14 @@ import { useSelector } from "react-redux";
 import { io, Socket } from "socket.io-client";
 import config from "../../config/config";
 import { useLocation, useNavigate } from "react-router-dom";
+import Spinner from "../users/Spinner";
+import axios from "axios";
+import { motion } from "framer-motion";
 
 const BookDetailPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const userInfo = useSelector((state: any) => state.user.userInfo?.user);
+    const address = userInfo?.address;
     const userId = userInfo?._id || "";
     const username = userInfo?.name;
     const [book, setBook] = useState<any>(null);
@@ -29,7 +33,7 @@ const BookDetailPage: React.FC = () => {
         book?.isArchived || false
     );
     const [isLoading, setIsLoading] = useState<boolean>(false);
-
+    const [loading, setLoading] = useState(true);
     const [socket, setSocket] = useState<Socket | null>(null);
     const [quantity, setQuantity] = useState<number>(1);
     const location = useLocation();
@@ -89,6 +93,7 @@ const BookDetailPage: React.FC = () => {
 
     const fetchBook = async () => {
         try {
+            setLoading(true);
             const response = await userAxiosInstance.get(
                 `/books/details/${id}`
             );
@@ -110,6 +115,8 @@ const BookDetailPage: React.FC = () => {
                     "An error occurred while getching book details, please try again later"
                 );
             }
+        } finally {
+            setLoading(false);
         }
     };
     useEffect(() => {
@@ -181,104 +188,121 @@ const BookDetailPage: React.FC = () => {
             }
         };
     }, []);
-
     const handleRequest = async () => {
         try {
-            const currentUserLocation = await currentUserGetLocation();
-            const bookLocation = {
-                latitude: book.latitude,
-                longitude: book.longitude,
-            };
+            const userAddress = userInfo?.address;
+            if (!userAddress) {
+                Swal.fire({
+                    icon: "warning",
+                    title: "Address Required",
+                    text: "Before you request a book, you must add your address.",
+                    showCancelButton: false,
+                    confirmButtonText: "Go to Profile",
+                    customClass: {
+                        confirmButton: "btn btn-primary",
+                    },
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        navigate("/profile");
+                    }
+                });
+                return;
+            }
+            // const lenderAddress = book?.address;
 
-            const calculateDistance = {
-                lat1: currentUserLocation.latitude,
-                lng1: currentUserLocation.longitude,
-                lat2: bookLocation.latitude,
-                lng2: bookLocation.longitude,
-            };
+            // const origin = `${userAddress.street}, ${userAddress.city}, ${userAddress.state}, ${userAddress.pincode}`;
+            // const destination = `${lenderAddress.street}, ${lenderAddress.city}, ${lenderAddress.state}, ${lenderAddress.pincode}`;
 
-            const distanceResponse = await userAxiosInstance.get(
-                "/google/locations/distance",
-                {
-                    params: calculateDistance,
-                    withCredentials: true,
-                }
+            // const API_KEY = "AIzaSyD06G78Q2_d18EkXbsYsyg7qb2O-WWUU-Q";
+            // const distanceResponse = await axios.get(
+            //     `https://maps.googleapis.com/maps/api/distancematrix/json`,
+            //     {
+            //         params: {
+            //             origins: origin,
+            //             destinations: destination,
+            //             key: API_KEY,
+            //         },
+            //     }
+            // );
+            // if (distanceResponse?.data?.status === "OK") {
+            //     const distance =
+            //         distanceResponse.data.rows[0].elements[0].distance.value;
+            //     const maxDistance = book.maxDistance * 1000;
+
+            //     console.log(
+            //         `Distance: ${distance} meters, Max Distance: ${maxDistance} meters`
+            //     );
+
+            //     if (distance > maxDistance) {
+            //         toast.error(
+            //             `The book is not available for distances greater than ${book.maxDistance} km.`
+            //         );
+            //         return;
+            //     }
+
+            const cartData = {
+                userId,
+                ownerId: lender._id,
+                bookId: book._id,
+                quantity,
+                totalAmount,
+                totalRentalPrice,
+                totalDepositAmount,
+                totalDays,
+                types: "requested",
+            };
+            const cartCreateResponse = await userAxiosInstance.post(
+                "/cart/add",
+                cartData
             );
 
-            if (distanceResponse.status === 200) {
-                const distance = distanceResponse?.data?.distanceResponse;
-                const allowedDistance = book.maxDistance;
-
-                if (distance > allowedDistance) {
-                    toast.error(
-                        `The book is available within ${book.maxDistance}.`
-                    );
-                    return;
-                } else {
-                    const cartData = {
-                        userId,
-                        ownerId: lender._id,
-                        bookId: book._id,
-                        quantity,
-                        totalAmount,
-                        totalRentalPrice,
-                        totalDepositAmount,
-                        totalDays,
-                        types: "requested",
-                    };
-                    const cartCreateResponse = await userAxiosInstance.post(
-                        "/cart/add",
-                        cartData
-                    );
-
-                    const cartId = cartCreateResponse?.data?.cart?._id;
-                    if (cartCreateResponse.status == 200) {
-                        const notificationData = {
-                            cartId,
-                            userId,
+            const cartId = cartCreateResponse?.data?.cart?._id;
+            if (cartCreateResponse.status == 200) {
+                const notificationData = {
+                    cartId,
+                    userId,
+                    receiverId: lender._id,
+                    bookId: book._id,
+                    status: "requested",
+                };
+                const notificationResponse = await userAxiosInstance.post(
+                    "/notifications/send-notification",
+                    notificationData
+                );
+                if (notificationResponse.status === 200) {
+                    if (socket) {
+                        socket.emit("send-notification", {
                             receiverId: lender._id,
-                            bookId: book._id,
-                            status: "requested",
-                        };
-                        const notificationResponse =
-                            await userAxiosInstance.post(
-                                "/notifications/send-notification",
-                                notificationData
-                            );
-                        if (notificationResponse.status === 200) {
-                            if (socket) {
-                                socket.emit("send-notification", {
-                                    receiverId: lender._id,
-                                    notification:
-                                        notificationResponse?.data
-                                            ?.notification,
-                                });
-                            }
-                            Swal.fire({
-                                icon: "success",
-                                title: "Request Sent",
-                                text: "Your request has been sent to the lender. Please wait for acceptance.",
-                                confirmButtonText: "OK",
-                            });
-                        } else {
-                            console.error(
-                                "Failed to send notification:",
-                                notificationResponse.statusText
-                            );
-                        }
-                    } else {
-                        console.error(
-                            "Failed to create cart item :",
-                            cartCreateResponse.statusText
-                        );
+                            notification:
+                                notificationResponse?.data?.notification,
+                        });
                     }
+                    Swal.fire({
+                        icon: "success",
+                        title: "Request Sent",
+                        text: "Your request has been sent to the lender. Please wait for acceptance.",
+                        confirmButtonText: "OK",
+                    });
+                } else {
+                    console.error(
+                        "Failed to send notification:",
+                        notificationResponse.statusText
+                    );
                 }
             } else {
                 console.error(
-                    "Failed to get distance from server:",
-                    distanceResponse.statusText
+                    "Failed to create cart item :",
+                    cartCreateResponse.statusText
                 );
             }
+            // } else {
+            //     console.error(
+            //         "Failed to get distance:",
+            //         distanceResponse?.data?.error_message
+            //     );
+            //     toast.error("Unable to fetch distance. Please try again.");
+            //     return;
+            // }
         } catch (error: any) {
             if (error.response && error.response.status === 403) {
                 toast.error(error.response.data.message);
@@ -287,6 +311,111 @@ const BookDetailPage: React.FC = () => {
             }
         }
     };
+    // const handleRequest = async () => {
+    //     try {
+    //         const currentUserLocation = await currentUserGetLocation();
+    //         const bookLocation = {
+    //             latitude: book.latitude,
+    //             longitude: book.longitude,
+    //         };
+
+    //         const calculateDistance = {
+    //             lat1: currentUserLocation.latitude,
+    //             lng1: currentUserLocation.longitude,
+    //             lat2: bookLocation.latitude,
+    //             lng2: bookLocation.longitude,
+    //         };
+
+    //         const distanceResponse = await userAxiosInstance.get(
+    //             "/google/locations/distance",
+    //             {
+    //                 params: calculateDistance,
+    //                 withCredentials: true,
+    //             }
+    //         );
+
+    //         if (distanceResponse.status === 200) {
+    //             const distance = distanceResponse?.data?.distanceResponse;
+    //             const allowedDistance = book.maxDistance;
+
+    //             if (distance > allowedDistance) {
+    //                 toast.error(
+    //                     `The book is available within ${book.maxDistance}.`
+    //                 );
+    //                 return;
+    //             } else {
+    //                 const cartData = {
+    //                     userId,
+    //                     ownerId: lender._id,
+    //                     bookId: book._id,
+    //                     quantity,
+    //                     totalAmount,
+    //                     totalRentalPrice,
+    //                     totalDepositAmount,
+    //                     totalDays,
+    //                     types: "requested",
+    //                 };
+    //                 const cartCreateResponse = await userAxiosInstance.post(
+    //                     "/cart/add",
+    //                     cartData
+    //                 );
+
+    //                 const cartId = cartCreateResponse?.data?.cart?._id;
+    //                 if (cartCreateResponse.status == 200) {
+    //                     const notificationData = {
+    //                         cartId,
+    //                         userId,
+    //                         receiverId: lender._id,
+    //                         bookId: book._id,
+    //                         status: "requested",
+    //                     };
+    //                     const notificationResponse =
+    //                         await userAxiosInstance.post(
+    //                             "/notifications/send-notification",
+    //                             notificationData
+    //                         );
+    //                     if (notificationResponse.status === 200) {
+    //                         if (socket) {
+    //                             socket.emit("send-notification", {
+    //                                 receiverId: lender._id,
+    //                                 notification:
+    //                                     notificationResponse?.data
+    //                                         ?.notification,
+    //                             });
+    //                         }
+    //                         Swal.fire({
+    //                             icon: "success",
+    //                             title: "Request Sent",
+    //                             text: "Your request has been sent to the lender. Please wait for acceptance.",
+    //                             confirmButtonText: "OK",
+    //                         });
+    //                     } else {
+    //                         console.error(
+    //                             "Failed to send notification:",
+    //                             notificationResponse.statusText
+    //                         );
+    //                     }
+    //                 } else {
+    //                     console.error(
+    //                         "Failed to create cart item :",
+    //                         cartCreateResponse.statusText
+    //                     );
+    //                 }
+    //             }
+    //         } else {
+    //             console.error(
+    //                 "Failed to get distance from server:",
+    //                 distanceResponse.statusText
+    //             );
+    //         }
+    //     } catch (error: any) {
+    //         if (error.response && error.response.status === 403) {
+    //             toast.error(error.response.data.message);
+    //         } else {
+    //             toast.error("An error occurred, please try again later");
+    //         }
+    //     }
+    // };
 
     const toggleArchiveStatus = async (bookId: string, isArchived: boolean) => {
         try {
@@ -324,7 +453,7 @@ const BookDetailPage: React.FC = () => {
             );
             console.log(response.data);
             if (response.status == 200) {
-                navigate(`/${username}/lend-books`);
+                navigate("/profile/lend-books");
             }
         } catch (error: any) {
             if (error.response && error.response.status === 400) {
@@ -339,7 +468,28 @@ const BookDetailPage: React.FC = () => {
     const handleEditClick = async (bookId: string) => {
         navigate(`/books/update/${bookId}`);
     };
-    if (!book) return <div>Loading...</div>;
+
+    if (loading) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-screen">
+                <motion.div
+                    className="loader w-12 h-12 border-4 border-blue-500 border-dashed rounded-full animate-spin"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5 }}
+                />
+                <p className="mt-4 text-gray-600 text-md font-semibold">
+                    Loading notifications...
+                </p>
+            </div>
+        );
+    }
+    if (!book)
+        return (
+            <div>
+                <Spinner />
+            </div>
+        );
 
     return (
         <div className="flex flex-col items-center justify-center py-24 min-h-screen">
@@ -361,23 +511,22 @@ const BookDetailPage: React.FC = () => {
                 </div>
             </div>
             <div className="w-full p-2 flex flex-col md:flex-row justify-center space-y-1 md:space-y-0 md:space-x-5">
-            <div className={`relative rounded-2xl p-5 ${myBook ? "shadow-lg" : ""}`}>
-
-                        <div className="flex items-center  border-gray-500 rounded-full">
-                            <img
-                                src={lender.image}
-                                alt={lender.name}
-                                className="w-12 h-12 object-cover rounded-full border-2 shadow-md"
-                            />
-                            <div className="ml-2">
-                                <p className="text-xs text-gray-600">
-                                    Lended by
-                                </p>
-                                <span className="text-sm text-gray-800 font-semibold ">
-                                    {lender.name}
-                                </span>
-                            </div>
-                        
+                <div
+                    className={`relative rounded-2xl p-5 ${
+                        myBook ? "shadow-lg" : ""
+                    }`}>
+                    <div className="flex items-center  border-gray-500 rounded-full">
+                        <img
+                            src={lender.image}
+                            alt={lender.name}
+                            className="w-12 h-12 object-cover rounded-full border-2 shadow-md"
+                        />
+                        <div className="ml-2">
+                            <p className="text-xs text-gray-600">Lended by</p>
+                            <span className="text-sm text-gray-800 font-semibold ">
+                                {lender.name}
+                            </span>
+                        </div>
                     </div>
                     <div className="flex flex-col justify-center items-center">
                         <div className="border-gray-300 border-2">
@@ -508,7 +657,7 @@ const BookDetailPage: React.FC = () => {
                         <span> {book.author}</span>
                     </p>
                     <p className="mb-2 flex items-center">
-                    <span className="font-semibold text-sm w-40">
+                        <span className="font-semibold text-sm w-40">
                             PUBLISHER
                         </span>{" "}
                         <span className="md:ml-0 ml-4"> {book.publisher}</span>

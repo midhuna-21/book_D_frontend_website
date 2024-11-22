@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../utils/ReduxStore/store/store";
 import { FaGreaterThan, FaLessThan, FaCheck } from "react-icons/fa";
 import { toast } from "sonner";
+import Spinner from "../users/Spinner";
 
 interface Address {
     street: string;
@@ -27,8 +28,8 @@ interface Order {
         extraFee: number;
         address: Address;
     };
-    bookTitle:string;
-    bookAddress:string;
+    bookTitle: string;
+    bookAddress: string;
     lenderId: {
         name: string;
     };
@@ -235,7 +236,7 @@ const LendedBooks: React.FC = () => {
             );
             fetchOrders();
             setShowModal(false);
-        } catch (error:any) {
+        } catch (error: any) {
             if (error.response && error.response.status === 403) {
                 toast.error(error.response.data.message);
             } else {
@@ -248,7 +249,7 @@ const LendedBooks: React.FC = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center min-h-screen">
-                Loading...
+                <Spinner />
             </div>
         );
     }
@@ -359,10 +360,7 @@ const LendedBooks: React.FC = () => {
                                                     target="_blank"
                                                     rel="noopener noreferrer"
                                                     className="text-blue-600 underline hover:text-blue-800">
-                                                    {
-                                                        order?.bookAddress
-                                                    }{" "}
-                                                   
+                                                    {order?.bookAddress}{" "}
                                                 </a>
                                             </td>
                                             <td className="px-6 py-4 max-w-[150px] truncate text-center">

@@ -1,3 +1,5 @@
+const disallowedCharacters = /[^a-zA-Z0-9\s.,-]/;
+
 export const validateName = (name: string) => {
     if (name.trim() === "") {
         return "Please enter a name.";
@@ -29,7 +31,7 @@ export const validatePhone = (phone: string) => {
     if (phone.length !== 10) {
         return "Phone number should be 10 digits long.";
     }
-    const regex = /^(?!.*(.)\1{4})\d{10}$/;
+    const regex = /^(?!.*(.)\1{6})\d{10}$/;
     if (!regex.test(phone)) {
         return "Please enter a valid phone number.";
     }
@@ -40,11 +42,17 @@ export const validateStreet = (street: string) => {
     if (street.length > 100) {
         return "street should not exceed 100 characters.";
     }
+    if (disallowedCharacters.test(street)) {
+        return "Please provide valid street address.";
+    }
     return true;
 };
 export const validateCity = (city: string) => {
     if (city.length > 100) {
         return "City should not exceed 100 characters.";
+    }
+    if (disallowedCharacters.test(city)) {
+        return "Please provide valid city address.";
     }
     return true;
 };
@@ -53,12 +61,18 @@ export const validateDistrict = (district: string) => {
     if (district.length > 100) {
         return "District should not exceed 100 characters.";
     }
+    if (disallowedCharacters.test(district)) {
+        return "Please provide valid distict.";
+    }
     return true;
 };
 
 export const validateState = (state: string) => {
     if (state.length > 100) {
         return "State should not exceed 100 characters.";
+    }
+    if (disallowedCharacters.test(state)) {
+        return "Please provide valid state.";
     }
     return true;
 };

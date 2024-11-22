@@ -14,6 +14,7 @@ const Otp: React.FC = () => {
         location.state?.response?.user || location.state?.response || "";
     const origin = location.state?.origin;
     const email = response.email;
+    const userId = response._id;
     const [isSendOtp, setIsSendOtp] = useState(false);
     const [isOtpOnce, setIsOtpOnce] = useState(false);
     const [timer, setTimer] = useState(60);
@@ -68,6 +69,7 @@ const Otp: React.FC = () => {
         const otpValue = otp.join("");
         try {
             const responses = await axiosUser.post("/verify-otp", {
+                userId,
                 response,
                 otp: otpValue,
                 origin,
@@ -88,7 +90,7 @@ const Otp: React.FC = () => {
                     navigate("/home");
                     localStorage.removeItem("otpPageVisited");
                 } else {
-                    console.log(user,'user')
+                    console.log(user, "user");
                     navigate("/password/update", { state: { response: user } });
                     localStorage.setItem("otpSubmitted", "true");
                 }
@@ -141,7 +143,10 @@ const Otp: React.FC = () => {
             return toast.error("An error occurred, please try again later");
         }
         try {
-            const response = await axiosUser.post("/otp/resend", { email });
+            const response = await axiosUser.post("/otp/resend", {
+                email,
+                userId,
+            });
             setIsSendOtp(true);
             setIsOtpOnce(true);
             startTimer();

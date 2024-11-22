@@ -28,28 +28,29 @@ const GmailUpdate: React.FC = () => {
         openModal();
     };
     const handleUnlinkConfirm = async () => {
-        try{
-       const response = await userAxiosInstance
-            .post("/email/unlink", { withCredentials: true })
-            
-                if (response.status == 200) {
-                    dispatch(addUser(response.data));
-                    setMessage(
-                        "Check your email. We've sent a reset password link."
-                    );
-                    setMessageType("success");
-                    closeModal();
-                }
-            }catch(error:any){
-                console.log("Error");
-                setMessage("An error occurred. Please try again.");
-                setMessageType("info");
+        try {
+            const response = await userAxiosInstance.post("/email/unlink", {
+                withCredentials: true,
+            });
+
+            if (response.status == 200) {
+                dispatch(addUser(response.data));
+                setMessage(
+                    "Check your email. We've sent a reset password link."
+                );
+                setMessageType("success");
+                closeModal();
             }
+        } catch (error: any) {
+            console.log("Error");
+            setMessage("An error occurred. Please try again.");
+            setMessageType("info");
+        }
     };
 
     return (
         <>
-            <div className="bg-white rounded-lg shadow-xl p-7 w-full md:w-2/3 mx-auto mt-5 md:mt-0">
+            <div className="bg-white p-7 w-full md:w-2/3 mx-auto">
                 <h2 className="text-s font-bold mb-5 text-gray-700 ">
                     Email Address
                 </h2>

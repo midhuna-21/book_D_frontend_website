@@ -10,7 +10,8 @@ import {
 } from "react-icons/fa";
 import { toast } from "sonner";
 import { Box, Flex, Icon } from "@chakra-ui/react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 interface Cart {
     quantity: number;
@@ -46,7 +47,7 @@ interface Order {
 
 const Lend: React.FC = () => {
     const [pickupCode, setPickupCode] = useState<string>("");
-    
+
     const [searchQuery, setSearchQuery] = useState("");
 
     const [selectedOption, setSelectedOption] = useState("all");
@@ -86,7 +87,6 @@ const Lend: React.FC = () => {
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(event.target.value.toLowerCase());
     };
-    
 
     const userInfo = useSelector(
         (state: RootState) => state.user.userInfo?.user
@@ -142,7 +142,7 @@ const Lend: React.FC = () => {
                 );
             });
         }
-    
+
         return filtered;
     };
 
@@ -192,14 +192,16 @@ const Lend: React.FC = () => {
     );
 
     const fetchOrders = async () => {
+        setLoading(true);
+
         try {
             const response = await userAxiosInstance.get(
                 `/books/lent/${userId}`
             );
             setOrders(response.data.orders);
-            setLoading(false);
         } catch (error) {
             console.error("Error fetching orders:", error);
+        } finally {
             setLoading(false);
         }
     };
@@ -222,12 +224,13 @@ const Lend: React.FC = () => {
                     pickupCode,
                 }
             );
-           if(response.data.success==false){
-               toast.error(response.data.message)
-        }else {
-            fetchOrders();
-            setShowModal(false);
-           }
+
+            if (response.data.success == false) {
+                toast.error(response.data.message);
+            } else {
+                fetchOrders();
+                setShowModal(false);
+            }
         } catch (error: any) {
             if (error.response && error.response.status === 403) {
                 toast.error(error.response.data.message);
@@ -237,16 +240,32 @@ const Lend: React.FC = () => {
             }
         }
     };
-    const navigate = useNavigate()
+    const navigate = useNavigate();
     const handleDetailPage = (orderId: string) => {
-        navigate(`/${username}/books/lend/order-detail/${orderId}`);
+        navigate(`/profile/books/lend/order-detail/${orderId}`);
     };
+
+    if (loading) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-screen">
+                <motion.div
+                    className="loader w-12 h-12 border-4 border-blue-500 border-dashed rounded-full animate-spin"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5 }}
+                />
+                <p className="mt-4 text-gray-600 text-md font-semibold">
+                    Loading notifications...
+                </p>
+            </div>
+        );
+    }
 
     if (orders.length === 0) {
         return (
             <div className="flex justify-center h-screen items-center">
                 <p className="text-gray-600 text-lg font-semibold">
-                    No Rental Orders
+                    No Lend Orders
                 </p>
             </div>
         );
@@ -305,201 +324,229 @@ const Lend: React.FC = () => {
                     </div>
                 ) : (
                     <>
-                <div className="overflow-x-auto  min-h-[60vh]">
-                    <table className=" hidden md:table min-w-full bg-white border rounded-lg shadow-lg">
-                        <thead>
-                            <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal  ">
-                                {[
-                                    "Book Title",
-                                    "Customer",
-                                    "Total Amount",
-                                    "Return Code",
-                                    "Rented On",
-                                    "Due Date",
-                                    "Status",
-                                    "Updations",
-                                ].map((header) => (
-                                    <th
-                                        key={header}
-                                        className="py-3 px-6 text-center">
-                                        {header}
-                                    </th>
-                                ))}
-                            </tr>
-                        </thead>
-                        <tbody className="text-gray-600 text-sm font-light">
-                            {currentOrders.map((order) => (
-                                
-                                <tr
-                                    key={order._id}
-                                    onClick={() => handleDetailPage(order._id)}
-                                    className="border-b border-gray-200 hover:shadow-lg">
-                                    <td className="py-3 px-6 text-left whitespace-nowrap">
-                                        {order.bookTitle}
-                                    </td>
-                                    <td className="py-3 px-6 text-center">
-                                        {order.userId.name}
-                                    </td>
-                                    <td className="py-3 px-6 text-center">
-                                        {order.cartId?.totalAmount}
-                                    </td>
-                                    <td className="py-3 px-6 text-center">
-                                        {order?.returnCode}
-                                    </td>
-                                    <td className="py-3 px-6 text-center">
-                                        {new Date(
-                                            order?.rentedOn
-                                        ).toLocaleDateString()}
-                                    </td>
-                                    <td className="py-3 px-6 text-center">
-                                        {new Date(
-                                            order?.dueDate
-                                        ).toLocaleDateString()}
-                                    </td>
+                        <div className="overflow-x-auto  min-h-[60vh]">
+                            <table className=" hidden md:table min-w-full bg-white border rounded-lg shadow-lg">
+                                <thead>
+                                    <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal  ">
+                                        {[
+                                            "Book Title",
+                                            "Customer",
+                                            "Total Amount",
+                                            "Return Code",
+                                            "Rented On",
+                                            "Due Date",
+                                            "Status",
+                                            "Updations",
+                                        ].map((header) => (
+                                            <th
+                                                key={header}
+                                                className="py-3 px-6 text-center">
+                                                {header}
+                                            </th>
+                                        ))}
+                                    </tr>
+                                </thead>
+                                <tbody className="text-gray-600 text-sm font-light">
+                                    {currentOrders.map((order) => (
+                                        <tr
+                                            key={order._id}
+                                            // onClick={() => handleDetailPage(order._id)}
+                                            className="border-b border-gray-200 hover:shadow-lg">
+                                            <td className="py-3 px-6 text-left whitespace-nowrap">
+                                                {order.bookTitle}
+                                            </td>
+                                            <td className="py-3 px-6 text-center">
+                                                {order.userId.name}
+                                            </td>
+                                            <td className="py-3 px-6 text-center">
+                                                {order.cartId?.totalAmount}
+                                            </td>
+                                            <td className="py-3 px-6 text-center">
+                                                {order?.returnCode}
+                                            </td>
+                                            <td className="py-3 px-6 text-center">
+                                                {new Date(
+                                                    order?.rentedOn
+                                                ).toLocaleDateString()}
+                                            </td>
+                                            <td className="py-3 px-6 text-center">
+                                                {new Date(
+                                                    order?.dueDate
+                                                ).toLocaleDateString()}
+                                            </td>
 
-                                    <td className="py-3 px-6 text-center">
-                                        <span
-                                            className={`font-semibold text-xs md:text-sm rounded-md p-1 ${
-                                                order.bookStatus === "completed"
-                                                    ? "bg-green-200 text-green-800"
-                                                    : order.bookStatus ===
-                                                      "overdue"
-                                                    ? "bg-yellow-200 text-yellow-800"
-                                                    : "bg-orange-200 text-orange-800"
-                                            }`}>
-                                            {order.bookStatus.replace("_", " ")}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4 text-center">
-                                        {order.bookStatus === "completed" ? (
-                                            <div className="flex items-center justify-center">
-                                                <span className="text-green-600 font-semibold text-xs md:text-sm">
-                                                    Completed
+                                            <td className="py-3 px-6 text-center">
+                                                <span
+                                                    className={`font-semibold text-xs md:text-sm rounded-md p-1 ${
+                                                        order.bookStatus ===
+                                                        "completed"
+                                                            ? "bg-green-200 text-green-800"
+                                                            : order.bookStatus ===
+                                                              "overdue"
+                                                            ? "bg-yellow-200 text-yellow-800"
+                                                            : "bg-orange-200 text-orange-800"
+                                                    }`}>
+                                                    {order.bookStatus.replace(
+                                                        "_",
+                                                        " "
+                                                    )}
                                                 </span>
-                                                <FaCheck className="text-green-600 ml-2" />
-                                            </div>
-                                        ) : order.bookStatus === "not_returned" ? (
-                                            <div className="flex items-center justify-center">
-                                                <span className="text-blue-600 font-semibold text-xs md:text-sm">
-                                                    Active Rental
-                                                </span>
-                                            </div>
-                                            ):  (
+                                            </td>
+                                            <td className="px-6 py-4 text-center">
+                                                {order.bookStatus ===
+                                                "completed" ? (
+                                                    <div className="flex items-center justify-center">
+                                                        <span className="text-green-600 font-semibold text-xs md:text-sm">
+                                                            Completed
+                                                        </span>
+                                                        <FaCheck className="text-green-600 ml-2" />
+                                                    </div>
+                                                ) : order.bookStatus ===
+                                                  "not_returned" ? (
+                                                    <div className="flex items-center justify-center">
+                                                        <span className="text-blue-600 font-semibold text-xs md:text-sm">
+                                                            Active Rental
+                                                        </span>
+                                                    </div>
+                                                ) : (
+                                                    <button
+                                                        onClick={() =>
+                                                            handleStatusUpdate(
+                                                                order?._id
+                                                            )
+                                                        }
+                                                        className="px-2 py-2 text-white bg-green-800 rounded-lg hover:bg-green-600 text-xs md:text-sm transition-colors duration-200">
+                                                        Confirm Pickup
+                                                    </button>
+                                                )}
+                                            </td>
+                                            <td className="px-6 py-4 text-center">
+                                                <button
+                                                    onClick={() =>
+                                                        handleDetailPage(
+                                                            order._id
+                                                        )
+                                                    }
+                                                    className="px-3 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-400 text-xs md:text-sm transition-colors duration-200">
+                                                    View
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+
+                            <div className="md:hidden">
+                                {currentOrders.map((order) => (
+                                    <div
+                                        key={order._id}
+                                        // onClick={() => handleDetailPage(order._id)}
+                                        className="bg-white shadow-md rounded-lg p-4 mb-6">
+                                        <div className="flex justify-between items-center mb-3">
+                                            <strong className="text-gray-700">
+                                                Book Title:
+                                            </strong>
+                                            <span className="text-gray-600">
+                                                {order.bookTitle}
+                                            </span>
+                                        </div>
+                                        <div className="flex justify-between items-center mb-3">
+                                            <strong className="text-gray-700">
+                                                Customer:
+                                            </strong>
+                                            <span className="text-gray-600">
+                                                {order.userId.name}
+                                            </span>
+                                        </div>
+                                        <div className="flex justify-between items-center mb-3">
+                                            <strong className="text-gray-700">
+                                                Total Amount:
+                                            </strong>
+                                            <span className="text-gray-600">
+                                                {order.cartId?.totalAmount} ₹
+                                            </span>
+                                        </div>
+                                        <div className="flex justify-between items-center mb-3">
+                                            <strong className="text-gray-700">
+                                                Return Code:
+                                            </strong>
+                                            <span className="text-gray-600">
+                                                {order?.returnCode}
+                                            </span>
+                                        </div>
+                                        <div className="flex justify-between items-center mb-3">
+                                            <strong className="text-gray-700">
+                                                Rented On:
+                                            </strong>
+                                            <span className="text-gray-600">
+                                                {new Date(
+                                                    order?.rentedOn
+                                                ).toLocaleDateString()}
+                                            </span>
+                                        </div>
+                                        <div className="flex justify-between items-center mb-3">
+                                            <strong className="text-gray-700">
+                                                Due Date:
+                                            </strong>
+                                            <span className="text-gray-600">
+                                                {new Date(
+                                                    order?.dueDate
+                                                ).toLocaleDateString()}
+                                            </span>
+                                        </div>
+                                        <div className="flex justify-between items-center mb-3">
+                                            <strong className="text-gray-700">
+                                                Status:
+                                            </strong>
+                                            <span
+                                                className={`font-semibold rounded-md px-2 py-1 text-sm ${
+                                                    order.bookStatus ===
+                                                    "completed"
+                                                        ? "bg-green-200 text-green-800"
+                                                        : order.bookStatus ===
+                                                          "overdue"
+                                                        ? "bg-yellow-200 text-yellow-800"
+                                                        : "bg-orange-200 text-orange-800"
+                                                }`}>
+                                                {order.bookStatus.replace(
+                                                    "_",
+                                                    " "
+                                                )}
+                                            </span>
+                                        </div>
+                                        <div className="flex justify-center mt-4">
+                                            {order.bookStatus ===
+                                            "completed" ? (
+                                                <div className="flex items-center">
+                                                    <span className="text-green-600 font-semibold">
+                                                        Completed
+                                                    </span>
+                                                    <FaCheck className="text-green-600 ml-2" />
+                                                </div>
+                                            ) : (
+                                                <button
+                                                    onClick={() =>
+                                                        handleStatusUpdate(
+                                                            order?._id
+                                                        )
+                                                    }
+                                                    className="w-full py-2 text-white bg-green-800 rounded-lg hover:bg-green-600 text-sm transition-colors duration-200">
+                                                    Confirm Pickup
+                                                </button>
+                                            )}
                                             <button
                                                 onClick={() =>
-                                                    handleStatusUpdate(
-                                                        order?._id
-                                                    )
+                                                    handleDetailPage(order._id)
                                                 }
-                                                className="px-2 py-2 text-white bg-green-800 rounded-lg hover:bg-green-600 text-xs md:text-sm transition-colors duration-200">
-                                                Confirm Pickup
+                                                className="px-3 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-400 text-xs md:text-sm transition-colors duration-200">
+                                                View
                                             </button>
-                                        )}
-                                    </td>
-                                </tr>
-                               
-                            ))}
-                        </tbody>
-                    </table>
-
-                    <div className="md:hidden">
-                        {currentOrders.map((order) => (
-                  
-                            <div
-                                key={order._id}
-                                onClick={() => handleDetailPage(order._id)}
-                                className="bg-white shadow-md rounded-lg p-4 mb-6">
-                                <div className="flex justify-between items-center mb-3">
-                                    <strong className="text-gray-700">
-                                        Book Title:
-                                    </strong>
-                                    <span className="text-gray-600">
-                                        {order.bookTitle}
-                                    </span>
-                                </div>
-                                <div className="flex justify-between items-center mb-3">
-                                    <strong className="text-gray-700">
-                                        Customer:
-                                    </strong>
-                                    <span className="text-gray-600">
-                                        {order.userId.name}
-                                    </span>
-                                </div>
-                                <div className="flex justify-between items-center mb-3">
-                                    <strong className="text-gray-700">
-                                        Total Amount:
-                                    </strong>
-                                    <span className="text-gray-600">
-                                        {order.cartId?.totalAmount} ₹
-                                    </span>
-                                </div>
-                                <div className="flex justify-between items-center mb-3">
-                                    <strong className="text-gray-700">
-                                        Return Code:
-                                    </strong>
-                                    <span className="text-gray-600">
-                                        {order?.returnCode}
-                                    </span>
-                                </div>
-                                <div className="flex justify-between items-center mb-3">
-                                    <strong className="text-gray-700">
-                                        Rented On:
-                                    </strong>
-                                    <span className="text-gray-600">
-                                        {new Date(
-                                            order?.rentedOn
-                                        ).toLocaleDateString()}
-                                    </span>
-                                </div>
-                                <div className="flex justify-between items-center mb-3">
-                                    <strong className="text-gray-700">
-                                        Due Date:
-                                    </strong>
-                                    <span className="text-gray-600">
-                                        {new Date(
-                                            order?.dueDate
-                                        ).toLocaleDateString()}
-                                    </span>
-                                </div>
-                                <div className="flex justify-between items-center mb-3">
-                                    <strong className="text-gray-700">
-                                        Status:
-                                    </strong>
-                                    <span
-                                        className={`font-semibold rounded-md px-2 py-1 text-sm ${
-                                            order.bookStatus === "completed"
-                                                ? "bg-green-200 text-green-800"
-                                                : order.bookStatus === "overdue"
-                                                ? "bg-yellow-200 text-yellow-800"
-                                                : "bg-orange-200 text-orange-800"
-                                        }`}>
-                                        {order.bookStatus.replace("_", " ")}
-                                    </span>
-                                </div>
-                                <div className="flex justify-center mt-4">
-                                    {order.bookStatus === "completed" ? (
-                                        <div className="flex items-center">
-                                            <span className="text-green-600 font-semibold">
-                                                Completed
-                                            </span>
-                                            <FaCheck className="text-green-600 ml-2" />
                                         </div>
-                                    ) : (
-                                        <button
-                                            onClick={() =>
-                                                handleStatusUpdate(order?._id)
-                                            }
-                                            className="w-full py-2 text-white bg-green-800 rounded-lg hover:bg-green-600 text-sm transition-colors duration-200">
-                                            Confirm Pickup
-                                        </button>
-                                    )}
-                                </div>
+                                    </div>
+                                ))}
                             </div>
-                    
-                        ))}
-                    </div>
-                </div>
-                </>
+                        </div>
+                    </>
                 )}
 
                 <div

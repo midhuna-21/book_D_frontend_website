@@ -7,6 +7,8 @@ import { useSocket } from "../../utils/context/SocketProvider";
 import ConfirmationRequest from "./ConfirmationRequest";
 import photo from "../../assets/th.jpeg";
 import { toast } from "sonner";
+import notificationImage from "../../assets/notification.png";
+import { motion } from "framer-motion";
 
 interface User {
     _id: string;
@@ -40,6 +42,8 @@ const UserNotifications: React.FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModalOpenPayment, setIsModalOpenPayment] = useState(false);
     const [cartQuantity, setCartQuantity] = useState<string | null>(null);
+    const [loading, setLoading] = useState(true);
+
     const [selectedNotification, setSelectedNotification] =
         useState<Notification | null>(null);
     const { socket } = useSocket();
@@ -50,6 +54,7 @@ const UserNotifications: React.FC = () => {
     const userid = userInfo?._id;
 
     const fetchNotification = async () => {
+        setLoading(true);
         try {
             await userAxiosInstance.put("/notifications/update-status");
             const response = await userAxiosInstance.get("/notifications");
@@ -81,6 +86,8 @@ const UserNotifications: React.FC = () => {
             }
         } catch (error: any) {
             console.log("Error fetching notifications", error);
+        } finally {
+            setLoading(false);
         }
     };
     useEffect(() => {
@@ -295,12 +302,47 @@ const UserNotifications: React.FC = () => {
         setIsModalOpenPayment(true);
     };
 
+    if (loading) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-screen">
+                <motion.div
+                    className="loader w-12 h-12 border-4 border-blue-500 border-dashed rounded-full animate-spin"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5 }}
+                />
+                <p className="mt-4 text-gray-600 text-md font-semibold">
+                    Loading notifications...
+                </p>
+            </div>
+        );
+    }
+
     if (notifications.length === 0) {
         return (
-            <div className="flex items-center justify-center h-screen">
-                <p className="text-gray-600 text-lg font-semibold">
-                    No notifications
-                </p>
+            <div className="flex flex-col items-center justify-center min-h-screen">
+                <motion.img
+                    src={notificationImage}
+                    alt="Empty Notifications"
+                    className="w-56 h-42 mb-4"
+                    // animate={{
+                    //     y: [0, -10, 0],
+                    // }}
+                    transition={{
+                        duration: 2,
+                        ease: "easeInOut",
+                        repeat: Infinity,
+                        repeatType: "loop",
+                    }}
+                />
+                <div className="text-center">
+                    <p className="text-gray-600 text-md font-semibold">
+                        You don't have any notifications yet.
+                    </p>
+                    <p className="text-gray-600 text-md font-semibold">
+                        Stay tuned for updates!
+                    </p>
+                </div>
             </div>
         );
     }

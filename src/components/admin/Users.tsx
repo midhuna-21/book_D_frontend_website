@@ -4,8 +4,9 @@ import { toast } from "sonner";
 import userLogo from "../../assets/userLogo.png";
 import { AiOutlineSearch } from "react-icons/ai";
 import { FaGreaterThan, FaLessThan } from "react-icons/fa";
-import {useDispatch} from 'react-redux';
-import { addUser } from '../../utils/ReduxStore/slice/userSlice'
+import { useDispatch } from "react-redux";
+import { addUser } from "../../utils/ReduxStore/slice/userSlice";
+import Spinner from "../users/Spinner";
 
 interface User {
     _id: string;
@@ -113,51 +114,52 @@ const Users: React.FC = () => {
     );
 
     const handleBlock = async (userId: string) => {
-        try{ 
-        const response = await adminAxiosInstance
-            .post("/user/block", { _id: userId })
-                const user = response.data;
-                setUsers((prevUsers) => {
-                    const newUsers = prevUsers.map((user) =>
-                        user._id === userId
-                            ? { ...user, isBlocked: true }
-                            : user
-                    );
-                    return newUsers;
-                });
-            }catch(error:any) {
-                if (error.response && error.response.status === 400) {
-                    toast.error(error.response.data.message);
-                } else {
-                    toast.error("An error occurred, try again later");
-                }
+        try {
+            const response = await adminAxiosInstance.post("/user/block", {
+                _id: userId,
+            });
+            const user = response.data;
+            setUsers((prevUsers) => {
+                const newUsers = prevUsers.map((user) =>
+                    user._id === userId ? { ...user, isBlocked: true } : user
+                );
+                return newUsers;
+            });
+        } catch (error: any) {
+            if (error.response && error.response.status === 400) {
+                toast.error(error.response.data.message);
+            } else {
+                toast.error("An error occurred, try again later");
             }
+        }
     };
 
     const handleUnblock = async (userId: string) => {
-       try{
-        const response =  await adminAxiosInstance
-            .post("/user/unblock", { _id: userId })
-                const user = response.data;
-                setUsers((prevUsers) =>
-                    prevUsers.map((user) =>
-                        user._id === userId
-                            ? { ...user, isBlocked: false }
-                            : user
-                    )
-                );
+        try {
+            const response = await adminAxiosInstance.post("/user/unblock", {
+                _id: userId,
+            });
+            const user = response.data;
+            setUsers((prevUsers) =>
+                prevUsers.map((user) =>
+                    user._id === userId ? { ...user, isBlocked: false } : user
+                )
+            );
+        } catch (error: any) {
+            if (error.response && error.response.status === 400) {
+                toast.error(error.response.data.message);
+            } else {
+                toast.error("An error occurred, try again later");
             }
-            catch(error: any) {
-                if (error.response && error.response.status === 400) {
-                    toast.error(error.response.data.message);
-                } else {
-                    toast.error("An error occurred, try again later");
-                }
-            }
+        }
     };
 
     if (users.length === 0) {
-        return <div className="text-gray-500 text-center">Loading...</div>;
+        return (
+            <div>
+                <Spinner />
+            </div>
+        );
     }
     return (
         <div className="bg-white shadow-md rounded p-4 h-full w-4xl max-w-full mx-auto">

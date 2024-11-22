@@ -14,7 +14,7 @@ const AdminLogin: React.FC = () => {
     const [password, setPassword] = useState("");
     const dispatch = useDispatch();
 
-    const handleLogin = async(
+    const handleLogin = async (
         e: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
         e.preventDefault();
@@ -24,38 +24,37 @@ const AdminLogin: React.FC = () => {
             toast.error(validationResult);
             return;
         }
-try{
-        const response = await axiosAdmin
-            .post(
+        try {
+            const response = await axiosAdmin.post(
                 "/login",
                 {
                     email: email,
                     password: password,
                 },
                 { withCredentials: true }
-            )
-                if (response.status === 200) {
-                    dispatch(addAdmin(response.data));
-                    localStorage.setItem(
-                        "adminaccessToken",
-                        response.data.accessToken
-                    );
-                    localStorage.setItem(
-                        "adminrefreshToken",
-                        response.data.refreshToken
-                    );
-                    navigate("/admin/dashboard");
-                }
-            }catch(error:any) {
-                if (
-                    (error.response && error.response.status === 400) ||
-                    error.response.status === 401
-                ) {
-                    toast.error(error.response.data.message);
-                } else {
-                    toast.error("An error occured try again later");
-                }
+            );
+            if (response.status === 200) {
+                dispatch(addAdmin(response.data));
+                localStorage.setItem(
+                    "adminaccessToken",
+                    response.data.accessToken
+                );
+                localStorage.setItem(
+                    "adminrefreshToken",
+                    response.data.refreshToken
+                );
+                navigate("/admin/dashboard");
             }
+        } catch (error: any) {
+            if (
+                (error.response && error.response.status === 400) ||
+                error.response.status === 401
+            ) {
+                toast.error(error.response.data.message);
+            } else {
+                toast.error("An error occured try again later");
+            }
+        }
     };
 
     return (

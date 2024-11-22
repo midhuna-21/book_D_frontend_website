@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
+import walletImgage from "../../assets/wallet.png";
+import { motion } from "framer-motion";
 import { FaGreaterThan, FaLessThan } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { RootState } from "../../utils/ReduxStore/store/store";
 import { userAxiosInstance } from "../../utils/api/userAxiosInstance";
-import {toast} from 'sonner';
+import { toast } from "sonner";
 
 interface ITransaction {
     type: "credit" | "debit";
@@ -19,7 +21,6 @@ interface IWallet {
     balance: number;
     transactions: ITransaction[];
 }
-
 
 interface IOrder {
     _id: string;
@@ -42,13 +43,13 @@ const WalletTransactions: React.FC = () => {
                     "/wallet/transactions"
                 );
                 if (response?.data?.wallet) {
-                    console.log(response,'responsee wallet')
+                    console.log(response, "responsee wallet");
                     setBalance(response?.data?.wallet?.balance);
                     setWallet(response.data.wallet);
                 } else {
                     console.error("Wallet data not found in the response");
                 }
-            } catch (error:any) {
+            } catch (error: any) {
                 if (error.response && error.response.status === 403) {
                     toast.error(error.response.data.message);
                 } else {
@@ -61,7 +62,7 @@ const WalletTransactions: React.FC = () => {
     }, [userId]);
 
     const transactions = wallet?.transactions ?? [];
-    
+
     const totalPages =
         transactions.length > 0
             ? Math.ceil(transactions.length / transactionsPerPage)
@@ -90,8 +91,29 @@ const WalletTransactions: React.FC = () => {
 
     if (!wallet || !wallet.transactions) {
         return (
-            <div className="flex items-center justify-center h-screen">
-                <p className="text-gray-600 text-lg font-semibold">No wallet transactions</p>
+            <div className="flex flex-col items-center justify-center min-h-screen">
+                <motion.img
+                    src={walletImgage}
+                    alt="Empty Wallet"
+                    className="w-66 h-56 mb-4"
+                    // animate={{
+                    //     y: [0, -10, 0],
+                    // }}
+                    transition={{
+                        duration: 2,
+                        ease: "easeInOut",
+                        repeat: Infinity,
+                        repeatType: "loop",
+                    }}
+                />
+                <div className="text-center">
+                    <p className="text-gray-600 text-md font-semibold">
+                        Empty wallet?
+                    </p>
+                    <p className="text-gray-600 text-md font-semibold">
+                        Share your books and earn extra money!
+                    </p>
+                </div>
             </div>
         );
     }
@@ -155,9 +177,9 @@ const WalletTransactions: React.FC = () => {
                                                     }
                                                     className="odd:bg-white even:bg-gray-50 border-b">
                                                     <td className="py-4 font-medium text-gray-700 text-sm text-left">
-                                                       
                                                         {
-                                                            transaction.orderId?.bookTitle
+                                                            transaction.orderId
+                                                                ?.bookTitle
                                                         }
                                                     </td>
                                                     <td className="px- py- font-medium text-gray-700 text-sm text-left">

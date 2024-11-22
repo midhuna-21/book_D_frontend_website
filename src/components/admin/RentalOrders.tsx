@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { adminAxiosInstance } from "../../utils/api/adminAxiosInstance";
+import Spinner from "../users/Spinner";
 
 interface Book {
     _id: string;
@@ -71,15 +72,13 @@ const RentalOrdersList: React.FC = () => {
             case "not_returned":
                 filtered = filtered.filter(
                     (order) =>
-                        order.bookStatus &&
-                        order.bookStatus === "not_returned"
+                        order.bookStatus && order.bookStatus === "not_returned"
                 );
                 break;
             case "completed":
                 filtered = filtered.filter(
                     (order) =>
-                        order.bookStatus &&
-                        order.bookStatus === "completed"
+                        order.bookStatus && order.bookStatus === "completed"
                 );
                 break;
             case "not_picked_up":
@@ -93,8 +92,7 @@ const RentalOrdersList: React.FC = () => {
             case "overdue":
                 filtered = filtered.filter(
                     (order) =>
-                        order.bookStatus &&
-                        order.bookStatus === "overdue"
+                        order.bookStatus && order.bookStatus === "overdue"
                 );
                 break;
             default:
@@ -123,9 +121,13 @@ const RentalOrdersList: React.FC = () => {
         navigate(`/admin/order-detail/${orderId}`);
     };
 
-    console.log(orders,'orders')
+    console.log(orders, "orders");
     if (orders.length === 0) {
-        return <div className="text-gray-500 text-center">Loading...</div>;
+        return (
+            <div>
+                <Spinner />
+            </div>
+        );
     }
     return (
         <div className="bg-white shadow-md rounded p-4 h-full">
@@ -207,7 +209,7 @@ const RentalOrdersList: React.FC = () => {
                                     <th className="py-2 px-4 border-b text-center">
                                         Renter
                                     </th>
-                                    
+
                                     <th className="py-2 px-4 border-b text-center">
                                         Lender
                                     </th>
@@ -231,15 +233,14 @@ const RentalOrdersList: React.FC = () => {
                                         <td className="py-2 px-4 border-b text-black text-center truncate max-w-[150px]">
                                             {order?.userId?.name}
                                         </td>
-                                  
+
                                         <td className="py-2 px-4 border-b text-black text-center truncate max-w-[150px]">
                                             {order?.lenderId?.name}
                                         </td>
 
                                         <td
                                             className={`py-2 px-4 border-b text-black text-center truncate max-w-[150px] ${
-                                                order.bookStatus ===
-                                                "completed"
+                                                order.bookStatus === "completed"
                                                     ? "bg-green-600"
                                                     : order.bookStatus ===
                                                       "overdue"
@@ -264,7 +265,6 @@ const RentalOrdersList: React.FC = () => {
                                                   ).toLocaleDateString()
                                                 : "Not yet"}
                                         </td>
-                                       
 
                                         <td className="py-2 px-4 border-b text-black text-center">
                                             <button

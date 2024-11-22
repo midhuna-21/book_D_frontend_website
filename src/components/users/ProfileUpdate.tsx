@@ -1,12 +1,12 @@
 import React, { useState, useEffect, ChangeEvent } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import { RootState } from "../../utils/ReduxStore/store/store";
 import { toast } from "sonner";
 import { addUser } from "../../utils/ReduxStore/slice/userSlice";
 import { userAxiosInstance } from "../../utils/api/userAxiosInstance";
 import { validate } from "../../utils/validations/profile-validation";
 import GmailUpdate from "./GmailUpdate";
+import ChangePasswordForm from "./changePassword";
 
 interface Address {
     street?: string;
@@ -28,7 +28,6 @@ const ProfileUpdate: React.FC = () => {
     const user = useSelector(
         (state: RootState) => state?.user?.userInfo?.user
     ) as User;
-    const username = user?.name
     const initialFormData: User = {
         name: user?.name || "",
         email: user?.email || "",
@@ -44,7 +43,6 @@ const ProfileUpdate: React.FC = () => {
 
     const [formData, setFormData] = useState<User>(initialFormData);
     const [isFormChanged, setIsFormChanged] = useState(false);
-    const navigate = useNavigate();
     const dispatch = useDispatch();
 
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -168,20 +166,22 @@ const ProfileUpdate: React.FC = () => {
 
                 const response = await userAxiosInstance.put(
                     "/profile/update",
-                    { formData: filteredFormData },
-                    { withCredentials: true }
+                    { formData: filteredFormData }
                 );
 
                 if (response.status === 200) {
                     setIsFormChanged(false);
                     dispatch(addUser(response.data));
 
-                    navigate(`/${username}`);
                     setFormData(filteredFormData);
+                    console.log("filteredFormData", filteredFormData);
                     toast.success("Profile updated successfully");
                 }
             } catch (error: any) {
-                if (error.response && error.response.status === 404 || error.response.status === 403) {
+                if (
+                    (error.response && error.response.status === 404) ||
+                    error.response.status === 403
+                ) {
                     toast.error(error.response.data.message);
                 } else {
                     toast.error("An error occurred, please try again later");
@@ -193,10 +193,11 @@ const ProfileUpdate: React.FC = () => {
     };
 
     return (
-        <div className="container px-4 md:px-8 flex flex-col md:flex-row gap-5">
+        <div className="container flex flex-col md:flex-row ">
             {user.isGoogle && <GmailUpdate />}
+            {!user.isGoogle && <ChangePasswordForm />}
             <div
-                className={`bg-white rounded-lg shadow-xl p-7 ${
+                className={`bg-white p-7 ${
                     user.isGoogle ? "w-full" : "w-full md:w-2/3 mx-auto"
                 } h-full `}>
                 <h2 className="text-lg font-bold mb-5 text-gray-700">

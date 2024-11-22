@@ -5,7 +5,7 @@ import { Box, Image, Text, Flex, Icon } from "@chakra-ui/react";
 import { userAxiosInstance } from "../../utils/api/userAxiosInstance";
 import { FaBookReader } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import {toast} from 'sonner'
+import { toast } from "sonner";
 
 interface Genres {
     _id: string;
@@ -41,11 +41,13 @@ const Genre: React.FC = () => {
             try {
                 const response = await userAxiosInstance.get("/books/genres");
                 setGenres(response.data);
-            } catch (error:any) {
+            } catch (error: any) {
                 if (error.response && error.response.status === 403) {
                     toast.error(error.response.data.message);
                 } else {
-                    toast.error("An error occurred while fetching genres, please try again later");
+                    toast.error(
+                        "An error occurred while fetching genres, please try again later"
+                    );
                     console.error("Error fetching genres:", error);
                 }
             }

@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { AiOutlineCheckCircle } from "react-icons/ai";
 import { userAxiosInstance } from "../../utils/api/userAxiosInstance";
-import {toast} from 'sonner';
+import { toast } from "sonner";
 
 const PaymentSuccess = () => {
     const location = useLocation();
@@ -30,7 +30,7 @@ const PaymentSuccess = () => {
                         amount,
                     });
                 }
-            } catch (error:any) {
+            } catch (error: any) {
                 if (error.response && error.response.status === 403) {
                     toast.error(error.response.data.message);
                 } else {

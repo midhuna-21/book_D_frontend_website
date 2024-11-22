@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../utils/ReduxStore/store/store";
 import { FaGreaterThan, FaLessThan, FaCheck } from "react-icons/fa";
 import { toast } from "sonner";
+import Spinner from "../users/Spinner";
 
 interface Address {
     street: string;
@@ -21,7 +22,7 @@ interface Cart {
 }
 interface Order {
     _id: string;
-    bookTitle:string;
+    bookTitle: string;
     bookId: {
         bookTitle: string;
         rentalFee: number;
@@ -45,7 +46,7 @@ interface Order {
     bookStatusFromLender: string;
     createdAt: Date;
     statusUpdateRenterDate: Date;
-    bookAddress:string;
+    bookAddress: string;
 }
 
 const RentedBooks: React.FC = () => {
@@ -189,7 +190,7 @@ const RentedBooks: React.FC = () => {
             );
             setOrders(response.data.orders);
             setLoading(false);
-        } catch (error:any) {
+        } catch (error: any) {
             if (error.response && error.response.status === 403) {
                 toast.error(error.response.data.message);
             } else {
@@ -284,8 +285,8 @@ const RentedBooks: React.FC = () => {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-screen">
-                Loading...
+            <div>
+                <Spinner />
             </div>
         );
     }
@@ -392,7 +393,7 @@ const RentedBooks: React.FC = () => {
                                             </td>
                                             {/* <td className="px-6 py-4 text-gray-600">{order.bookId?.address?.street},{order.bookId?.address?.city},{order.bookId?.address?.district},{order.bookId?.address?.state},{order.bookId?.address?.pincode}</td> */}
                                             <td className="px-6 py-4 text-gray-600 text-sm max-w-[150px] truncate text-center">
-                                               <a
+                                                <a
                                                     href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
                                                         `${order?.bookAddress}`
                                                     )}`}
@@ -401,7 +402,6 @@ const RentedBooks: React.FC = () => {
                                                     className="text-blue-600 underline hover:text-blue-800">
                                                     {order?.bookAddress}
                                                 </a>
-                                               
                                             </td>
                                             <td className="px-6 py-4 text-gray-600 text-sm max-w-[150px] truncate text-center">
                                                 {new Date(

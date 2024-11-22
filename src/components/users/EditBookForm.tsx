@@ -7,8 +7,8 @@ import images from "../../assets/images.png";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import axios from "axios";
-import {useSelector} from 'react-redux';
-import {RootState} from '../../utils/ReduxStore/store/store'
+import { useSelector } from "react-redux";
+import { RootState } from "../../utils/ReduxStore/store/store";
 
 interface Genre {
     genreName: string;
@@ -42,7 +42,6 @@ type FormData = {
 };
 
 const EditBookForm: React.FC = () => {
-    
     const initialFormData: FormData = {
         bookTitle: "",
         description: "",
@@ -69,8 +68,9 @@ const EditBookForm: React.FC = () => {
         longitude: 0,
     };
 
-    
-    const username = useSelector((state:RootState)=>state?.user?.userInfo?.user?.name)
+    const username = useSelector(
+        (state: RootState) => state?.user?.userInfo?.user?.name
+    );
 
     const [formData, setFormData] = useState<FormData>(initialFormData);
     const { bookId } = useParams();
@@ -93,16 +93,20 @@ const EditBookForm: React.FC = () => {
     useEffect(() => {
         const fetchBook = async () => {
             try {
-                const response = await userAxiosInstance.get(`/books/details/${bookId}`);
+                const response = await userAxiosInstance.get(
+                    `/books/details/${bookId}`
+                );
                 const fetchedBook = response?.data?.book;
                 if (fetchedBook) {
                     setBook(fetchedBook);
                 }
-            } catch (error:any) {
+            } catch (error: any) {
                 if (error.response && error.response.status === 403) {
                     toast.error(error.response.data.message);
                 } else {
-                    toast.error("An error occurred while fetching book details, please try again later");
+                    toast.error(
+                        "An error occurred while fetching book details, please try again later"
+                    );
                 }
             }
         };
@@ -237,17 +241,19 @@ const EditBookForm: React.FC = () => {
             try {
                 const response = await userAxiosInstance.get("/genres");
                 setGenres(response.data);
-            } catch (error:any) {
+            } catch (error: any) {
                 if (error.response && error.response.status === 403) {
                     toast.error(error.response.data.message);
                 } else {
-                    toast.error("An error occurred while fetching genres, please try again later");
+                    toast.error(
+                        "An error occurred while fetching genres, please try again later"
+                    );
                 }
             }
         };
 
         fetchGenre();
-    },[]);
+    }, []);
 
     const handleGetLocation = () => {
         if (navigator.geolocation) {
@@ -352,7 +358,7 @@ const EditBookForm: React.FC = () => {
         }
 
         const errors = validateFormData(formData);
-        
+
         if (errors.length === 0) {
             const formDataWithImages = new FormData();
             formDataWithImages.append("bookTitle", formData.bookTitle);
@@ -425,8 +431,8 @@ const EditBookForm: React.FC = () => {
                 );
 
                 if (response.status === 200) {
-                    console.log(username,'usernam')
-                    navigate(`/${username}/lend-books`);``
+                    console.log(username, "usernam");
+                    navigate("/profile/lend-books");
                 }
             } catch (error: any) {
                 if (error.response && error.response.status === 404) {

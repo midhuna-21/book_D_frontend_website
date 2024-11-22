@@ -7,7 +7,6 @@ import { Link } from "react-router-dom";
 import {
     FaHome,
     FaUser,
-    FaPaypal,
     FaBook,
     FaPlus,
     FaSignOutAlt,
@@ -29,8 +28,6 @@ const AdminSideBar: React.FC = () => {
         dispatch(clearAdmin());
         navigate("/admin/login");
     };
-
-    
 
     return (
         <div

@@ -7,8 +7,8 @@ import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import {useSelector} from 'react-redux';
-import {RootState} from '../../utils/ReduxStore/store/store'
+import { useSelector } from "react-redux";
+import { RootState } from "../../utils/ReduxStore/store/store";
 
 interface Genre {
     genreName: string;
@@ -42,105 +42,139 @@ type FormData = {
 };
 
 const LendBookForm: React.FC = () => {
-    const initialFormData: FormData = {
-        bookTitle: "",
-        description: "",
-        images: null,
-        author: "",
-        publisher: "",
-        publishedYear: "",
-        genre: "",
-        customGenre: "",
-        rentalFee: 0,
-        extraFee: 0,
-        quantity: 0,
-        address: {
-            street: "",
-            city: "",
-            district: "",
-            state: "",
-            pincode: "",
-        },
-        maxDistance: 0,
-        maxDays: 0,
-        minDays: 0,
-        latitude: 0,
-        longitude: 0,
-    };
+    // const initialFormData: FormData = {
+    //     bookTitle: "",
+    //     description: "",
+    //     images: null,
+    //     author: "",
+    //     publisher: "",
+    //     publishedYear: "",
+    //     genre: "",
+    //     customGenre: "",
+    //     rentalFee: 0,
+    //     extraFee: 0,
+    //     quantity: 0,
+    //     address: {
+    //         street: "",
+    //         city: "",
+    //         district: "",
+    //         state: "",
+    //         pincode: "",
+    //     },
+    //     maxDistance: 0,
+    //     maxDays: 0,
+    //     minDays: 0,
+    //     latitude: 0,
+    //     longitude: 0,
+    // };
 
-    const username = useSelector((state:RootState)=>state?.user?.userInfo?.user?.name)
-    const [formData, setFormData] = useState<FormData>(initialFormData);
+    const [bookTitle, setBookTitle] = useState<string>("");
+    const [publisher, setPublisher] = useState<string>("");
+    const [publishedYear, setPublishedYear] = useState<string>("");
+    const [author, setAuthor] = useState<string>("");
+    const [description, setDescription] = useState<string>("");
+    const [genre, setGenre] = useState<string>("");
+    const [images, setImages] = useState<File[]>([]);
+    const [rentalFee, setRentalFee] = useState<number>(0);
+    const [extraFee, setExtraFee] = useState<number>(0);
+    const [quantity, setQuantity] = useState<number>(0);
+    const [maxDistance, setMaxDistance] = useState<number>(0);
+    const [maxDays, setMaxDays] = useState<number>(0);
+    const [minDays, setMinDays] = useState<number>(0);
+
+    const [address, setAddress] = useState({
+        street: "",
+        city: "",
+        district: "",
+        state: "",
+        pincode: "",
+    });
+
+    const username = useSelector(
+        (state: RootState) => state?.user?.userInfo?.user?.name
+    );
+    // const [formData, setFormData] = useState<FormData>(initialFormData);
 
     const [genres, setGenres] = useState<Genre[]>([]);
 
     const navigate = useNavigate();
 
-    const clearInput = () => {
-        setFormData(initialFormData);
-    };
+    // const clearInput = () => {
+    //     setFormData(initialFormData);
+    // };
+
+    // const handleRemoveImage = (index: number) => {
+    //     if (formData.images && formData.images.length > 0) {
+    //         const newImages = Array.from(formData.images);
+    //         newImages.splice(index, 1);
+    //         setFormData((prevState) => ({
+    //             ...prevState,
+    //             images: newImages.length > 0 ? newImages : null,
+    //         }));
+    //     }
+    // };
 
     const handleRemoveImage = (index: number) => {
-        if (formData.images && formData.images.length > 0) {
-            const newImages = Array.from(formData.images);
-            newImages.splice(index, 1);
-            setFormData((prevState) => ({
-                ...prevState,
-                images: newImages.length > 0 ? newImages : null,
-            }));
-        }
+        setImages((prevImages) => prevImages.filter((_, i) => i !== index));
     };
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
         if (files) {
-            setFormData((prevState) => ({
-                ...prevState,
-                images: prevState.images
-                    ? [...Array.from(prevState.images), ...Array.from(files)]
-                    : Array.from(files),
-            }));
+            setImages((prevState) => [...prevState, ...Array.from(files)]);
         }
     };
+    // const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    //     const files = e.target.files;
+    //     if (files) {
+    //         setFormData((prevState) => ({
+    //             ...prevState,
+    //             images: prevState.images
+    //                 ? [...Array.from(prevState.images), ...Array.from(files)]
+    //                 : Array.from(files),
+    //         }));
+    //     }
+    // };
 
-    const handleChange = (
-        e: React.ChangeEvent<
-            HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-        >
-    ) => {
-        const { name, value } = e.target;
-        if (name.startsWith("address")) {
-            const fieldName = name.split(".")[1];
-            setFormData((prevState) => ({
-                ...prevState,
-                address: {
-                    ...prevState.address,
-                    [fieldName]: value,
-                },
-            }));
-        } else {
-            let sanitizedValue = value;
-            if (
-                [
-                    "rentalFee",
-                    "quantity",
-                    "extraFee",
-                    "maxDistance",
-                    "maxDays",
-                    "minDays",
-                ].includes(name)
-            ) {
-                let numericValue = parseFloat(value);
-                if (numericValue < 0 || isNaN(numericValue)) {
-                    numericValue = 0;
-                }
-                sanitizedValue = numericValue.toString();
-            }
-            setFormData((prevState) => ({
-                ...prevState,
-                [name]: sanitizedValue,
-            }));
-        }
-    };
+    // const handleChange = (
+    //     e: React.ChangeEvent<
+    //         HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    //     >
+    // ) => {
+    //     const { name, value } = e.target;
+    //     if (name.startsWith("address")) {
+    //         const fieldName = name.split(".")[1];
+    //         setFormData((prevState) => ({
+    //             ...prevState,
+    //             address: {
+    //                 ...prevState.address,
+    //                 [fieldName]: value,
+    //             },
+    //         }));
+    //     } else {
+    //         let sanitizedValue = value;
+    //         if (
+    //             [
+    //                 "rentalFee",
+    //                 "quantity",
+    //                 "extraFee",
+    //                 "maxDistance",
+    //                 "maxDays",
+    //                 "minDays",
+    //             ].includes(name)
+    //         ) {
+    //             let numericValue = parseFloat(value);
+    //             if (numericValue < 0 || isNaN(numericValue)) {
+    //                 numericValue = 0;
+    //             }
+    //             sanitizedValue = numericValue.toString();
+    //         }
+    //         setFormData((prevState) => ({
+    //             ...prevState,
+    //             [name]: sanitizedValue,
+    //         }));
+    //     }
+    // };
 
     const getLatLngFromAddress = async (address: string) => {
         try {
@@ -175,179 +209,178 @@ const LendBookForm: React.FC = () => {
             try {
                 const response = await userAxiosInstance.get("/genres");
                 setGenres(response.data);
-            } catch (error:any) {
+            } catch (error: any) {
                 if (error.response && error.response.status === 403) {
                     toast.error(error.response.data.message);
                 } else {
-                    toast.error("An error occurred while fetching genres, try again later");
+                    toast.error(
+                        "An error occurred while fetching genres, try again later"
+                    );
                 }
             }
         };
 
         fetchBook();
-    },[]);
+    }, []);
 
-    const handleGetLocation = () => {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                async (position) => {
-                    const { latitude, longitude } = position.coords;
-                    const locationDetails = await getAddressFromCoordinates(
-                        latitude,
-                        longitude
-                    );
-                    if (locationDetails) {
-                        setFormData({
-                            ...formData,
-                            latitude: latitude,
-                            longitude: longitude,
-                            address: {
-                                street: locationDetails.street || "",
-                                city: locationDetails.city || "",
-                                district: locationDetails.district || "",
-                                state: locationDetails.state || "",
-                                pincode: locationDetails.pincode || "",
-                            },
-                        });
-                    }
-                },
-                (error) => {
-                    console.error("Error fetching geolocation:", error);
-                    alert("Unable to retrieve location");
-                },
-                {
-                    enableHighAccuracy: true,
-                    timeout: 10000,
-                    maximumAge: 0,
-                }
-            );
-        } else {
-            alert("Geolocation is not supported by your browser");
-        }
-    };
+    // const handleGetLocation = () => {
+    //     if (navigator.geolocation) {
+    //         navigator.geolocation.getCurrentPosition(
+    //             async (position) => {
+    //                 const { latitude, longitude } = position.coords;
+    //                 const locationDetails = await getAddressFromCoordinates(
+    //                     latitude,
+    //                     longitude
+    //                 );
+    //                 if (locationDetails) {
+    //                     setFormData({
+    //                         ...formData,
+    //                         latitude: latitude,
+    //                         longitude: longitude,
+    //                         address: {
+    //                             street: locationDetails.street || "",
+    //                             city: locationDetails.city || "",
+    //                             district: locationDetails.district || "",
+    //                             state: locationDetails.state || "",
+    //                             pincode: locationDetails.pincode || "",
+    //                         },
+    //                     });
+    //                 }
+    //             },
+    //             (error) => {
+    //                 console.error("Error fetching geolocation:", error);
+    //                 alert("Unable to retrieve location");
+    //             },
+    //             {
+    //                 enableHighAccuracy: true,
+    //                 timeout: 10000,
+    //                 maximumAge: 0,
+    //             }
+    //         );
+    //     } else {
+    //         alert("Geolocation is not supported by your browser");
+    //     }
+    // };
 
-    const getAddressFromCoordinates = async (latitude: any, longitude: any) => {
-        const key = "AIzaSyD06G78Q2_d18EkXbsYsyg7qb2O-WWUU-Q";
-        const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${key}`;
+    // const getAddressFromCoordinates = async (latitude: any, longitude: any) => {
+    //     const key = "AIzaSyD06G78Q2_d18EkXbsYsyg7qb2O-WWUU-Q";
+    //     const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${key}`;
 
-        try {
-            const response = await axios.get(url);
-            const results = response.data.results;
+    //     try {
+    //         const response = await axios.get(url);
+    //         const results = response.data.results;
 
-            if (results.length > 0) {
-                const addressComponents = results[0].address_components;
-                let street = "",
-                    city = "",
-                    district = "",
-                    state = "",
-                    pincode = "";
+    //         if (results.length > 0) {
+    //             const addressComponents = results[0].address_components;
+    //             let street = "",
+    //                 city = "",
+    //                 district = "",
+    //                 state = "",
+    //                 pincode = "";
 
-                addressComponents.forEach((component: any) => {
-                    if (component.types.includes("sublocality_level_2")) {
-                        street = component.long_name;
-                    }
-                    if (component.types.includes("sublocality_level_1")) {
-                        city = component.long_name;
-                    }
+    //             addressComponents.forEach((component: any) => {
+    //                 if (component.types.includes("sublocality_level_2")) {
+    //                     street = component.long_name;
+    //                 }
+    //                 if (component.types.includes("sublocality_level_1")) {
+    //                     city = component.long_name;
+    //                 }
 
-                    if (
-                        component.types.includes("administrative_area_level_3")
-                    ) {
-                        district = component.long_name;
-                    }
-                    if (
-                        component.types.includes("administrative_area_level_1")
-                    ) {
-                        state = component.long_name;
-                    }
-                    if (component.types.includes("postal_code")) {
-                        pincode = component.long_name;
-                    }
-                });
+    //                 if (
+    //                     component.types.includes("administrative_area_level_3")
+    //                 ) {
+    //                     district = component.long_name;
+    //                 }
+    //                 if (
+    //                     component.types.includes("administrative_area_level_1")
+    //                 ) {
+    //                     state = component.long_name;
+    //                 }
+    //                 if (component.types.includes("postal_code")) {
+    //                     pincode = component.long_name;
+    //                 }
+    //             });
 
-                return { street, city, district, state, pincode };
-            } else {
-                throw new Error("No results found");
-            }
-        } catch (error: any) {
-            console.error("Error fetching address:", error);
-            return null;
-        }
-    };
+    //             return { street, city, district, state, pincode };
+    //         } else {
+    //             throw new Error("No results found");
+    //         }
+    //     } catch (error: any) {
+    //         console.error("Error fetching address:", error);
+    //         return null;
+    //     }
+    // };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        const formattedAddress = `${formData.address.street}, ${formData.address.city}, ${formData.address.district}, ${formData.address.state}, ${formData.address.pincode}`;
+        const formattedAddress = `${address.street}, ${address.city}, ${address.district}, ${address.state}, ${address.pincode}`;
 
-        const latLng = await getLatLngFromAddress(formattedAddress);
+        // const latLng = await getLatLngFromAddress(formattedAddress);
 
-        if (latLng) {
-            setFormData((prevFormData) => ({
-                ...prevFormData,
-                latitude: latLng.latitude,
-                longitude: latLng.longitude,
-            }));
-        }
-
-        const errors = validateFormData(formData);
+        // if (latLng) {
+        //     setLatitude(latLng.latitude);
+        //     setLongitude(latLng.longitude);
+        // }
+        const addr = {
+            street: address.state,
+            city: address.city,
+            district: address.district,
+            state: address.state,
+            pincode: address.pincode,
+        };
+        const errors = validateFormData({
+            bookTitle,
+            publisher,
+            publishedYear,
+            author,
+            description,
+            genre,
+            images,
+            address: addr,
+            rentalFee,
+            extraFee,
+            quantity,
+            maxDistance,
+            maxDays,
+            minDays,
+        });
         if (errors.length === 0) {
             const formDataWithImages = new FormData();
-            formDataWithImages.append("bookTitle", formData.bookTitle);
-            if (formData.images) {
-                for (let i = 0; i < formData.images.length; i++) {
-                    formDataWithImages.append("images", formData.images[i]);
+            formDataWithImages.append("bookTitle", bookTitle);
+            if (images) {
+                for (let i = 0; i < images.length; i++) {
+                    formDataWithImages.append("images", images[i]);
                 }
             }
-            formDataWithImages.append("description", formData.description);
-            formDataWithImages.append("author", formData.author);
-            formDataWithImages.append("publisher", formData.publisher);
-            formDataWithImages.append("publishedYear", formData.publishedYear);
-            formDataWithImages.append("genre", formData.genre);
-            formDataWithImages.append(
-                "quantity",
-                formData.quantity?.toString() || ""
-            );
-            formDataWithImages.append("street", formData.address.street || "");
-            formDataWithImages.append("city", formData.address.city || "");
-            formDataWithImages.append(
-                "district",
-                formData.address.district || ""
-            );
-            formDataWithImages.append("state", formData.address.state || "");
-            formDataWithImages.append(
-                "pincode",
-                formData.address.pincode || ""
-            );
-            formDataWithImages.append(
-                "latitude",
-                formData.latitude?.toString() || ""
-            );
-            formDataWithImages.append(
-                "longitude",
-                formData.longitude?.toString() || ""
-            );
+            formDataWithImages.append("description", description);
+            formDataWithImages.append("author", author);
+            formDataWithImages.append("publisher", publisher);
+            formDataWithImages.append("publishedYear", publishedYear);
+            formDataWithImages.append("genre", genre);
+            formDataWithImages.append("quantity", quantity?.toString() || "");
+            formDataWithImages.append("street", address.street || "");
+            formDataWithImages.append("city", address.city || "");
+            formDataWithImages.append("district", address.district || "");
+            formDataWithImages.append("state", address.state || "");
+            formDataWithImages.append("pincode", address.pincode || "");
+            // formDataWithImages.append(
+            //     "latitude",
+            //     latitude?.toString() || ""
+            // );
+            // formDataWithImages.append(
+            //     "longitude",
+            //      longitude?.toString() || ""
+            // );
 
-            formDataWithImages.append(
-                "rentalFee",
-                formData.rentalFee?.toString() || ""
-            );
+            formDataWithImages.append("rentalFee", rentalFee?.toString() || "");
             formDataWithImages.append(
                 "maxDistance",
-                formData.maxDistance?.toString() || ""
+                maxDistance?.toString() || ""
             );
-            formDataWithImages.append(
-                "maxDays",
-                formData.maxDays?.toString() || ""
-            );
-            formDataWithImages.append(
-                "minDays",
-                formData.minDays?.toString() || ""
-            );
+            formDataWithImages.append("maxDays", maxDays?.toString() || "");
+            formDataWithImages.append("minDays", minDays?.toString() || "");
 
-            formDataWithImages.append(
-                "extraFee",
-                formData.extraFee?.toString() || ""
-            );
+            formDataWithImages.append("extraFee", extraFee?.toString() || "");
 
             try {
                 const response = await userAxiosInstance.post(
@@ -362,11 +395,13 @@ const LendBookForm: React.FC = () => {
                 );
 
                 if (response.status === 200) {
-                    navigate(`/${username}/lend-books`);
-                    clearInput();
+                    navigate("/profile/lend-books");
                 }
             } catch (error: any) {
-                if (error.response && error.response.status === 404 || error.response.status === 403) {
+                if (
+                    (error.response && error.response.status === 404) ||
+                    error.response.status === 403
+                ) {
                     toast.error(error.response.data.message);
                 } else {
                     toast.error("An error occurred, please try again later");
@@ -411,8 +446,10 @@ const LendBookForm: React.FC = () => {
                                     id="bookTitle"
                                     name="bookTitle"
                                     placeholder="e.g., Wings Of Fire"
-                                    value={formData.bookTitle}
-                                    onChange={handleChange}
+                                    value={bookTitle}
+                                    onChange={(e) =>
+                                        setBookTitle(e.target.value)
+                                    }
                                     className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
                                 />
 
@@ -428,8 +465,10 @@ const LendBookForm: React.FC = () => {
                                             id="publisher"
                                             name="publisher"
                                             placeholder="e.g., Universities Press"
-                                            value={formData.publisher}
-                                            onChange={handleChange}
+                                            value={publisher}
+                                            onChange={(e) =>
+                                                setPublisher(e.target.value)
+                                            }
                                             className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
                                         />
                                     </div>
@@ -444,8 +483,10 @@ const LendBookForm: React.FC = () => {
                                             id="publishedYear"
                                             name="publishedYear"
                                             placeholder="e.g., 2003"
-                                            value={formData.publishedYear}
-                                            onChange={handleChange}
+                                            value={publishedYear}
+                                            onChange={(e) =>
+                                                setPublishedYear(e.target.value)
+                                            }
                                             className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
                                         />
                                     </div>
@@ -462,8 +503,10 @@ const LendBookForm: React.FC = () => {
                                         id="author"
                                         name="author"
                                         placeholder="e.g., A.P.J Abdul Kalam"
-                                        value={formData.author}
-                                        onChange={handleChange}
+                                        value={author}
+                                        onChange={(e) =>
+                                            setAuthor(e.target.value)
+                                        }
                                         className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
                                     />
                                 </div>
@@ -477,8 +520,12 @@ const LendBookForm: React.FC = () => {
                                         type="number"
                                         id="quantity"
                                         name="quantity"
-                                        value={formData.quantity}
-                                        onChange={handleChange}
+                                        value={quantity}
+                                        onChange={(e) =>
+                                            setQuantity(
+                                                parseFloat(e.target.value)
+                                            )
+                                        }
                                         className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
                                     />
                                 </div>
@@ -486,61 +533,50 @@ const LendBookForm: React.FC = () => {
 
                             <div className="flex-1 flex flex-col items-center justify-center">
                                 <div className="w-60 h-68 mb-4 relative">
-                                    {formData.images &&
-                                    formData.images.length > 0 ? (
+                                    {images.length > 0 ? (
                                         <Carousel
                                             showThumbs={false}
                                             className="w-full">
-                                            {Array.from(formData.images).map(
-                                                (image, index) => (
-                                                    <div
-                                                        key={index}
-                                                        className="w-full h-full relative">
-                                                        <img
-                                                            src={URL.createObjectURL(
-                                                                image
-                                                            )}
-                                                            alt={`Book ${index}`}
-                                                            className="w-full h-full object-cover rounded-lg shadow-lg"
-                                                        />
-                                                        <button
-                                                            type="button"
-                                                            className="absolute top-2 left-2 bg-gray-800 text-white rounded-full p-1 m-1 hover:bg-gray-600 transition duration-300"
-                                                            onClick={() =>
-                                                                handleRemoveImage(
-                                                                    index
-                                                                )
-                                                            }>
-                                                            <svg
-                                                                xmlns="http://www.w3.org/2000/svg"
-                                                                className="h-4 w-4"
-                                                                fill="none"
-                                                                viewBox="0 0 24 24"
-                                                                stroke="currentColor">
-                                                                <path
-                                                                    strokeLinecap="round"
-                                                                    strokeLinejoin="round"
-                                                                    strokeWidth="2"
-                                                                    d="M6 18L18 6M6 6l12 12"
-                                                                />
-                                                            </svg>
-                                                        </button>
-                                                    </div>
-                                                )
-                                            )}
+                                            {images.map((image, index) => (
+                                                <div
+                                                    key={index}
+                                                    className="w-full h-full relative">
+                                                    <img
+                                                        src={URL.createObjectURL(
+                                                            image
+                                                        )}
+                                                        alt={`Book ${index}`}
+                                                        className="w-full h-full object-cover rounded-lg shadow-lg"
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        className="absolute top-2 left-2 bg-gray-800 text-white rounded-full p-1 m-1 hover:bg-gray-600 transition duration-300"
+                                                        onClick={() =>
+                                                            handleRemoveImage(
+                                                                index
+                                                            )
+                                                        }>
+                                                        <svg
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            className="h-4 w-4"
+                                                            fill="none"
+                                                            viewBox="0 0 24 24"
+                                                            stroke="currentColor">
+                                                            <path
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                                strokeWidth="2"
+                                                                d="M6 18L18 6M6 6l12 12"
+                                                            />
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            ))}
                                         </Carousel>
                                     ) : (
-                                        <img
-                                            src={
-                                                formData.images
-                                                    ? URL.createObjectURL(
-                                                          formData.images[0]
-                                                      )
-                                                    : images
-                                            }
-                                            alt="Book"
-                                            className="w-full h-full object-cover rounded-lg shadow-lg"
-                                        />
+                                        <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-500">
+                                            No images selected
+                                        </div>
                                     )}
                                 </div>
                                 <label
@@ -569,8 +605,10 @@ const LendBookForm: React.FC = () => {
                                 <textarea
                                     id="description"
                                     name="description"
-                                    value={formData.description}
-                                    onChange={handleChange}
+                                    value={description}
+                                    onChange={(e) =>
+                                        setDescription(e.target.value)
+                                    }
                                     placeholder="e.g., Wings of Fire (1999), is the autobiography of the Missile Man..."
                                     className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
                                 />
@@ -584,8 +622,8 @@ const LendBookForm: React.FC = () => {
                                 <select
                                     id="genre"
                                     name="genre"
-                                    value={formData.genre}
-                                    onChange={handleChange}
+                                    value={genre}
+                                    onChange={(e) => setGenre(e.target.value)}
                                     className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200">
                                     <option value="" disabled>
                                         Select a genre
@@ -615,8 +653,13 @@ const LendBookForm: React.FC = () => {
                                     type="text"
                                     id="street"
                                     name="address.street"
-                                    value={formData.address.street}
-                                    onChange={handleChange}
+                                    value={address.street}
+                                    onChange={(e) =>
+                                        setAddress((prev) => ({
+                                            ...prev,
+                                            street: e.target.value,
+                                        }))
+                                    }
                                     className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
                                 />
                             </div>
@@ -630,8 +673,13 @@ const LendBookForm: React.FC = () => {
                                     type="text"
                                     id="city"
                                     name="address.city"
-                                    value={formData.address.city}
-                                    onChange={handleChange}
+                                    value={address.city}
+                                    onChange={(e) =>
+                                        setAddress((prev) => ({
+                                            ...prev,
+                                            city: e.target.value,
+                                        }))
+                                    }
                                     className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
                                 />
                             </div>
@@ -647,8 +695,13 @@ const LendBookForm: React.FC = () => {
                                     type="text"
                                     id="district"
                                     name="address.district"
-                                    value={formData.address.district}
-                                    onChange={handleChange}
+                                    value={address.district}
+                                    onChange={(e) =>
+                                        setAddress((prev) => ({
+                                            ...prev,
+                                            district: e.target.value,
+                                        }))
+                                    }
                                     className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
                                 />
                             </div>
@@ -662,8 +715,13 @@ const LendBookForm: React.FC = () => {
                                     type="text"
                                     id="state"
                                     name="address.state"
-                                    value={formData.address.state}
-                                    onChange={handleChange}
+                                    value={address.state}
+                                    onChange={(e) =>
+                                        setAddress((prev) => ({
+                                            ...prev,
+                                            state: e.target.value,
+                                        }))
+                                    }
                                     className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
                                 />
                             </div>
@@ -677,21 +735,26 @@ const LendBookForm: React.FC = () => {
                                     type="text"
                                     id="pincode"
                                     name="address.pincode"
-                                    value={formData.address.pincode}
-                                    onChange={handleChange}
+                                    value={address.pincode}
+                                    onChange={(e) =>
+                                        setAddress((prev) => ({
+                                            ...prev,
+                                            pincode: e.target.value,
+                                        }))
+                                    }
                                     className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
                                 />
                             </div>
                         </div>
 
-                        <div className="flex flex-col sm:flex-row sm:space-x-6 mt-4">
+                        {/* <div className="flex flex-col sm:flex-row sm:space-x-6 mt-4">
                             <button
                                 type="button"
-                                onClick={handleGetLocation}
+                                // onClick={handleGetLocation}
                                 className="bg-red-500 text-white font-bold py-2 px-4 rounded mt-4">
                                 Get your current Location
                             </button>
-                        </div>
+                        </div> */}
 
                         <div className="flex flex-col sm:flex-row sm:space-x-6 mt-4">
                             <div className="flex-1">
@@ -705,8 +768,10 @@ const LendBookForm: React.FC = () => {
                                     id="rentalFee"
                                     name="rentalFee"
                                     placeholder="e.g., 20 rs"
-                                    value={formData.rentalFee || ""}
-                                    onChange={handleChange}
+                                    value={rentalFee}
+                                    onChange={(e) =>
+                                        setRentalFee(parseFloat(e.target.value))
+                                    }
                                     className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
                                 />
                             </div>
@@ -720,8 +785,10 @@ const LendBookForm: React.FC = () => {
                                     type="number"
                                     id="extraFee"
                                     name="extraFee"
-                                    value={formData.extraFee || ""}
-                                    onChange={handleChange}
+                                    value={extraFee}
+                                    onChange={(e) =>
+                                        setExtraFee(parseFloat(e.target.value))
+                                    }
                                     className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
                                 />
                             </div>
@@ -738,8 +805,12 @@ const LendBookForm: React.FC = () => {
                                     id="maxDistance"
                                     name="maxDistance"
                                     placeholder="e.g., 50 km"
-                                    value={formData.maxDistance || ""}
-                                    onChange={handleChange}
+                                    value={maxDistance}
+                                    onChange={(e) =>
+                                        setMaxDistance(
+                                            parseFloat(e.target.value)
+                                        )
+                                    }
                                     className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
                                 />
                             </div>{" "}
@@ -754,8 +825,10 @@ const LendBookForm: React.FC = () => {
                                     id="maxDays"
                                     name="maxDays"
                                     placeholder="e.g., 30 days"
-                                    value={formData.maxDays || ""}
-                                    onChange={handleChange}
+                                    value={maxDays || ""}
+                                    onChange={(e) =>
+                                        setMaxDays(parseFloat(e.target.value))
+                                    }
                                     className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
                                 />
                             </div>
@@ -770,8 +843,10 @@ const LendBookForm: React.FC = () => {
                                     id="minDays"
                                     name="minDays"
                                     placeholder="e.g., 30 days"
-                                    value={formData.minDays || ""}
-                                    onChange={handleChange}
+                                    value={minDays || ""}
+                                    onChange={(e) =>
+                                        setMinDays(parseFloat(e.target.value))
+                                    }
                                     className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder:text-sm"
                                 />
                             </div>

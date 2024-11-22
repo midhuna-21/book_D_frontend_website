@@ -3,9 +3,9 @@ import { userAxiosInstance } from "../../utils/api/userAxiosInstance";
 import { useSelector } from "react-redux";
 import { RootState } from "../../utils/ReduxStore/store/store";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import {
     FaGreaterThan,
-    FaSearch,
     FaBookReader,
     FaLessThan,
     FaCheck,
@@ -192,12 +192,12 @@ const Rent: React.FC = () => {
     );
 
     const fetchOrders = async () => {
+        setLoading(true);
         try {
             const response = await userAxiosInstance.get(
                 `/books/rental-orders/${userId}`
             );
             setOrders(response.data.orders);
-            setLoading(false);
         } catch (error: any) {
             if (error.response && error.response.status === 403) {
                 toast.error(error.response.data.message);
@@ -205,6 +205,7 @@ const Rent: React.FC = () => {
                 toast.error("An error occurred, please try again later");
                 console.error("Error fetching orders:", error);
             }
+        } finally {
             setLoading(false);
         }
     };
@@ -227,28 +228,43 @@ const Rent: React.FC = () => {
     const confirmStatusUpdate = async (orderId: string, returnCode: string) => {
         if (orderId === null || returnCode === null) return;
         try {
-           const response =  await userAxiosInstance.put(
+            const response = await userAxiosInstance.put(
                 `/books/rental-orders/renter/confirm/return/${orderId}`,
                 {
                     returnCode,
                 }
             );
-            if(response.data.success==false){
-                toast.error(response.data.message)
-         }else {
-             fetchOrders();
-             setShowModal(false);
+            if (response.data.success == false) {
+                toast.error(response.data.message);
+            } else {
+                fetchOrders();
+                setShowModal(false);
             }
         } catch (error) {
             console.error("Error updating status:", error);
         }
     };
 
-    const navigate = useNavigate()
+    const navigate = useNavigate();
     const handleDetailPage = (orderId: string) => {
-        navigate(`/${username}/books/lend/order-detail/${orderId}`);
+        navigate(`/profile/books/lend/order-detail/${orderId}`);
     };
 
+    if (loading) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-screen">
+                <motion.div
+                    className="loader w-12 h-12 border-4 border-blue-500 border-dashed rounded-full animate-spin"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5 }}
+                />
+                <p className="mt-4 text-gray-600 text-md font-semibold">
+                    Loading notifications...
+                </p>
+            </div>
+        );
+    }
     if (orders.length === 0) {
         return (
             <div className="flex items-center justify-center h-screen">
@@ -337,10 +353,9 @@ const Rent: React.FC = () => {
                                 </thead>
                                 <tbody className="text-gray-600 text-sm font-light">
                                     {currentOrders.map((order) => (
-                                       
                                         <tr
                                             key={order._id}
-                                            onClick={() => handleDetailPage(order._id)}
+                                            // onClick={() => handleDetailPage(order._id)}
                                             className="border-b border-gray-200 hover:shadow-lg">
                                             <td className="py-3 px-6 text-center whitespace-nowrap truncate w-[12%] max-w-[150px]">
                                                 {order?.bookTitle}
@@ -448,6 +463,17 @@ const Rent: React.FC = () => {
                                                     </div>
                                                 ) : null}
                                             </td>
+                                            <td className="px-6 py-4 text-center">
+                                                <button
+                                                    onClick={() =>
+                                                        handleDetailPage(
+                                                            order._id
+                                                        )
+                                                    }
+                                                    className="px-3 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-400 text-xs md:text-sm transition-colors duration-200">
+                                                    View
+                                                </button>
+                                            </td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -455,10 +481,9 @@ const Rent: React.FC = () => {
 
                             <div className="md:hidden">
                                 {currentOrders.map((order) => (
-                                   
                                     <div
                                         key={order._id}
-                                        onClick={() => handleDetailPage(order._id)}
+                                        // onClick={() => handleDetailPage(order._id)}
                                         className="bg-white shadow-md rounded-lg p-4 mb-6">
                                         <div className="flex justify-between items-center mb-3">
                                             <strong className="text-gray-700">
@@ -568,9 +593,15 @@ const Rent: React.FC = () => {
                                                     Confirm Pickup
                                                 </button>
                                             )}
+                                            <button
+                                                onClick={() =>
+                                                    handleDetailPage(order._id)
+                                                }
+                                                className="px-3 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-400 text-xs md:text-sm transition-colors duration-200">
+                                                View
+                                            </button>
                                         </div>
                                     </div>
-                                   
                                 ))}
                             </div>
                         </div>

@@ -29,7 +29,7 @@ const ResetPassword: React.FC = () => {
     const togglePasswordVisibility = () => {
         setIsPasswordVisible(!isPasswordVisible);
     };
-    const handleSubmit = async(
+    const handleSubmit = async (
         e: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
         e.preventDefault();
@@ -43,28 +43,27 @@ const ResetPassword: React.FC = () => {
             toast.error(validationResult);
             return;
         }
-        try{
-         await userAxiosInstance
-            .post("/update-password", {
+        try {
+            await userAxiosInstance.post("/update-password", {
                 resetToken,
                 resetTokenExpiration,
                 email: email,
                 password: password,
-            })
-           
-                localStorage.removeItem("useraccessToken");
-                localStorage.removeItem("userrefreshToken");
-                dispatch(clearUser());
-                toast.success("successfully unlinked your email account.");
-                navigate("/login", { replace: true });
-                localStorage.removeItem("otpSubmitted");
-            }catch(error:any) {
-                if (error.response && error.response.status === 401) {
-                    toast.error(error.response.data.message);
-                } else {
-                    toast.error("An error occured try again later");
-                }   
+            });
+
+            localStorage.removeItem("useraccessToken");
+            localStorage.removeItem("userrefreshToken");
+            dispatch(clearUser());
+            toast.success("successfully unlinked your email account.");
+            navigate("/login", { replace: true });
+            localStorage.removeItem("otpSubmitted");
+        } catch (error: any) {
+            if (error.response && error.response.status === 401) {
+                toast.error(error.response.data.message);
+            } else {
+                toast.error("An error occured try again later");
             }
+        }
     };
 
     useEffect(() => {

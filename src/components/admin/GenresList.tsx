@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Box, Image, Text, Spinner, IconButton } from "@chakra-ui/react";
+import { Box, Image, Text, IconButton } from "@chakra-ui/react";
 import { adminAxiosInstance } from "../../utils/api/adminAxiosInstance";
 import { FaTrashAlt, FaEdit } from "react-icons/fa";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import Spinner from "../users/Spinner";
 
 interface Genres {
     _id: string;
@@ -83,7 +84,7 @@ const GenresList: React.FC = () => {
     if (loading) {
         return (
             <Box className="flex justify-center items-center h-full">
-                <Spinner size="xl" color="teal.500" />
+                <Spinner />
             </Box>
         );
     }

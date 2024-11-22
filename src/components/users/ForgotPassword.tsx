@@ -11,7 +11,7 @@ const ForgotPassword: React.FC = () => {
     const [email, setEmail] = useState("");
     const navigate = useNavigate();
 
-    const handleSubmitEmail = async(
+    const handleSubmitEmail = async (
         e: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
         e.preventDefault();
@@ -21,27 +21,26 @@ const ForgotPassword: React.FC = () => {
             toast.error(validationResult);
             return;
         }
-        try{
-        const response = await axiosUser
-            .post("/send-otp/password-reset", {
+        try {
+            const response = await axiosUser.post("/send-otp/password-reset", {
                 email: email,
-            })
-          
-                toast.success("Email sent successfully.Check your email.");
-                navigate("/verify-otp", {
-                    state: {
-                        response: response.data.isValidEmail,
-                    },
-                    replace: true,
-                });
-                window.history.replaceState(null, "");
-            }catch(error:any) {
-                if (error.response && error.response.status === 401) {
-                    toast.error(error.response.data.message);
-                } else {
-                    toast.error("An error occured try again later");
-                }
+            });
+
+            toast.success("Email sent successfully.Check your email.");
+            navigate("/verify-otp", {
+                state: {
+                    response: response.data.isValidEmail,
+                },
+                replace: true,
+            });
+            window.history.replaceState(null, "");
+        } catch (error: any) {
+            if (error.response && error.response.status === 401) {
+                toast.error(error.response.data.message);
+            } else {
+                toast.error("An error occured try again later");
             }
+        }
     };
 
     useEffect(() => {

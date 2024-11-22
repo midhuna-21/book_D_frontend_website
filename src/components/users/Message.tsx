@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../utils/ReduxStore/store/store";
 import { userAxiosInstance } from "../../utils/api/userAxiosInstance";
 import { useSocket } from "../../utils/context/SocketProvider";
-import {toast} from 'sonner';
+import { toast } from "sonner";
 
 interface Receiver {
     chatRoomId: string;
@@ -73,11 +73,13 @@ const Message: React.FC<MessageProps> = ({ selectedUser }) => {
             } else {
                 console.error("Failed to send message");
             }
-        } catch (error:any) {
+        } catch (error: any) {
             if (error.response && error.response.status === 403) {
                 toast.error(error.response.data.message);
             } else {
-                toast.error("An error occurred while sending messages, please try again later");
+                toast.error(
+                    "An error occurred while sending messages, please try again later"
+                );
                 console.error("Error sending message:", error);
             }
         }
@@ -89,11 +91,13 @@ const Message: React.FC<MessageProps> = ({ selectedUser }) => {
                 `/messages/${chatRoomId}`
             );
             setMessages(response.data.messages || []);
-        } catch (error:any) {
+        } catch (error: any) {
             if (error.response && error.response.status === 403) {
                 toast.error(error.response.data.message);
             } else {
-                toast.error("An error occurred while fetching messages, please try again later");
+                toast.error(
+                    "An error occurred while fetching messages, please try again later"
+                );
                 console.log("Error fetching messages:", error);
             }
         }
