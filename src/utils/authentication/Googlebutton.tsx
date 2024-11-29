@@ -34,7 +34,7 @@ const SignInButton: React.FC = () => {
                         image: response.data.picture,
                     }
                     try {
-                        const res = await axios.post("https://bookd.store/api/user/google-login", data);
+                        const res = await axiosUser.post("/google-login", data);
     
                         if (res.status === 200) {
                             dispatch(addUser(res.data));
