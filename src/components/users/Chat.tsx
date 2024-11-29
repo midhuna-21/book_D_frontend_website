@@ -52,7 +52,6 @@ const UserChat: React.FC = () => {
 
     const fetchReceivers = async () => {
         try {
-            setLoading(true);
             const response = await userAxiosInstance.get(`/chats/${userId}`);
             const conversations = response.data.conversations;
             if (Array.isArray(conversations)) {
@@ -99,8 +98,6 @@ const UserChat: React.FC = () => {
                     "An error occurred while fetching messages, try again later"
                 );
             }
-        } finally {
-            setLoading(false);
         }
     };
     useEffect(() => {
@@ -335,7 +332,7 @@ const UserChat: React.FC = () => {
         }
     };
 
-    if (loading) {
+    if (!chatRooms.length) {
         return (
             <div className="flex flex-col items-center justify-center min-h-screen">
                 <motion.div

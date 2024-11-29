@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import {Link} from 'react-router-dom';
 import {
     FaSearch,
     FaTimes,
@@ -17,10 +18,18 @@ const AboutRentLend: React.FC = () => {
     const openLendModal = () => setIsLendModalOpen(true);
     const closeLendModal = () => setIsLendModalOpen(false);
     return (
-        <div className="container mx-auto px-8 mb-12 flex justify-center items-center min-h-[50vh]">
+        <div className="container mx-auto  flex justify-center items-center min-h-[50vh]">
+              <div className="flex flex-col items-center">
+            <div className="w-full py-6 mb-6 ">
+                <h2 className="text-2xl font-serif underline flex justify-center items-center md:text-3xl">
+                    How It Works
+                </h2>
+            </div>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full max-w-4xl">
+                <Link to='/how-renting-works'>
                 <div
-                    onClick={openRentModal}
+                    // onClick={openRentModal}
                     className="bg-cyan-500 hover:bg-box1 text-white p-8 rounded-lg shadow-md transition-colors duration-300 cursor-pointer flex flex-col items-center justify-center">
                     <h3 className="text-2xl font-bold mb-4">
                         How to Rent a Book
@@ -30,7 +39,8 @@ const AboutRentLend: React.FC = () => {
                         platform.
                     </p>
                 </div>
-
+                </Link>
+                <Link to='/how-lending-works'>
                 <div
                     onClick={openLendModal}
                     className="bg-box2 hover:bg-box4 text-white p-8 rounded-lg shadow-md transition-colors duration-300 cursor-pointer flex flex-col items-center justify-center">
@@ -42,8 +52,9 @@ const AboutRentLend: React.FC = () => {
                         read.
                     </p>
                 </div>
+                </Link>
             </div>
-            {isRentModalOpen && (
+            {/* {isRentModalOpen && (
                 <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
                     <div className="relative bg-white p-8 rounded-lg shadow-lg w-11/12 md:w-2/3 lg:w-1/2">
                         <FaTimes
@@ -212,7 +223,8 @@ const AboutRentLend: React.FC = () => {
                         </ol>
                     </div>
                 </div>
-            )}
+            )} */}
+        </div>
         </div>
     );
 };

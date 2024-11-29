@@ -34,6 +34,8 @@ const validateFormData = (formData: FormData): string[] => {
     const nonLetterRegex = /[^a-zA-Z\s]/;
     const currentYear = new Date().getFullYear();
     const startingYear = 1440;
+    const validNamePattern = /^[A-Za-z]+(?: [A-Za-z]+)*$/;
+    const disallowedCharacters = /[^a-zA-Z0-9\s.,-]/;
 
     if (!formData.bookTitle.trim()) {
         errors.push("Please enter Book title.");
@@ -58,18 +60,24 @@ const validateFormData = (formData: FormData): string[] => {
         errors.push("Please enter  Description.");
     } else if (formData.description.length > 500) {
         errors.push("Description is too long.");
+    } else if (!/[a-zA-Z]/.test(formData.description)) {
+        errors.push("Description cannot contian only numbers or specail characters.");
     }
 
     if (!formData.author.trim()) {
         errors.push("Please enter Author.");
     } else if (formData.author.length > 50) {
         errors.push("Author is too long.");
+    }else if (!validNamePattern.test(formData.author)){
+        errors.push("Please provide valida author")
     }
 
     if (!formData.publisher.trim()) {
         errors.push("Please enter Publisher.");
     } else if (formData.publisher.length > 50) {
         errors.push("Publisher is too long.");
+    }else if (!validNamePattern.test(formData.publisher)){
+        errors.push("Please provide valida publisher")
     }
 
     if (!formData.quantity || isNaN(formData.quantity)) {
@@ -104,10 +112,13 @@ const validateFormData = (formData: FormData): string[] => {
         errors.push("Custom genre is too long.");
     }
 
+    const maximumRentalFee = 1000 
     if (!formData.rentalFee || isNaN(formData.rentalFee)) {
         errors.push("Please enter Rental fee");
     } else if (formData.rentalFee <= 0) {
         errors.push("Rental fee must be a positive number.");
+    }else if (formData.rentalFee > maximumRentalFee) {
+        errors.push(`Rental fee must be within $${maximumRentalFee} rs.`);
     }
 
     if (!formData.extraFee || isNaN(formData.extraFee)) {
@@ -126,24 +137,32 @@ const validateFormData = (formData: FormData): string[] => {
         errors.push("Please enter Building Name.");
     } else if (formData.address.street.length > 100) {
         errors.push("Building Name is too long.");
+    }else if (disallowedCharacters.test(formData.address.street)) {
+        errors.push("Please provide valid city address.")
     }
 
     if (!formData.address.city.trim()) {
         errors.push("Please enter City.");
     } else if (formData.address.city.length > 50) {
         errors.push("City is too long.");
+    }else if (disallowedCharacters.test(formData.address.city)) {
+        errors.push("Please provide valid city address.")
     }
 
     if (!formData.address.district.trim()) {
         errors.push("Please enter District.");
     } else if (formData.address.district.length > 50) {
         errors.push("District is too long.");
+    }else if (disallowedCharacters.test(formData.address.district)) {
+        errors.push("Please provide valid city address.")
     }
 
     if (!formData.address.state.trim()) {
         errors.push("Please enter State.");
     } else if (formData.address.state.length > 50) {
         errors.push("State is too long.");
+    }else if (disallowedCharacters.test(formData.address.state)) {
+        errors.push("Please provide valid city address.")
     }
 
     if (!formData.maxDistance || isNaN(formData.maxDistance)) {

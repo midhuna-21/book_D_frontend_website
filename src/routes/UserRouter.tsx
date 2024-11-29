@@ -11,6 +11,8 @@ import Error from "../components/users/Error";
 import LinkGoogleAccount from "../components/users/LinkGooleEmail";
 import Header from "../components/users/Header";
 import CenterOfHome from "../components/users/HomePage";
+import DetailsOfLending from '../components/users/DetailsOfLending'
+import DetailsOfRenting from '../components/users/DetailsOfRenting'
 import UserAccountProfile from "../pages/user/UserProfile";
 import ExploreRentalBooks from "../components/users/ExploreBooks";
 import BookDetailPage from "../components/users/BookDetail";
@@ -94,6 +96,23 @@ const UserRouter = () => {
                                     <Route
                                         path="/home"
                                         element={<CenterOfHome />}
+                                    />
+
+                                    <Route
+                                        path="/how-lending-works"
+                                        element={
+                                            <PrivateRoute>
+                                                <DetailsOfLending/>
+                                            </PrivateRoute>
+                                        }
+                                    />
+                                    <Route
+                                        path="/how-renting-works"
+                                        element={
+                                            <PrivateRoute>
+                                                <DetailsOfRenting />
+                                            </PrivateRoute>
+                                        }
                                     />
                                     <Route
                                         path="/lend-book"

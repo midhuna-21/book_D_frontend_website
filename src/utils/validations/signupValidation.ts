@@ -1,12 +1,7 @@
-export const validateName = (name: string) => {
-    const trimmedName = name.trim();
-    const invalidCharacters = /[$%^@#&*]/;
-    const allNumbers = /^\d+$/;
-    return (
-        trimmedName !== "" &&
-        !invalidCharacters.test(trimmedName) &&
-        !allNumbers.test(trimmedName)
-    );
+export const validateName = (name: string) => {   
+    const trimmedName = name.trim().replace(/\s+/g, ' '); 
+    const validNamePattern = /^[A-Za-z]+(?: [A-Za-z]+)*$/;
+    return validNamePattern.test(trimmedName);
 };
 
 export const validateEmail = (email: string) => {

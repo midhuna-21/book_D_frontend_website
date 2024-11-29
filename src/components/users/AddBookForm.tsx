@@ -2,71 +2,18 @@ import React, { useState, useEffect } from "react";
 import { userAxiosInstance } from "../../utils/api/userAxiosInstance";
 import { toast } from "sonner";
 import { validateFormData } from "../../utils/validations/bookFormValidatoin";
-import images from "../../assets/images.png";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { RootState } from "../../utils/ReduxStore/store/store";
 
 interface Genre {
     genreName: string;
     image: string;
     _id: string;
 }
-type FormData = {
-    bookTitle: string;
-    description: string;
-    images: File[] | null;
-    author: string;
-    publisher: string;
-    publishedYear: string;
-    genre: string;
-    customGenre: string;
-    rentalFee?: number;
-    extraFee?: number;
-    quantity: number;
-    address: {
-        street: string;
-        city: string;
-        district: string;
-        state: string;
-        pincode: string;
-    };
-    maxDistance: number;
-    maxDays: number;
-    minDays: number;
-    latitude: number;
-    longitude: number;
-};
 
 const LendBookForm: React.FC = () => {
-    // const initialFormData: FormData = {
-    //     bookTitle: "",
-    //     description: "",
-    //     images: null,
-    //     author: "",
-    //     publisher: "",
-    //     publishedYear: "",
-    //     genre: "",
-    //     customGenre: "",
-    //     rentalFee: 0,
-    //     extraFee: 0,
-    //     quantity: 0,
-    //     address: {
-    //         street: "",
-    //         city: "",
-    //         district: "",
-    //         state: "",
-    //         pincode: "",
-    //     },
-    //     maxDistance: 0,
-    //     maxDays: 0,
-    //     minDays: 0,
-    //     latitude: 0,
-    //     longitude: 0,
-    // };
 
     const [bookTitle, setBookTitle] = useState<string>("");
     const [publisher, setPublisher] = useState<string>("");
@@ -90,9 +37,7 @@ const LendBookForm: React.FC = () => {
         pincode: "",
     });
 
-    const username = useSelector(
-        (state: RootState) => state?.user?.userInfo?.user?.name
-    );
+  
     // const [formData, setFormData] = useState<FormData>(initialFormData);
 
     const [genres, setGenres] = useState<Genre[]>([]);

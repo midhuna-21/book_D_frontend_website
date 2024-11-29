@@ -215,6 +215,7 @@ const RentalPaymentDetails = () => {
                             {bookDetails?.bookId?.address?.city},{" "}
                             {bookDetails?.bookId?.address?.district},{" "}
                             {bookDetails?.bookId?.address?.state},{" "}
+                            {bookDetails?.bookId?.address?.Country},{" "}
                             {bookDetails?.bookId?.address?.pincode}
                         </p>
                     </div>

@@ -3,25 +3,21 @@ import { useParams } from "react-router-dom";
 import { userAxiosInstance } from "../../utils/api/userAxiosInstance";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Swal from "sweetalert2";
 import { toast } from "sonner";
-import { FaEdit, FaTrash, FaBookReader } from "react-icons/fa";
+import { FaEdit, FaBookReader } from "react-icons/fa";
 import { MdOutlineArchive } from "react-icons/md";
 import { useSelector } from "react-redux";
 import { io, Socket } from "socket.io-client";
 import config from "../../config/config";
 import { useLocation, useNavigate } from "react-router-dom";
 import Spinner from "../users/Spinner";
-import axios from "axios";
 import { motion } from "framer-motion";
 
 const BookDetailPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const userInfo = useSelector((state: any) => state.user.userInfo?.user);
-    const address = userInfo?.address;
     const userId = userInfo?._id || "";
-    const username = userInfo?.name;
     const [book, setBook] = useState<any>(null);
     const bookId = book?._id!;
     const rentalFee = book?.rentalFee!;
@@ -29,9 +25,6 @@ const BookDetailPage: React.FC = () => {
     const [totalDays, setTotalDays] = useState<any>(null);
     const [lender, setLender] = useState<any>(null);
     const [requested, setRequested] = useState(false);
-    const [isArchived, setIsArchived] = useState<boolean>(
-        book?.isArchived || false
-    );
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [loading, setLoading] = useState(true);
     const [socket, setSocket] = useState<Socket | null>(null);

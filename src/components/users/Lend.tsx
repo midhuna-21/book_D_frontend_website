@@ -364,17 +364,28 @@ const Lend: React.FC = () => {
                                             <td className="py-3 px-6 text-center">
                                                 {order?.returnCode}
                                             </td>
-                                            <td className="py-3 px-6 text-center">
-                                                {new Date(
-                                                    order?.rentedOn
-                                                ).toLocaleDateString()}
-                                            </td>
-                                            <td className="py-3 px-6 text-center">
-                                                {new Date(
-                                                    order?.dueDate
-                                                ).toLocaleDateString()}
-                                            </td>
-
+                                            {order?.rentedOn ? (
+                                                <td className="py-3 px-6 text-center whitespace-nowrap">
+                                                    {new Date(
+                                                        order?.rentedOn
+                                                    ).toLocaleDateString()}
+                                                </td>
+                                            ) : (
+                                                <td className="py-3 px-6 text-center whitespace-nowrap">
+                                                    Not set
+                                                </td>
+                                            )}
+                                            {order?.dueDate ? (
+                                                <td className="py-3 px-6 text-center whitespace-nowrap">
+                                                    {new Date(
+                                                        order?.dueDate
+                                                    ).toLocaleDateString()}
+                                                </td>
+                                            ) : (
+                                                <td className="py-3 px-6 text-center whitespace-nowrap">
+                                                    Not set
+                                                </td>
+                                            )}
                                             <td className="py-3 px-6 text-center">
                                                 <span
                                                     className={`font-semibold text-xs md:text-sm rounded-md p-1 ${
@@ -401,7 +412,16 @@ const Lend: React.FC = () => {
                                                         </span>
                                                         <FaCheck className="text-green-600 ml-2" />
                                                     </div>
-                                                ) : order.bookStatus ===
+                                                ) : 
+                                                order.bookStatus ===
+                                                "cancelled" ? (
+                                                    <div className="flex items-center justify-center">
+                                                        <span className="text-red-600 font-semibold text-xs md:text-sm">
+                                                            cancelled
+                                                        </span>
+                                                    </div>
+                                                ) : 
+                                                order.bookStatus ===
                                                   "not_returned" ? (
                                                     <div className="flex items-center justify-center">
                                                         <span className="text-blue-600 font-semibold text-xs md:text-sm">
@@ -479,19 +499,16 @@ const Lend: React.FC = () => {
                                                 Rented On:
                                             </strong>
                                             <span className="text-gray-600">
-                                                {new Date(
-                                                    order?.rentedOn
-                                                ).toLocaleDateString()}
+                                            {order?.rentedOn ? new Date(order.rentedOn).toLocaleDateString() : "Not set"}
                                             </span>
+                                            
                                         </div>
                                         <div className="flex justify-between items-center mb-3">
                                             <strong className="text-gray-700">
                                                 Due Date:
                                             </strong>
                                             <span className="text-gray-600">
-                                                {new Date(
-                                                    order?.dueDate
-                                                ).toLocaleDateString()}
+                                            {order?.dueDate ? new Date(order.dueDate).toLocaleDateString() : "Not set"}
                                             </span>
                                         </div>
                                         <div className="flex justify-between items-center mb-3">
@@ -521,9 +538,24 @@ const Lend: React.FC = () => {
                                                     <span className="text-green-600 font-semibold">
                                                         Completed
                                                     </span>
-                                                    <FaCheck className="text-green-600 ml-2" />
+                                                    <FaCheck className="text-red-600 ml-2" />
                                                 </div>
-                                            ) : (
+                                            ) : order.bookStatus ===
+                                                "cancelled" ? (
+                                                    <div className="flex items-center">
+                                                        <span className="text-red-600 font-semibold">
+                                                            cancelled
+                                                        </span>
+                                                    </div>
+                                                ) : 
+                                                order.bookStatus ===
+                                                "cancelled" ? (
+                                                    <div className="flex items-center">
+                                                        <span className="text-red-600 font-semibold">
+                                                            cancelled
+                                                        </span>
+                                                    </div>
+                                                ) : (
                                                 <button
                                                     onClick={() =>
                                                         handleStatusUpdate(

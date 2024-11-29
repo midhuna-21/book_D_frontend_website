@@ -12,6 +12,7 @@ import {
 } from "react-icons/fa";
 import { toast } from "sonner";
 import { Box, Flex, Icon } from "@chakra-ui/react";
+import Swal from "sweetalert2";
 
 interface Cart {
     quantity: number;
@@ -28,6 +29,7 @@ interface Order {
         name: string;
     };
     userId: {
+        _id: string;
         name: string;
     };
     cartId: Cart;
@@ -222,6 +224,36 @@ const Rent: React.FC = () => {
         setSelectedOrderId(orderId);
         //  setCurrentOrderStatus(bookStatus);
         setShowModal(true);
+    };
+    const handleCancelRent = async (orderId: string) => {
+        try {
+            const result = await Swal.fire({
+                title: "Are you sure?",
+                text: "Do you want to cancel this rental?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Yes, cancel it!",
+                cancelButtonText: "No, keep it",
+            });
+
+            if (result.isConfirmed) {
+                const response = await userAxiosInstance.put(
+                    `/books/update-cancellation-rental/${orderId}/${userId}`
+                );
+                if (response.status === 200) {
+                    Swal.fire(
+                        "Cancelled!",
+                        "The rental has been cancelled.",
+                        "success"
+                    );
+                    fetchOrders();
+                }
+            } else {
+                Swal.fire("Cancelled", "Your rental is safe!", "info");
+            }
+        } catch (error) {
+            console.error("Error updating status:", error);
+        }
     };
 
     const confirmStatusUpdate = async (orderId: string, returnCode: string) => {
@@ -431,7 +463,7 @@ const Rent: React.FC = () => {
                                                 )}
                                             </td>
                                             <td className="py-3 px-6 text-center whitespace-nowrap">
-                                                {order.bookStatus ==
+                                                {order.bookStatus ===
                                                 "completed" ? (
                                                     <div className="flex items-center justify-center">
                                                         <span className="text-green-600 font-semibold text-xs md:text-sm whitespace-nowrap px-2 py-2">
@@ -440,6 +472,14 @@ const Rent: React.FC = () => {
                                                         <FaCheck className="text-green-600 text-lg ml-2" />
                                                     </div>
                                                 ) : order.bookStatus ===
+                                                    "cancelled" ? (
+                                                        <div className="flex items-center justify-center">
+                                                            <span className="text-red-600 font-semibold text-xs md:text-sm whitespace-nowrap px-2 py-2">
+                                                                cancelled
+                                                            </span>
+                                                        </div>
+                                                    ) :
+                                                 order.bookStatus ===
                                                   "not_returned" ? (
                                                     <div className="">
                                                         <button
@@ -449,16 +489,24 @@ const Rent: React.FC = () => {
                                                                     order?.dueDate
                                                                 );
                                                             }}
-                                                            className=" px-2 py-2 font-semibold  whitespace-nowrap text-white bg-green-800 rounded-lg hover:bg-green-600 transition-colors duration-200 text-xs md:text-sm">
+                                                            className="px-2 py-2 font-semibold whitespace-nowrap text-white bg-green-800 rounded-lg hover:bg-green-600 transition-colors duration-200 text-xs md:text-sm">
                                                             Confirm Return
                                                         </button>
                                                     </div>
-                                                ) : order.bookStatus ==
-                                                  "not_picked_up" ? (
-                                                    <div className="flex items-center justify-center">
-                                                        <span className="text-yellow-700 font-semibold text-sm whitespace-nowrap px-2 py-2">
-                                                            Not picked yet
-                                                        </span>
+                                                ) : order.bookStatus ===
+                                                      "not_picked_up" &&
+                                                  order?.userId?._id ===
+                                                      userId ? (
+                                                    <div className="">
+                                                        <button
+                                                            onClick={() => {
+                                                                handleCancelRent(
+                                                                    order?._id
+                                                                );
+                                                            }}
+                                                            className="px-2 py-2 font-semibold whitespace-nowrap text-white bg-red-600 rounded-lg hover:bg-red-800 transition-colors duration-200 text-xs md:text-sm">
+                                                            Cancel
+                                                        </button>
                                                     </div>
                                                 ) : null}
                                             </td>
@@ -536,9 +584,11 @@ const Rent: React.FC = () => {
                                                 Rented On:
                                             </strong>
                                             <span className="text-gray-600">
-                                                {new Date(
-                                                    order?.rentedOn
-                                                ).toLocaleDateString()}
+                                                {order?.rentedOn
+                                                    ? new Date(
+                                                          order.rentedOn
+                                                      ).toLocaleDateString()
+                                                    : "Not set"}
                                             </span>
                                         </div>
                                         <div className="flex justify-between items-center mb-3">
@@ -546,9 +596,11 @@ const Rent: React.FC = () => {
                                                 Due Date:
                                             </strong>
                                             <span className="text-gray-600">
-                                                {new Date(
-                                                    order?.dueDate
-                                                ).toLocaleDateString()}
+                                                {order?.dueDate
+                                                    ? new Date(
+                                                          order.dueDate
+                                                      ).toLocaleDateString()
+                                                    : "Not set"}
                                             </span>
                                         </div>
                                         <div className="flex justify-between items-center mb-3">

@@ -25,49 +25,93 @@ const SignInButton: React.FC = () => {
                         },
                     }
                 );
-                await axiosUser
-                    .post("/google-login", {
+
+
+                if (response && response.data) {
+                    const data = {
                         name: response.data.name,
                         email: response.data.email,
                         image: response.data.picture,
-                    })
-                    .then(function (response) {
-                        if (response.status == 200) {
-                            dispatch(addUser(response.data));
-
+                    }
+                    try {
+                        const res = await axiosUser.post("/google-login", data);
+    
+                        if (res.status === 200) {
+                            dispatch(addUser(res.data));
+    
                             localStorage.setItem(
                                 "useraccessToken",
-                                response.data.accessToken
+                                res.data.accessToken
                             );
                             localStorage.setItem(
                                 "userrefreshToken",
-                                response.data.refreshToken
+                                res.data.refreshToken
                             );
+    
                             navigate("/home");
                         }
-                    })
-                    .catch(function (error) {
-                        if (error.response && error.response.status === 400) {
-                            toast.error(error.response.data.message);
+                    } catch (innerError: any) {
+                        if (innerError.response && innerError.response.status === 400) {
+                            toast.error(innerError.response.data.message);
                             navigate("/google-link-password", {
                                 state: { email: response.data.email },
                             });
-                        }
-
-                        if (
-                            (error.response && error.response.status === 500) ||
-                            error.response.status === 401
+                        } else if (
+                            innerError.response &&
+                            (innerError.response.status === 500 || innerError.response.status === 401)
                         ) {
-                            toast.error(error.response.data.message);
+                            toast.error(innerError.response.data.message);
+                        } else {
+                            console.error("Unexpected error in inner API call:", innerError.message);
                         }
-                    });
-            } catch (error: any) {
-                console.log(error.message);
-            }
-        },
-        onError: (error) => {
-            console.error("Login Failed:", error);
-        },
+                    }
+                }
+
+                    // await axiosUser
+                    //     .post("/google-login", {
+                    //         name: response.data.name,
+                    //         email: response.data.email,
+                    //         image: response.data.picture,
+                    //     }
+                    // )
+                    //     .then(function (response) {
+                    //         if (response.status == 200) {
+                    //             dispatch(addUser(response.data));
+
+                    //             localStorage.setItem(
+                    //             "useraccessToken",
+                    //             response.data.accessToken
+                    //         );
+                    //         localStorage.setItem(
+                    //             "userrefreshToken",
+                    //             response.data.refreshToken
+                    //         );
+                    //         navigate("/home");
+                    //     }
+                    // })
+                    // .catch(function (error) {
+                    //     if (error.response && error.response.status === 400) {
+                    //         toast.error(error.response.data.message);
+                    //         navigate("/google-link-password", {
+                    //             state: { email: response.data.email },
+                    //         });
+                    //     }
+
+                    //     if (
+                    //         (error.response && error.response.status === 500) ||
+                    //         error.response.status === 401
+                    //     ) {
+                    //         toast.error(error.response.data.message);
+                    //     }
+                    // });
+                }catch (outerError: any) {
+                   
+                    console.error("Error fetching Google user data:", outerError.message);
+                }
+            },
+            onError: (error) => {
+                console.error("Login Failed:", error);
+            },
     });
 
     return (

@@ -40,6 +40,7 @@ const ExploreRentalBooks: React.FC = () => {
         try {
             setLoading(true);
 
+            
             const response = await userAxiosInstance.get(
                 "/books/available-for-rent",
                 {

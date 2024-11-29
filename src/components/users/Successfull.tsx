@@ -28,6 +28,8 @@ const PaymentSuccess = () => {
     const navigate = useNavigate();
     const hasFetchedData = useRef(false);
     const { fromWallet, orderId } = location.state || {};
+    console.log(username,'username')
+    console.log({ bookId, userId, cartId, sessionId });
 
     const fetchOrderDataFromWallet = async () => {
         try {
@@ -113,6 +115,7 @@ const PaymentSuccess = () => {
             </div>
         );
     }
+    console.log(orderData,'orderData')
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">

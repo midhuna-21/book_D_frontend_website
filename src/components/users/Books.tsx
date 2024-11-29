@@ -30,9 +30,9 @@ const Books: React.FC = () => {
 
     if (books.length == 0) return null;
     return (
-        <div className="container mb-14 mt-14 min-">
+        <div className="p-5">
             <div className="flex flex-col items-center">
-                <div className="w-full py-6 mb-6 border-b border-gray-200">
+                <div className="w-full py-6 mb-6">
                     <h2 className="text-2xl font-serif underline flex justify-center items-center md:text-3xl">
                         Top Books
                     </h2>
@@ -40,10 +40,11 @@ const Books: React.FC = () => {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
                     {books.slice(0, 5).map((book) => (
+                         <Link to={`/book/${book._id}`}>
                         <div
                             key={book._id}
-                            className="bg-white p-4 rounded-xl hover:border border-gray-200 hover:shadow-md"
-                            style={{ width: "250px", height: "450px" }}>
+                            className="bg-white p-4 hover:rounded-xl hover:border border border-gray-200 hover:shadow-md"
+                            >
                             <img
                                 src={book.images[0]}
                                 alt={book.name}
@@ -95,7 +96,7 @@ const Books: React.FC = () => {
                                 <p className="text-sm text-gray-600 mb-4">
                                     4.0 (120 reviews)
                                 </p> */}
-                                <Link to={`/book/${book._id}`}>
+                                {/* <Link to={`/book/${book._id}`}>
                                     <button
                                         className="bg-stone-700 hover:bg-stone-400 hover:text-black text-white px-4 py-2 rounded-md transition-colors duration-300"
                                         style={{
@@ -104,9 +105,10 @@ const Books: React.FC = () => {
                                         }}>
                                         Choose
                                     </button>
-                                </Link>
+                                </Link> */}
                             </div>
                         </div>
+                        </Link>
                     ))}
                 </div>
             </div>
