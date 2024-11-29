@@ -3,7 +3,6 @@ import config from "../../config/config";
 
 const BASE_URL = config.API_URL || "https://www.bookd.store/api";
 
-console.log(BASE_URL,'BASE_URL')
 const createAxiosInstance = (baseURL: string): AxiosInstance => {
     return axios.create({
         baseURL,
@@ -12,7 +11,7 @@ const createAxiosInstance = (baseURL: string): AxiosInstance => {
     });
 };
 
-export const axiosPrivate = createAxiosInstance(BASE_URL,);
+export const axiosPrivate = createAxiosInstance(BASE_URL);
 
 export const axiosUser = createAxiosInstance(`${BASE_URL}/user`);
 
