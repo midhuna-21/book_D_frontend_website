@@ -1,6 +1,6 @@
 // tailwind.config.js
 
-module.exports = {
+export default {
     plugins: [
         function ({ addUtilities }) {
           addUtilities({

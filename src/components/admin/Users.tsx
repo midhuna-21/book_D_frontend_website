@@ -5,7 +5,6 @@ import userLogo from "../../assets/userLogo.png";
 import { AiOutlineSearch } from "react-icons/ai";
 import { FaGreaterThan, FaLessThan } from "react-icons/fa";
 import { useDispatch } from "react-redux";
-import { addUser } from "../../utils/ReduxStore/slice/userSlice";
 import Spinner from "../users/Spinner";
 
 interface User {
@@ -118,7 +117,6 @@ const Users: React.FC = () => {
             const response = await adminAxiosInstance.post("/user/block", {
                 _id: userId,
             });
-            const user = response.data;
             setUsers((prevUsers) => {
                 const newUsers = prevUsers.map((user) =>
                     user._id === userId ? { ...user, isBlocked: true } : user
@@ -139,7 +137,6 @@ const Users: React.FC = () => {
             const response = await adminAxiosInstance.post("/user/unblock", {
                 _id: userId,
             });
-            const user = response.data;
             setUsers((prevUsers) =>
                 prevUsers.map((user) =>
                     user._id === userId ? { ...user, isBlocked: false } : user

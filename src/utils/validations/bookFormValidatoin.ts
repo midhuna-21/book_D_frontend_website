@@ -42,7 +42,7 @@ const validateFormData = (formData: FormData): string[] => {
     } else if (formData.bookTitle.length > 100) {
         errors.push("Book title is too long.");
     } else if (!letterRegex.test(formData.bookTitle)) {
-        errors.push("Book title must contain atleast one letter.");
+        errors.push("Book title must be a valid name.");
     } else {
         const digits = formData.bookTitle.match(digitRegex);
         if (digits && digits.length > 5) {
@@ -69,19 +69,19 @@ const validateFormData = (formData: FormData): string[] => {
     } else if (formData.author.length > 50) {
         errors.push("Author is too long.");
     }else if (!validNamePattern.test(formData.author)){
-        errors.push("Please provide valida author")
+        errors.push("Please enter valid a author name")
     }
 
     if (!formData.publisher.trim()) {
-        errors.push("Please enter Publisher.");
+        errors.push("Please enter Publisher");
     } else if (formData.publisher.length > 50) {
-        errors.push("Publisher is too long.");
+        errors.push("Publisher is too long");
     }else if (!validNamePattern.test(formData.publisher)){
         errors.push("Please provide valida publisher")
     }
 
     if (!formData.quantity || isNaN(formData.quantity)) {
-        errors.push("Please enter quantity.");
+        errors.push("Please enter quantity");
     } else if (formData.quantity <= 0) {
         errors.push("Quantity must be a positive number.");
     }
@@ -126,55 +126,55 @@ const validateFormData = (formData: FormData): string[] => {
     } else if (formData.extraFee <= 0) {
         errors.push("Rental fee must be a positive number.");
     } else if (formData.extraFee < 0) {
-        errors.push("Extra fee cannot be negative.");
+        errors.push("Extra fee cannot be negative");
     }
 
     if (!formData.images || formData.images.length === 0) {
-        errors.push("Upload at least one image.");
+        errors.push("Upload at least one image");
     }
 
     if (!formData.address.street.trim()) {
-        errors.push("Please enter Building Name.");
+        errors.push("Please enter Building Name");
     } else if (formData.address.street.length > 100) {
-        errors.push("Building Name is too long.");
+        errors.push("Building Name is too long");
     }else if (disallowedCharacters.test(formData.address.street)) {
-        errors.push("Please provide valid city address.")
+        errors.push("Please provide valid city address")
     }
 
     if (!formData.address.city.trim()) {
-        errors.push("Please enter City.");
+        errors.push("Please enter City");
     } else if (formData.address.city.length > 50) {
-        errors.push("City is too long.");
+        errors.push("City is too long");
     }else if (disallowedCharacters.test(formData.address.city)) {
-        errors.push("Please provide valid city address.")
+        errors.push("Please provide valid city address")
     }
 
     if (!formData.address.district.trim()) {
-        errors.push("Please enter District.");
+        errors.push("Please enter District");
     } else if (formData.address.district.length > 50) {
-        errors.push("District is too long.");
+        errors.push("District is too long");
     }else if (disallowedCharacters.test(formData.address.district)) {
-        errors.push("Please provide valid city address.")
+        errors.push("Please provide valid city address")
     }
 
     if (!formData.address.state.trim()) {
-        errors.push("Please enter State.");
+        errors.push("Please enter State");
     } else if (formData.address.state.length > 50) {
-        errors.push("State is too long.");
+        errors.push("State is too long");
     }else if (disallowedCharacters.test(formData.address.state)) {
-        errors.push("Please provide valid city address.")
+        errors.push("Please provide valid city address")
     }
 
     if (!formData.maxDistance || isNaN(formData.maxDistance)) {
-        errors.push("Please enter Maximum distance.");
+        errors.push("Please enter Maximum distance");
     } else if (formData.quantity <= 0) {
-        errors.push("Maximum distance must be a positive number.");
+        errors.push("Maximum distance must be a positive number");
     }
 
     if (!formData.maxDays || isNaN(formData.maxDays)) {
-        errors.push("Please enter Maximum Days.");
+        errors.push("Please enter Maximum Days");
     } else if (formData.maxDays <= 0) {
-        errors.push("Maximum Days must be a positive number.");
+        errors.push("Maximum Days must be a positive number");
     }
 
     if (!formData.minDays || isNaN(formData.minDays)) {
