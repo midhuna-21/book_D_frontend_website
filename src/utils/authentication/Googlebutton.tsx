@@ -34,9 +34,11 @@ const SignInButton: React.FC = () => {
                         image: response.data.picture,
                     }
                     try {
-                        const res = await axiosUser.post("/google-login", data
+                        const res = await axios.post("https://bookd.store/api/user/google-login", data
                             ,{
-                                withCredentials:true
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                  },
                             }
                         );
     
