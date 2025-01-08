@@ -40,6 +40,7 @@ const GenresList: React.FC = () => {
         fetchGenres();
     }, []);
 
+    console.log(genres,'genres')
     const handleScroll = () => {
         const container = genresContainerRef.current;
         if (container) {

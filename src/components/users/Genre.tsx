@@ -16,7 +16,7 @@ interface Genres {
 const responsive = {
     superLargeDesktop: {
         breakpoint: { max: 4000, min: 1024 },
-        items: 4,
+        items: 5,
     },
     desktop: {
         breakpoint: { max: 1024, min: 768 },
@@ -66,27 +66,6 @@ const Genre: React.FC = () => {
 
     return (
         <Box className="side mt-10 items-center justify-center px-10">
-            <Box className="h-12 w-full flex flex-col items-center justify-center mb-6">
-                <Text
-                    fontSize="xx-large"
-                    fontFamily="serif"
-                    fontWeight="thickness"
-                    pl="12">
-                    Genres
-                </Text>
-                <Flex align="center" width="100%" mt="2">
-                    <Box h="1px" bg="grey" flex="1" />
-                    <Icon
-                        as={FaBookReader}
-                        mx="2"
-                        bg="gray.200"
-                        p="2"
-                        borderRadius="50%"
-                        boxSize="1.5em"
-                    />
-                    <Box h="1px" bg="grey" flex="1" />
-                </Flex>
-            </Box>
             <Box className="container mt-12">
                 <Carousel
                     responsive={responsive}
@@ -94,20 +73,38 @@ const Genre: React.FC = () => {
                     autoPlay
                     autoPlaySpeed={3000}>
                     {genres.map((genre) => (
-                        <Box
-                            key={genre._id}
-                            display="flex"
-                            justifyContent="center"
-                            mx="2"
-                            onClick={() => handleGenreClick(genre.genreName)}
-                            cursor="pointer">
-                            <Image
-                                src={genre.image}
-                                alt={`Genre ${genre._id}`}
-                                boxSize="30vh"
-                                objectFit="cover"
-                            />
-                        </Box>
+                      <Box
+                      key={genre._id}
+                      textAlign="center"
+                      onClick={() => handleGenreClick(genre.genreName)}
+                  >
+                      <Flex
+                          justifyContent="center"
+                          alignItems="center"
+                          flexDirection="column"
+                          mx="2">
+                          <Image
+                              src={genre.image}
+                              alt={`Genre ${genre._id}`}
+                              boxSize="150px"
+                              objectFit="cover"
+                              boxShadow="md"
+                              cursor="pointer"
+                              _hover={{
+                                  transform: "scale(1.1)",
+                                  transition: "all 0.3s ease-in-out",
+                                  boxShadow: "lg",
+                              }}
+                          />
+                          <Text
+                              mt="2"
+                              fontSize="lg"
+                              fontWeight="semibold"
+                              color="gray.700">
+                              {genre.genreName}
+                          </Text>
+                      </Flex>
+                  </Box>
                     ))}
                 </Carousel>
             </Box>

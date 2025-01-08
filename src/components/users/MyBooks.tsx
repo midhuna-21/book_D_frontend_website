@@ -145,54 +145,16 @@ const UserLendBooks: React.FC = () => {
                     {currentBooks.map((book) => (
                         <div
                             key={book._id}
-                            className="p-4 border border-gray-200 shadow-md rounded-lg hover:shadow-2xl"
+                            className="p-4"
                             onClick={() => showBookDetails(book._id)}>
-                            <div className="relative w-full h-72">
+                            <div className="relative w-full"
+                            style={{height:'350px'}}>
                                 {" "}
                                 <img
                                     src={book.images[0]}
                                     alt={book.name}
-                                    className="absolute inset-0 w-full h-full object-cover rounded-md"
-                                />
-                            </div>
-                            <div className="flex flex-col items-center text-center mt-4">
-                                <h3
-                                    className="text-lg font-bold mb-3 overflow-hidden"
-                                    style={{
-                                        height: "40px",
-                                        lineHeight: "1.2em",
-                                        display: "-webkit-box",
-                                        WebkitLineClamp: 2,
-                                        WebkitBoxOrient: "vertical",
-                                    }}>
-                                    {book.bookTitle.length > 40
-                                        ? `${book.bookTitle.substring(
-                                              0,
-                                              40
-                                          )}...`
-                                        : book.bookTitle}
-                                </h3>
-
-                                <p
-                                    className="text-sm text-gray-600 mb-2 overflow-hidden"
-                                    style={{
-                                        height: "60px",
-                                        lineHeight: "1.5em",
-                                        display: "-webkit-box",
-                                        WebkitLineClamp: 3,
-                                        WebkitBoxOrient: "vertical",
-                                    }}>
-                                    {book.description.length > 100
-                                        ? `${book.description.substring(
-                                              0,
-                                              100
-                                          )}...`
-                                        : book.description}
-                                </p>
-                                {/* 
-                                    <button className="bg-stone-700 hover:bg-stone-400 hover:text-black text-white px-4 py-2 rounded-md transition-colors duration-300 w-1/2 md:w-full">
-                                        Choose
-                                    </button> */}
+                                    className="absolute inset-0 w-full h-full object-cover rounded-md transition-transform duration-300 ease-in-out transform hover:scale-110"
+                                    />
                             </div>
                         </div>
                     ))}

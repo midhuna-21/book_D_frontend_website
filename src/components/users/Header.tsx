@@ -1,19 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link,useLocation } from "react-router-dom";
 import { useSocket } from "../../utils/context/SocketProvider";
-import {
-    FaHome,
-    FaUser,
-    FaEnvelope,
-    FaBell,
-    FaCompass,
-    FaBook,
-    FaBars,
-    FaSignOutAlt,
-} from "react-icons/fa";
 import { clearUser } from "../../utils/ReduxStore/slice/userSlice";
-import logo from "../../assets/logo.png";
 import userLogo from "../../assets/userLogo.png";
 import { RootState } from "../../utils/ReduxStore/store/store";
 import { userAxiosInstance } from "../../utils/api/userAxiosInstance";
@@ -23,6 +12,7 @@ const Header: React.FC = () => {
     const userInfo = useSelector(
         (state: RootState) => state.user.userInfo?.user
     );
+    const location = useLocation();
     const userId = userInfo?._id || "";
     const name = userInfo?.name || "";
     const picture = userInfo?.image || userLogo;
@@ -60,6 +50,16 @@ const Header: React.FC = () => {
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);
     };
+
+    const isHomePage = location.pathname === "/home";
+    const isProfilePage = location.pathname === "/profile"; 
+    const navLinkStyle = isHomePage
+        ? "text-white hover:text-gray-300"
+        : "text-black hover:text-gray-600";
+
+    const activeNavLinkStyle = isHomePage
+        ? "border-b-2 border-white text-white"
+        : "border-b-2 border-black text-black";
 
     useEffect(() => {
         if (userId) {
@@ -127,212 +127,102 @@ const Header: React.FC = () => {
 
     return (
         <>
-            <header
-                className={`flex items-center justify-between fixed top-0 w-full z-50 transition-all duration-300 bg-white shadow-md ${
-                    !visible && "transform -translate-y-full"
-                }`}
-                style={{ height: "80px" }}>
-                <Link to="/home">
-                    <div className="flex items-center ml-4">
-                        <img src={logo} alt="Logo" className="h-12" />
-                        <span className="font-serif ml-2 text-emerald-800 text-xl">
-                            Book.D
-                        </span>
-                    </div>
+   <header
+            className={`flex items-center justify-between fixed top-0 w-full z-50 transition-all duration-300 ${
+                isHomePage ? "bg-transparent" : "bg-transparent"
+            }`}
+            style={{
+                height: "80px",
+                backgroundColor: isHomePage ? "rgba(0, 0, 0, 0.6)" : "rgba(255, 255, 255, 0.9)", 
+                backdropFilter: "blur(5px)", 
+            }}
+        >
+           
+            <Link to="/home" className="flex flex-col items-center ml-10">
+                <div
+                    className={`text-3xl font-serif font-bold tracking-wider ${
+                        isHomePage ? "text-purple-700" : "text-purple-600"
+                    }`}
+                >
+                    Book<span className={isHomePage ? "text-white" : "text-gray-800"}>.D</span>
+                </div>
+                <span
+                    className={`text-sm font-light ${
+                        isHomePage ? "text-gray-300" : "text-gray-800"
+                    }`}
+                >
+                    Your Book Sharing Hub
+                </span>
+            </Link>
+
+            <div className="flex items-center space-x-8 ml-10">
+                <Link
+                    to="/home"
+                    className={`flex flex-col items-center cursor-pointer ${
+                        location.pathname === "/home" ? activeNavLinkStyle : navLinkStyle
+                    }`}
+                >
+                    <span className="text-sm">Home</span>
                 </Link>
 
-                <div className="flex items-center md:hidden mr-4">
-                    <button onClick={toggleMenu} className="focus:outline-none">
-                        <FaBars className="text-gray-800 text-2xl" />
-                    </button>
-                </div>
+                <Link
+                    to="/explore-books"
+                    className={`flex flex-col items-center cursor-pointer ${
+                        location.pathname === "/explore-books" ? activeNavLinkStyle : navLinkStyle
+                    }`}
+                >
+                    <span className="text-sm">Books</span>
+                </Link>
+
+                <Link
+                    to="/lend-book"
+                    className={`flex flex-col items-center cursor-pointer ${
+                        location.pathname === "/lend-book" ? activeNavLinkStyle : navLinkStyle
+                    }`}
+                >
+                    <span className="text-sm">Lend</span>
+                </Link>
+
+                <Link
+                    to="/chat"
+                    className={`flex flex-col items-center cursor-pointer ${
+                        location.pathname === "/chat" ? activeNavLinkStyle : navLinkStyle
+                    }`}
+                >
+                    <span className="text-sm">Messages</span>
+                </Link>
+
+                <Link
+                    to="/notifications"
+                    className={`flex flex-col items-center cursor-pointer ${
+                        location.pathname === "/notifications" ? activeNavLinkStyle : navLinkStyle
+                    }`}
+                >
+                    <span className="text-sm">Notifications</span>
+                </Link>
+
+                <Link
+                    to="/profile"
+                    className={`flex flex-col items-center cursor-pointer ${
+                        location.pathname === "/profile" ? activeNavLinkStyle : navLinkStyle
+                    }`}
+                >
+                    <span className="text-sm">Profile</span>
+                </Link>
+            </div>
+            <div className="flex items-center mr-10">
                 <div
-                    className={`hidden md:flex items-center space-x-4 px-10 mr-12 gap-10`}>
-                    <Link to="/home">
-                        <div className="relative flex flex-col items-center cursor-pointer group">
-                            <div className="flex items-center justify-center">
-                                <FaHome className="text-gray-800 text-2xl" />
-                            </div>
-                            <div className="absolute top-8 bg-gray-800 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-opacity">
-                                Home
-                            </div>
-                        </div>
-                    </Link>
-                    <Link to="/explore-books">
-                        <div className="relative flex flex-col items-center cursor-pointer group">
-                            <div className="flex items-center justify-center">
-                                <FaCompass className="text-gray-800 text-xl" />
-                            </div>
-                            <div className="absolute top-8 bg-gray-800 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-opacity">
-                                Books for You
-                            </div>
-                        </div>
-                    </Link>
-                    <Link to="/lend-book">
-                        <div className="relative flex flex-col items-center cursor-pointer group">
-                            <div className="flex items-center justify-center">
-                                <FaBook className="text-gray-800 text-xl" />
-                            </div>
-                            <div className="absolute top-8 bg-gray-800 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-opacity">
-                                LendBook
-                            </div>
-                        </div>
-                    </Link>
-                    <Link to="/chat">
-                        <div className="relative flex flex-col items-center cursor-pointer group">
-                            <div className="flex items-center justify-center">
-                                <FaEnvelope className="text-gray-800 text-xl" />
-                                {messageCount > 0 && (
-                                    <span className="absolute top-0 right-0 bg-red-500 text-white rounded-full text-xs px-1">
-                                        {messageCount}
-                                    </span>
-                                )}
-                            </div>
-                            <div className="absolute top-8 bg-gray-800 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-opacity">
-                                Messages
-                            </div>
-                        </div>
-                    </Link>
-
-                    <Link to="/notifications">
-                        <div className="relative flex flex-col items-center cursor-pointer group">
-                            <div className="flex items-center justify-center">
-                                <FaBell className="text-gray-800 text-xl" />
-                                {notificationCount > 0 && (
-                                    <span className="absolute top-0 right-0 bg-red-500 text-white rounded-full text-xs px-1">
-                                        {notificationCount}
-                                    </span>
-                                )}
-                            </div>
-                            <div className="absolute top-8 bg-gray-800 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-opacity">
-                                Notifications
-                            </div>
-                        </div>
-                    </Link>
-
-                    {name ? (
-                        <div
-                            className="relative flex items-center cursor-pointer"
-                            onMouseEnter={() => setIsHovered(true)}
-                            onMouseLeave={() => setIsHovered(false)}>
-                            <img
-                                src={picture}
-                                // alt={user.name}
-                                className="w-12 h-12 object-cover rounded-full border-2 shadow-md"
-                            />
-                            {isHovered && (
-                                <div
-                                    className="absolute top-9 left-[-20px] mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-lg z-10 transition duration-300 ease-in-out transform origin-top-left scale-100"
-                                    onMouseEnter={() => setIsHovered(true)}
-                                    onMouseLeave={() => setIsHovered(false)}>
-                                    <ul className="py-1">
-                                        <Link to={"/profile"}>
-                                            <li className="hover:bg-gray-100 px-4 py-2 cursor-pointer transition duration-200 ease-in-out transform hover:translate-x-1 flex items-center space-x-2">
-                                                <FaUser className="text-gray-500" />
-                                                <span className="text-gray-800">
-                                                    Profile
-                                                </span>
-                                            </li>
-                                        </Link>
-                                        <li className="hover:bg-gray-100 px-4 py-2 cursor-pointer transition duration-200 ease-in-out transform hover:translate-x-1 flex items-center space-x-2">
-                                            <FaSignOutAlt className="text-gray-500" />
-                                            <span
-                                                className="text-gray-800"
-                                                onClick={handleLogout}>
-                                                Logout
-                                            </span>
-                                        </li>
-                                    </ul>
-                                </div>
-                            )}
-                        </div>
-                    ) : (
-                        <Link to="/">
-                            <button className="px-4 py-2 bg-fuchsia-950 text-white rounded-lg hover:bg-fuchsia-350">
-                                Sign Up
-                            </button>
-                            <span
-                                className="text-gray-800"
-                                onClick={handleLogout}>
-                                Logout
-                            </span>
-                        </Link>
-                    )}
+                onClick={handleLogout}
+                    className={`text-sm cursor-pointer ${
+                        isHomePage ? "text-gray-300" : "text-gray-800"
+                    } hover:text-blue-500`}
+                >
+                    Sign Out
                 </div>
-            </header>
-            {isMenuOpen && (
-                <div className="md:hidden flex flex-col items-center bg-white shadow-lg fixed top-0 left-0 w-full mt-20 p-4 z-40">
-                    <Link
-                        to="/home"
-                        className="py-2"
-                        onClick={() => setIsMenuOpen(false)}>
-                        <span className="text-gray-800 font-semibold">
-                            Home
-                        </span>
-                    </Link>
-                    <Link
-                        to="/explore-books"
-                        className="py-2"
-                        onClick={() => setIsMenuOpen(false)}>
-                        <span className="text-gray-800 font-semibold">
-                            Explore
-                        </span>
-                    </Link>
-                    <Link
-                        to="/lend-book"
-                        className="py-2"
-                        onClick={() => setIsMenuOpen(false)}>
-                        <span className="text-gray-800 font-semibold">
-                            Lend Book
-                        </span>
-                    </Link>
-                    <Link
-                        to="/chat"
-                        className="py-2"
-                        onClick={() => setIsMenuOpen(false)}>
-                        <span className="text-gray-800 font-semibold">
-                            Messages
-                        </span>
-                    </Link>
-                    <Link
-                        to="/notifications"
-                        className="py-2"
-                        onClick={() => setIsMenuOpen(false)}>
-                        <span className="text-gray-800 font-semibold">
-                            Notifications
-                        </span>
-                    </Link>
-                    {name ? (
-                        <>
-                            <Link
-                                to="/profile"
-                                className="py-2"
-                                onClick={() => setIsMenuOpen(false)}>
-                                <span className="text-gray-800 font-semibold">
-                                    Profile
-                                </span>
-                            </Link>
-                            <div
-                                className="py-2 cursor-pointer"
-                                onClick={handleLogout}>
-                                <span className="text-gray-800 font-semibold">
-                                    Logout
-                                </span>
-                            </div>
-                        </>
-                    ) : (
-                        <Link
-                            to="/"
-                            className="py-2"
-                            onClick={() => setIsMenuOpen(false)}>
-                            <span className="text-gray-800 font-semibold">
-                                Sign Up
-                            </span>
-                        </Link>
-                    )}
-                </div>
-            )}
-        </>
+            </div>
+        </header>
+</>
+
     );
 };
 

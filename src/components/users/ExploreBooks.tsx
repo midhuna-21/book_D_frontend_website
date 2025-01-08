@@ -15,6 +15,7 @@ const ExploreRentalBooks: React.FC = () => {
     const [books, setBooks] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1); 
     const booksPerPage = 10;
     const userInfo = useSelector((state: RootState) => state.user?.userInfo);
     const name = userInfo?.name || "";
@@ -53,6 +54,7 @@ const ExploreRentalBooks: React.FC = () => {
                 }
             );
             setBooks(response.data.books);
+            setTotalPages(Math.ceil(response.data.totalBooks / booksPerPage));
         } catch (error: any) {
             if (error.response && error.response.status === 403) {
                 toast.error(error.response.data.message);
@@ -94,6 +96,7 @@ const ExploreRentalBooks: React.FC = () => {
         setCurrentGenre("");
         setSelectedGenre(null);
         setSearchQuery("");
+        debounceSearch("");
         setCurrentPage(1);
     };
 
@@ -104,6 +107,20 @@ const ExploreRentalBooks: React.FC = () => {
             setLoading(false);
         }, 3000);
     }, []);
+
+
+    const prevPage = () => {
+        if (currentPage > 1) setCurrentPage(currentPage - 1);
+    };
+
+    const nextPage = () => {
+        if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+    };
+
+    const goToPage = (page: number) => {
+        setCurrentPage(page);
+    };
+
 
     if (loading) {
         return (
@@ -179,16 +196,16 @@ const ExploreRentalBooks: React.FC = () => {
                         value={searchQuery}
                         onChange={handleSearchChange}
                         placeholder="Search by book's name, author, publisher, location...."
-                        className="w-full md:w-[400px] px-4 py-2 text-sm border-2 border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-600"
+                        className="w-full md:w-[400px] px-4 py-2 text-sm border-2 border-gray-400 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-400"
                     />
                     <button
                         onClick={handleBooks}
-                        className="bg-cyan-600 text-white px-4 py-2 rounded-md mb-5 ml-3 hover:bg-cyan-800">
+                        className="border-2 text-gray-600 px-4 py-2 rounded-md mb-5 ml-3 hover:shadow-md shadow-sm">
                         All Books
                     </button>
                     <button
                         onClick={() => handleGenre()}
-                        className="bg-cyan-600 text-white px-4 py-2 rounded-md mb-5 ml-3 hover:bg-cyan-800">
+                        className="border-2 text-gray-600 px-4 py-2 rounded-md mb-5 ml-3 hover:shadow-md shadow-sm">
                         {selectedGenre ? `${selectedGenre}` : "Pick Genre"}
                     </button>
 
@@ -241,86 +258,55 @@ const ExploreRentalBooks: React.FC = () => {
                         </div>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 p-3 min-h-screen">
-                        {books.map((book) => (
-                            <Link to={`/book/${book._id}`}>
-                                <div
-                                    key={book._id}
-                                    className="p-4 border border-gray-200 shadow-md rounded-lg hover:shadow-2xl">
-                                    <div className="relative w-full h-72">
-                                        {" "}
-                                        <img
-                                            src={book.images[0]}
-                                            alt={book.name}
-                                            className="absolute inset-0 w-full h-full object-cover rounded-md"
-                                        />
-                                    </div>
-                                    <div className="flex flex-col items-center text-center h-full">
-                                        <h3
-                                            className="text-lg font-bold mt-3 overflow-hidden"
-                                            style={{
-                                                height: "40px",
-                                                lineHeight: "1.2em",
-                                                display: "-webkit-box",
-                                                WebkitLineClamp: 2,
-                                                WebkitBoxOrient: "vertical",
-                                            }}>
-                                            {book.bookTitle.length > 40
-                                                ? `${book.bookTitle.substring(
-                                                      0,
-                                                      40
-                                                  )}...`
-                                                : book.bookTitle}
-                                        </h3>
-
-                                        <p
-                                            className="text-sm text-gray-600 mb-2 overflow-hidden"
-                                            style={{
-                                                height: "60px",
-                                                lineHeight: "1.5em",
-                                                display: "-webkit-box",
-                                                WebkitLineClamp: 3,
-                                                WebkitBoxOrient: "vertical",
-                                            }}>
-                                            {book.description.length > 100
-                                                ? `${book.description.substring(
-                                                      0,
-                                                      100
-                                                  )}...`
-                                                : book.description}
-                                        </p>
-
-                                        {/* <button
-                                            className="bg-stone-700 hover:bg-stone-400 hover:text-black text-white px-4 py-2 rounded-md transition-colors duration-300"
-                                            style={{
-                                                width: "100px",
-                                                height: "40px",
-                                            }}>
-                                            Choose
-                                        </button> */}
-                                    </div>
-                                </div>
-                            </Link>
-                        ))}
-                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 p-3 min-h-screen">
+                    {books.map((book) => (
+                      <Link to={`/book/${book._id}`} key={book._id}>
+                        <div className="p-4">
+                          <div 
+                          style={{height:'350px'}}
+                           className="relative "> 
+                            <img
+                              src={book.images[0]}
+                              alt={book.name}
+                              className="absolute inset-0 w-full h-full object-cover rounded-md transition-transform duration-300 ease-in-out transform hover:scale-105"
+                />
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                  
+                  
                 )}
                 {books.length > 0 && (
-                    <div className="flex justify-center mt-8">
-                        <button
-                            onClick={() =>
-                                setCurrentPage((prev) => Math.max(prev - 1, 1))
-                            }
-                            disabled={currentPage === 1}
-                            className="px-4 py-2 mx-1 bg-gray-200 text-gray-700 rounded disabled:opacity-50">
-                            <FaLessThan />
-                        </button>
-                        <button
-                            onClick={() => setCurrentPage((prev) => prev + 1)}
-                            disabled={books.length < limit}
-                            className="px-4 py-2 mx-1 bg-gray-200 text-gray-700 rounded disabled:opacity-50">
-                            <FaGreaterThan />
-                        </button>
-                    </div>
+                 <div className="px-12 flex items-center justify-center py-6">
+                <button
+                    onClick={prevPage}
+                    disabled={currentPage === 1}
+                    className="px-3 py-1 text-gray-700 rounded disabled:opacity-50">
+                    <FaLessThan />
+                </button>
+
+                {Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => (
+                    <button
+                        key={page}
+                        onClick={() => goToPage(page)}
+                        className={`px-3 py-1 mx-1 rounded ${
+                            currentPage === page
+                                ? "bg-cyan-800 text-white"
+                                : "bg-gray-200 text-gray-700"
+                        }`}>
+                        {page}
+                    </button>
+                ))}
+
+                <button
+                    onClick={nextPage}
+                    disabled={currentPage === totalPages}
+                    className="px-3 py-1 text-gray-700 rounded disabled:opacity-50">
+                    <FaGreaterThan />
+                </button>
+            </div>
                 )}
             </>
         </div>

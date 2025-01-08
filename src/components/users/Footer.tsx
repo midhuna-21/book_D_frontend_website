@@ -3,7 +3,7 @@ import { FaFacebook, FaInstagram, FaLinkedin } from "react-icons/fa";
 
 const Footer: React.FC = () => {
     return (
-        <footer className="bg-gray-900 text-white py-10">
+        <footer className="bg-gray-950 text-white py-10 mt-12">
             <div className="container mx-auto px-4">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div className="flex flex-col">
@@ -20,7 +20,7 @@ const Footer: React.FC = () => {
                         </h3>
                         <ul className="space-y-2">
                             <li>
-                                <a href="#" className="hover:underline">
+                                <a href="/about" className="hover:underline">
                                     About
                                 </a>
                             </li>

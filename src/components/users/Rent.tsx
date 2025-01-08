@@ -338,16 +338,17 @@ const Rent: React.FC = () => {
                                 {option.replace("_", " ")}
                             </button>
                         ))}
-                    </div>
-                    <div className="w-full md:w-auto">
+                        <div className="w-full md:w-auto">
                         <input
                             type="text"
                             value={searchQuery}
                             onChange={handleSearchChange}
                             placeholder="Search..."
-                            className="w-full md:w-[250px] px-4 py-2 text-sm border-2 border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-600"
+                            className="w-full md:w-[250px] px-4 py-2 text-sm border-2 border-gray-400 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-500"
                         />
                     </div>
+                    </div>
+                    
                 </div>
                 {currentOrders.length === 0 ? (
                     <div

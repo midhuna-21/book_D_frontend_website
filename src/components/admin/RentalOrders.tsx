@@ -171,7 +171,7 @@ const RentalOrdersList: React.FC = () => {
                         } mr-2`}>
                         Completed Orders
                     </button>
-                    <button
+                    {/* <button
                         onClick={() => handleViewModeChange("overdue")}
                         className={`px-4 py-2 rounded ${
                             viewMode === "overdue"
@@ -179,7 +179,7 @@ const RentalOrdersList: React.FC = () => {
                                 : "bg-gray-200"
                         } mr-2`}>
                         Overdue
-                    </button>
+                    </button> */}
                 </div>
                 <div className="flex space-x-2">
                     <input

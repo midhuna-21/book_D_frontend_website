@@ -6,6 +6,7 @@ import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import image from "../../assets/images.png";
 
 interface Genre {
     genreName: string;
@@ -273,23 +274,23 @@ const LendBookForm: React.FC = () => {
             state: address.state,
             pincode: address.pincode,
         };
-        const errors = validateFormData({
-            bookTitle,
-            publisher,
-            publishedYear,
-            author,
-            description,
-            genre,
-            images,
-            address: addr,
-            rentalFee,
-            extraFee,
-            quantity,
-            maxDistance,
-            maxDays,
-            minDays,
-        });
-        if (errors.length === 0) {
+        // const errors = validateFormData({
+        //     bookTitle,
+        //     publisher,
+        //     publishedYear,
+        //     author,
+        //     description,
+        //     genre,
+        //     images,
+        //     address: addr,
+        //     rentalFee,
+        //     extraFee,
+        //     quantity,
+        //     maxDistance,
+        //     maxDays,
+        //     minDays,
+        // });
+        // if (errors.length === 0) {
             const formDataWithImages = new FormData();
             formDataWithImages.append("bookTitle", bookTitle);
             if (images) {
@@ -333,7 +334,7 @@ const LendBookForm: React.FC = () => {
                     formDataWithImages,
                     {
                         withCredentials: true,
-                        headers: {
+                        headers: {                                                                                                                                      
                             "Content-Type": "multipart/form-data",
                         },
                     }
@@ -352,10 +353,10 @@ const LendBookForm: React.FC = () => {
                     toast.error("An error occurred, please try again later");
                 }
             }
-        } else {
-            console.error("Form validation errors:", errors);
-            toast.error(errors);
-        }
+        // } else {
+        //     console.error("Form validation errors:", errors);
+        //     toast.error(errors);
+        // }
     };
 
     return (
@@ -371,14 +372,8 @@ const LendBookForm: React.FC = () => {
             </div>
             <form className="space-y-6">
                 <div className="flex flex-col md:flex-row gap-3 px-12">
-                    <div className="bg-white opacity-95 shadow-lg rounded-lg px-8 py-6">
-                        <div className="flex  mb-6">
-                            <button
-                                type="button"
-                                className="px-4 py-2 rounded-l-lg bg-gradient-to-r from-sky-900 to-gray-800 text-white">
-                                Rent Book
-                            </button>
-                        </div>
+                    <div className="bg-white opacity-95 shadow-lg rounded-lg px-8 py-6 border-gray-200 border">
+                   
                         <div className="flex flex-col sm:flex-row sm:space-x-6">
                             <div className="flex-1">
                                 <label
@@ -476,7 +471,7 @@ const LendBookForm: React.FC = () => {
                                 </div>
                             </div>
 
-                            <div className="flex-1 flex flex-col items-center justify-center">
+                            <div className="flex-1 flex flex-col items-center justify-center ">
                                 <div className="w-60 h-68 mb-4 relative">
                                     {images.length > 0 ? (
                                         <Carousel
@@ -520,8 +515,13 @@ const LendBookForm: React.FC = () => {
                                         </Carousel>
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-500">
-                                            No images selected
-                                        </div>
+                                        <img
+                                            src={image}
+                                            alt="Book"
+                                            className="w-full h-full object-cover rounded-lg shadow-lg"
+                                        />
+                                    </div>
+                                    
                                     )}
                                 </div>
                                 <label
@@ -540,7 +540,7 @@ const LendBookForm: React.FC = () => {
                                 />
                             </div>
                         </div>
-                        <div className="flex flex-col sm:flex-row sm:space-x-6 mb-6 mt-4">
+                        <div className="flex flex-col sm:flex-row sm:space-x-6 mb-6 mt-4 ">
                             <div className="flex-1">
                                 <label
                                     className="block text-gray-700 font-medium mb-2"
@@ -586,7 +586,7 @@ const LendBookForm: React.FC = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="bg-white opacity-95 shadow-lg rounded-lg px-8 py-6 ">
+                    <div className="bg-white opacity-95 shadow-lg rounded-lg px-8 py-6 border-gray-200 border">
                         <div className="flex flex-col sm:flex-row sm:space-x-6 mt-12 py-2">
                             <div className="flex-1">
                                 <label

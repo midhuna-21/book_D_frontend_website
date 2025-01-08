@@ -342,7 +342,7 @@ const UserChat: React.FC = () => {
                     transition={{ duration: 0.5 }}
                 />
                 <p className="mt-4 text-gray-600 text-md font-semibold">
-                    Loading notifications...
+                    Loading messages...
                 </p>
             </div>
         );

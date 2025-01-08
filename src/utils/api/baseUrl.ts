@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from "axios";
 import config from "../../config/config";
 
-const BASE_URL = config.API_URL || "https://www.bookd.store/api";
+const BASE_URL = config.API_URL;
 
 const createAxiosInstance = (baseURL: string): AxiosInstance => {
     return axios.create({

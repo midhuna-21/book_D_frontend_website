@@ -357,9 +357,9 @@ const EditBookForm: React.FC = () => {
             }));
         }
 
-        const errors = validateFormData(formData);
+        // const errors = validateFormData(formData);
 
-        if (errors.length === 0) {
+        // if (errors.length === 0) {
             const formDataWithImages = new FormData();
             formDataWithImages.append("bookTitle", formData.bookTitle);
             if (formData.images) {
@@ -440,10 +440,10 @@ const EditBookForm: React.FC = () => {
                     toast.error("An error occurred, please try again later");
                 }
             }
-        } else {
-            console.error("Form validation errors:", errors);
-            toast.error(errors);
-        }
+        // } else {
+        //     console.error("Form validation errors:", errors);
+        //     toast.error(errors);
+        // }
     };
     return (
         <div className="flex min-h-screen bg-cover flex-col py-24">
