@@ -2,6 +2,7 @@ import axios, { AxiosInstance } from "axios";
 import config from "../../config/config";
 
 const BASE_URL = config.API_URL;
+console.log(BASE_URL,'BASE_URL')
 
 const createAxiosInstance = (baseURL: string): AxiosInstance => {
     return axios.create({

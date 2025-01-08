@@ -34,7 +34,11 @@ const SignInButton: React.FC = () => {
                         image: response.data.picture,
                     }
                     try {
-                        const res = await axiosUser.post("/google-login", data);
+                        const res = await axiosUser.post("/google-login", data
+                            ,{
+                                withCredentials:true
+                            }
+                        );
     
                         if (res.status === 200) {
                             dispatch(addUser(res.data));
