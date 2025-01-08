@@ -12,6 +12,7 @@ import SignInButton from "../../utils/authentication/Googlebutton";
 import { isValidateLogin } from "../../utils/validations/loginValidation";
 import config from "../../config/config";
 import { HiEye, HiEyeOff } from "react-icons/hi";
+import axios from "axios";
 
 const UserLogin: React.FC = () => {
     const navigate = useNavigate();
@@ -34,8 +35,7 @@ const UserLogin: React.FC = () => {
             return;
         }
         try {
-            const response = await axiosUser.post(
-                "/login",
+            const response = await axios.post("http://13.203.123.24:8000/api/user/login",
                 {
                     email: email,
                     password: password,
