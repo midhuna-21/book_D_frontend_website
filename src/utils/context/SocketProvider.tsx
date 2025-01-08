@@ -25,6 +25,9 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
     const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
 
     useEffect(() => {
+        if (!userId) {
+            return;  
+        }
         const newSocket = io(config.API_BACKEND);
 
         if (userId) {
