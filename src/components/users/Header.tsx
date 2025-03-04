@@ -212,7 +212,8 @@ const Header: React.FC = () => {
             </div>
             <div className="flex items-center mr-10">
                 <div
-                onClick={handleLogout}
+              
+              
                     className={`text-sm cursor-pointer ${
                         isHomePage ? "text-gray-300" : "text-gray-800"
                     } hover:text-blue-500`}
